@@ -4,6 +4,7 @@ import { TanStackDevtools } from "@tanstack/react-devtools"
 
 import appCss from "../styles.css?url"
 import { FloatBar } from "@/components/editor/float-bar"
+import { SiteHeader } from "@/components/site-header"
 import { loadRootSession } from "@/lib/auth/session.fn"
 
 export const Route = createRootRoute({
@@ -46,6 +47,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         <HeadContent />
       </head>
       <body>
+        <SiteHeader />
         {children}
         {session.editor && session.editorState ? (
           <FloatBar

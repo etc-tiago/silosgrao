@@ -12,6 +12,12 @@
     },
   ],
   "send_email": [{ "name": "EMAIL" }],
+  "r2_buckets": [
+    {
+      "binding": "CONTENT_ASSETS",
+      "bucket_name": "silosgraos-content",
+    },
+  ],
   "vars": {
     "OTP_FROM_EMAIL": "login@seudominio.com",
     "TURNSTILE_SITE_KEY": "1x00000000000000000000AA",

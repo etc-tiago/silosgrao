@@ -4,6 +4,7 @@ import { RotateCcw, RotateCw, Trash2, Upload, LogOut } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { ConfirmDialog } from "@/components/editor/confirm-dialog"
 import { orpc } from "@/orpc/browser-client"
+import { refreshEditorData } from "@/lib/content/refresh-editor-data"
 
 interface FloatBarProps {
   canUndo: boolean
@@ -19,7 +20,7 @@ export function FloatBar({ canUndo, canRedo, hasDevChanges }: FloatBarProps) {
   const [loading, setLoading] = useState(false)
 
   async function refreshSession() {
-    await router.invalidate()
+    await refreshEditorData(router)
   }
 
   async function handleUndo() {

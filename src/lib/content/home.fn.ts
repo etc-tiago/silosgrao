@@ -1,7 +1,7 @@
-import { createServerFn } from "@tanstack/react-start"
-import { getServerDb } from "@/lib/server/env"
 import { getSessionEditor } from "@/lib/auth/session.server"
 import { readContent } from "@/lib/content/read"
+import { getServerDb } from "@/lib/server/env"
+import { createServerFn } from "@tanstack/react-start"
 
 export const loadHomeContent = createServerFn({ method: "GET" }).handler(
   async () => {
@@ -16,6 +16,6 @@ export const loadHomeContent = createServerFn({ method: "GET" }).handler(
       mode
     )
 
-    return { content }
+    return { content, mode }
   }
 )

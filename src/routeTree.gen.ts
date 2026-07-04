@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as EditarRouteImport } from './routes/editar'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ApiRpcSplatRouteImport } from './routes/api/rpc/$'
+import { Route as ApiContentAssetsSplatRouteImport } from './routes/api/content-assets/$'
 
 const EditarRoute = EditarRouteImport.update({
   id: '/editar',
@@ -28,34 +29,43 @@ const ApiRpcSplatRoute = ApiRpcSplatRouteImport.update({
   path: '/api/rpc/$',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiContentAssetsSplatRoute = ApiContentAssetsSplatRouteImport.update({
+  id: '/api/content-assets/$',
+  path: '/api/content-assets/$',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/editar': typeof EditarRoute
+  '/api/content-assets/$': typeof ApiContentAssetsSplatRoute
   '/api/rpc/$': typeof ApiRpcSplatRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/editar': typeof EditarRoute
+  '/api/content-assets/$': typeof ApiContentAssetsSplatRoute
   '/api/rpc/$': typeof ApiRpcSplatRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/editar': typeof EditarRoute
+  '/api/content-assets/$': typeof ApiContentAssetsSplatRoute
   '/api/rpc/$': typeof ApiRpcSplatRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/editar' | '/api/rpc/$'
+  fullPaths: '/' | '/editar' | '/api/content-assets/$' | '/api/rpc/$'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/editar' | '/api/rpc/$'
-  id: '__root__' | '/' | '/editar' | '/api/rpc/$'
+  to: '/' | '/editar' | '/api/content-assets/$' | '/api/rpc/$'
+  id: '__root__' | '/' | '/editar' | '/api/content-assets/$' | '/api/rpc/$'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   EditarRoute: typeof EditarRoute
+  ApiContentAssetsSplatRoute: typeof ApiContentAssetsSplatRoute
   ApiRpcSplatRoute: typeof ApiRpcSplatRoute
 }
 
@@ -82,12 +92,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiRpcSplatRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/content-assets/$': {
+      id: '/api/content-assets/$'
+      path: '/api/content-assets/$'
+      fullPath: '/api/content-assets/$'
+      preLoaderRoute: typeof ApiContentAssetsSplatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   EditarRoute: EditarRoute,
+  ApiContentAssetsSplatRoute: ApiContentAssetsSplatRoute,
   ApiRpcSplatRoute: ApiRpcSplatRoute,
 }
 export const routeTree = rootRouteImport
