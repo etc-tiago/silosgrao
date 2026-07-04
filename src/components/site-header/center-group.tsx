@@ -1,3 +1,4 @@
+import type { LogoColorPreset } from "@/components/icons/logo-presets"
 import { SiteHeaderLogo } from "@/components/site-header/logo"
 import {
   navItemsLeft,
@@ -9,9 +10,13 @@ import { useRouterState } from "@tanstack/react-router"
 
 type SiteHeaderCenterGroupProps = {
   className?: string
+  logoPreset?: LogoColorPreset
 }
 
-export function SiteHeaderCenterGroup({ className }: SiteHeaderCenterGroupProps) {
+export function SiteHeaderCenterGroup({
+  className,
+  logoPreset,
+}: SiteHeaderCenterGroupProps) {
   const { location } = useRouterState()
   const hash = location.hash.replace(/^#/, "")
 
@@ -33,7 +38,7 @@ export function SiteHeaderCenterGroup({ className }: SiteHeaderCenterGroupProps)
         />
       </nav>
 
-      <SiteHeaderLogo className="shrink-0 px-6" />
+      <SiteHeaderLogo preset={logoPreset} className="shrink-0 px-6" />
 
       <nav
         aria-label="Principal — direita"

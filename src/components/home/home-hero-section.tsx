@@ -2,6 +2,10 @@ import { Span } from "@/components/content"
 import { EditableColumnImage } from "@/components/content/editable-column-image"
 import { SiteHeader } from "@/components/site-header"
 import {
+  DEFAULT_LOGO_PRESET,
+  parseLogoPresetValue,
+} from "@/lib/content/fields/logo-preset"
+import {
   HERO_CATEGORY_DEFAULTS,
   HERO_CATEGORY_PATHS,
   HERO_COLUMN_DEFAULTS,
@@ -21,6 +25,11 @@ export function HomeHeroSection({
   framed = false,
   embeddedHeader = false,
 }: HomeHeroSectionProps) {
+  const logoPreset = parseLogoPresetValue(
+    content["header.logoPreset"],
+    DEFAULT_LOGO_PRESET
+  )
+
   return (
     <section
       className={cn(
@@ -50,6 +59,7 @@ export function HomeHeroSection({
         <SiteHeader
           position="embedded"
           hideOnScroll={false}
+          logoPreset={logoPreset}
           className="px-5 py-5 md:px-8 md:py-8"
         />
       ) : null}

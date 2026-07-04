@@ -27,6 +27,12 @@ const categoryFields = Object.fromEntries(
 )
 
 export const homeEditableFields = {
+  "header.logoPreset": {
+    label: "Cor da logo",
+    editTipo: "logo-preset",
+    contentType: "text",
+    pageSlug: "home",
+  },
   "hero.headline.line1": {
     label: "Título — linha 1",
     editTipo: "text",

@@ -61,6 +61,8 @@ export function EditFieldDrawer({
             setButtonDraft={form.setButtonDraft}
             bgImageDraft={form.bgImageDraft}
             setBgImageDraft={form.setBgImageDraft}
+            logoPresetDraft={form.logoPresetDraft}
+            setLogoPresetDraft={form.setLogoPresetDraft}
             pages={form.pages}
             loading={form.loading}
             error={form.error}

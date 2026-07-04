@@ -11,10 +11,16 @@ import {
 } from "@/components/ui/drawer"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { parseButtonValue } from "@/lib/content/fields/button"
+import {
+  DEFAULT_LOGO_PRESET,
+  LOGO_PRESET_LABELS,
+  parseLogoPresetValue,
+} from "@/lib/content/fields/logo-preset"
 import type { EditSearch } from "@/lib/content/fields/search"
 import type { EditableFields } from "@/lib/content/fields/types"
+import { SilosGraosSymbol } from "@/components/icons/silos-graos-symbol"
 import { cn } from "@/lib/utils"
-import { ChevronRight, ImageIcon, Type } from "lucide-react"
+import { ChevronRight, ImageIcon, Palette, Type } from "lucide-react"
 
 type ContentBrowserDrawerProps = {
   content: Record<string, string>
@@ -82,7 +88,7 @@ export function ContentBrowserDrawer({
   onOpenChange,
 }: ContentBrowserDrawerProps) {
   const { editPath, openEdit } = useEditNavigation()
-  const { textFields, imageFields } = groupEditableFields(fields)
+  const { textFields, imageFields, logoFields } = groupEditableFields(fields)
 
   return (
     <Drawer open={open} onOpenChange={onOpenChange} swipeDirection="right">
@@ -108,6 +114,13 @@ export function ContentBrowserDrawer({
               Imagens
               <span className="text-xs text-muted-foreground">
                 ({imageFields.length})
+              </span>
+            </TabsTrigger>
+            <TabsTrigger value="logo" className="flex-1 gap-1.5">
+              <Palette className="size-4" />
+              Logo
+              <span className="text-xs text-muted-foreground">
+                ({logoFields.length})
               </span>
             </TabsTrigger>
           </TabsList>
@@ -177,6 +190,43 @@ export function ContentBrowserDrawer({
                             <ImageIcon className="size-5 text-muted-foreground" />
                           </div>
                         )
+                      }
+                    />
+                  )
+                })
+              )}
+            </div>
+          </TabsContent>
+
+          <TabsContent value="logo" className="flex-1 overflow-y-auto pb-4">
+            <div className="space-y-2 pt-2">
+              {logoFields.length === 0 ? (
+                <p className="py-8 text-center text-sm text-muted-foreground">
+                  Nenhuma configuração de logo nesta página.
+                </p>
+              ) : (
+                logoFields.map(([path, field]) => {
+                  const preset = parseLogoPresetValue(
+                    content[path],
+                    DEFAULT_LOGO_PRESET
+                  )
+                  return (
+                    <FieldListItem
+                      key={path}
+                      path={path}
+                      label={field.label}
+                      selected={editPath === path}
+                      onSelect={() => openEdit(path, field.editTipo)}
+                      thumbnail={
+                        <SilosGraosSymbol
+                          preset={preset}
+                          className="size-12"
+                        />
+                      }
+                      subtitle={
+                        <p className="text-xs text-muted-foreground">
+                          {LOGO_PRESET_LABELS[preset]}
+                        </p>
                       }
                     />
                   )

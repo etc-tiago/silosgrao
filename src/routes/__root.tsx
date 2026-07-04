@@ -2,6 +2,7 @@ import { HeadContent, Scripts, createRootRoute, useRouterState } from "@tanstack
 
 import { FloatBar } from "@/components/editor/float-bar"
 import { SiteHeader } from "@/components/site-header"
+import { usePageLogoPreset } from "@/components/site-header/use-page-logo-preset"
 import { loadRootSession } from "@/lib/auth/session.fn"
 import appCss from "../styles.css?url"
 
@@ -64,6 +65,11 @@ export const Route = createRootRoute({
   shellComponent: RootDocument,
 })
 
+function RootSiteHeader() {
+  const logoPreset = usePageLogoPreset()
+  return <SiteHeader logoPreset={logoPreset} />
+}
+
 function RootDocument({ children }: { children: React.ReactNode }) {
   const session = Route.useLoaderData()
   const pathname = useRouterState({ select: (s) => s.location.pathname })
@@ -75,7 +81,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         <HeadContent />
       </head>
       <body>
-        {showSiteHeader ? <SiteHeader /> : null}
+        {showSiteHeader ? <RootSiteHeader /> : null}
         {children}
         {session.editor && session.editorState ? (
           <FloatBar

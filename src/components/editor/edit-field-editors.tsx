@@ -4,6 +4,13 @@ import {
   heroImageObjectPositionOptions,
   type HeroImageValue,
 } from "@/lib/content/fields/hero-image"
+import {
+  LOGO_PRESET_LABELS,
+  logoPresetSchema,
+} from "@/lib/content/fields/logo-preset"
+import type { LogoColorPreset } from "@/components/icons/logo-presets"
+import { LOGO_COLOR_PRESETS } from "@/components/icons/logo-presets"
+import { SilosGraosLogomarca } from "@/components/icons/silos-graos-logomarca"
 import { cn } from "@/lib/utils"
 import type { ChangeEvent, RefObject } from "react"
 
@@ -325,6 +332,59 @@ export function ButtonFieldEditor({
   )
 }
 
+const logoPresetOptions = logoPresetSchema.options
+
+export function LogoPresetFieldEditor({
+  draft,
+  loading,
+  onChange,
+}: {
+  draft: LogoColorPreset
+  loading: boolean
+  onChange: (value: LogoColorPreset) => void
+}) {
+  return (
+    <div className="space-y-6">
+      <div className="space-y-2">
+        <p className="text-sm font-medium">Pré-visualização</p>
+        <div className="flex items-center justify-center rounded-xl border bg-muted/30 p-8">
+          <SilosGraosLogomarca preset={draft} className="h-16 w-auto" />
+        </div>
+      </div>
+
+      <fieldset className="space-y-3">
+        <legend className="text-sm font-medium">Cor</legend>
+        <div className="flex flex-col gap-2">
+          {logoPresetOptions.map((preset) => (
+            <label
+              key={preset}
+              className={cn(
+                "flex cursor-pointer items-center gap-3 rounded-xl border bg-input/20 p-3",
+                draft === preset && "border-primary bg-primary/5"
+              )}
+            >
+              <input
+                type="radio"
+                name="logo-preset"
+                checked={draft === preset}
+                onChange={() => onChange(preset)}
+                disabled={loading}
+              />
+              <span
+                className="size-5 shrink-0 rounded-full border border-border"
+                style={{ backgroundColor: LOGO_COLOR_PRESETS[preset] }}
+              />
+              <span className="text-sm font-medium">
+                {LOGO_PRESET_LABELS[preset]}
+              </span>
+            </label>
+          ))}
+        </div>
+      </fieldset>
+    </div>
+  )
+}
+
 type EditFieldFormProps = {
   fieldLabel: string
   tipo: string
@@ -335,6 +395,8 @@ type EditFieldFormProps = {
   setButtonDraft: (value: ButtonValue) => void
   bgImageDraft: HeroImageValue
   setBgImageDraft: (value: HeroImageValue) => void
+  logoPresetDraft: LogoColorPreset
+  setLogoPresetDraft: (value: LogoColorPreset) => void
   pages: PageOption[]
   loading: boolean
   error: string | null
@@ -354,6 +416,8 @@ export function EditFieldForm({
   setButtonDraft,
   bgImageDraft,
   setBgImageDraft,
+  logoPresetDraft,
+  setLogoPresetDraft,
   pages,
   loading,
   error,
@@ -428,6 +492,14 @@ export function EditFieldForm({
           pages={pages}
           loading={loading}
           onChange={setButtonDraft}
+        />
+      ) : null}
+
+      {tipo === "logo-preset" ? (
+        <LogoPresetFieldEditor
+          draft={logoPresetDraft}
+          loading={loading}
+          onChange={setLogoPresetDraft}
         />
       ) : null}
 

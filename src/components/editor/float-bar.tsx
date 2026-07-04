@@ -74,7 +74,7 @@ export function FloatBar({ canUndo, canRedo, hasDevChanges }: FloatBarProps) {
 
   return (
     <>
-      <div className="fixed bottom-4 left-1/2 z-50 flex -translate-x-1/2 items-center gap-1 rounded-full border bg-background/90 px-2 py-2 shadow-xl backdrop-blur-md">
+      <div className="fixed bottom-4 left-1/2 z-10001 flex -translate-x-1/2 items-center gap-1 rounded-full border bg-background/90 px-2 py-2 shadow-xl backdrop-blur-md">
         <Button
           size="sm"
           variant="ghost"

@@ -13,6 +13,12 @@ import {
   serializeHeroImageValue,
   type HeroImageValue,
 } from "@/lib/content/fields/hero-image"
+import {
+  DEFAULT_LOGO_PRESET,
+  logoPresetSchema,
+  parseLogoPresetValue,
+} from "@/lib/content/fields/logo-preset"
+import type { LogoColorPreset } from "@/components/icons/logo-presets"
 import type { EditSearch } from "@/lib/content/fields/search"
 import type { EditableFields, FieldDef } from "@/lib/content/fields/types"
 import { refreshEditorData } from "@/lib/content/refresh-editor-data"
@@ -57,6 +63,8 @@ export function useEditFieldForm({
   const [buttonDraft, setButtonDraft] = useState<ButtonValue>(buttonFallback)
   const [bgImageDraft, setBgImageDraft] =
     useState<HeroImageValue>(heroImageFallback)
+  const [logoPresetDraft, setLogoPresetDraft] =
+    useState<LogoColorPreset>(DEFAULT_LOGO_PRESET)
   const [pages, setPages] = useState<PageOption[]>([])
   const [imageFile, setImageFile] = useState<File | null>(null)
   const [imagePreview, setImagePreview] = useState<string | null>(null)
@@ -69,6 +77,7 @@ export function useEditFieldForm({
     setDraft(currentValue)
     setButtonDraft(parseButtonValue(currentValue, buttonFallback))
     setBgImageDraft(parseHeroImageValue(currentValue, HERO_COLUMN_DEFAULTS[0]))
+    setLogoPresetDraft(parseLogoPresetValue(currentValue, DEFAULT_LOGO_PRESET))
     setImageFile(null)
     setImagePreview(null)
     setError(null)
@@ -165,6 +174,13 @@ export function useEditFieldForm({
           return
         }
         value = serializeButtonValue(parsed.data)
+      } else if (tipo === "logo-preset") {
+        const parsed = logoPresetSchema.safeParse(logoPresetDraft)
+        if (!parsed.success) {
+          setError("Cor da logo inválida.")
+          return
+        }
+        value = parsed.data
       } else if (tipo === "video") {
         setError("Editor de vídeo em breve.")
         return
@@ -196,6 +212,8 @@ export function useEditFieldForm({
   )
   const draftBgImageSerialized = serializeHeroImageValue(bgImageDraft)
 
+  const currentLogoPreset = parseLogoPresetValue(currentValue, DEFAULT_LOGO_PRESET)
+
   const canSave =
     tipo === "text"
       ? draft !== currentValue
@@ -208,7 +226,10 @@ export function useEditFieldForm({
           : tipo === "button"
             ? draftButtonSerialized !== currentButtonSerialized &&
               buttonValueSchema.safeParse(buttonDraft).success
-            : false
+            : tipo === "logo-preset"
+              ? logoPresetDraft !== currentLogoPreset &&
+                logoPresetSchema.safeParse(logoPresetDraft).success
+              : false
 
   return {
     open,
@@ -221,6 +242,8 @@ export function useEditFieldForm({
     setButtonDraft,
     bgImageDraft,
     setBgImageDraft,
+    logoPresetDraft,
+    setLogoPresetDraft,
     pages,
     loading,
     error,
@@ -236,14 +259,17 @@ export function useEditFieldForm({
 export function groupEditableFields(fields: EditableFields) {
   const textFields: Array<[string, FieldDef]> = []
   const imageFields: Array<[string, FieldDef]> = []
+  const logoFields: Array<[string, FieldDef]> = []
 
   for (const [path, field] of Object.entries(fields)) {
     if (field.editTipo === "text" || field.editTipo === "button") {
       textFields.push([path, field])
     } else if (field.editTipo === "img" || field.editTipo === "bg-image") {
       imageFields.push([path, field])
+    } else if (field.editTipo === "logo-preset") {
+      logoFields.push([path, field])
     }
   }
 
-  return { textFields, imageFields }
+  return { textFields, imageFields, logoFields }
 }
