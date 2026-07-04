@@ -1,6 +1,7 @@
 import { EditorPageProvider } from "@/components/editor/editor-page-provider"
 import { HomeHeroIntro } from "@/components/home/home-hero-intro"
 import { HomeHeroSection } from "@/components/home/home-hero-section"
+import { HomeIntentsSection } from "@/components/home/home-intents-section"
 import { homeEditableFields } from "@/lib/content/fields/home"
 import { editSearchSchema } from "@/lib/content/fields/search"
 import { loadHomeContent } from "@/lib/content/home.fn"
@@ -23,9 +24,10 @@ function HomePage() {
       fields={homeEditableFields}
       search={search}
     >
-      <main>
-        <HomeHeroSection content={content} />
-        <HomeHeroIntro content={content} />
+      <main className="min-h-screen bg-background">
+        <HomeHeroSection content={content} framed />
+        <HomeHeroIntro content={content} framed />
+        <HomeIntentsSection framed />
       </main>
     </EditorPageProvider>
   )
