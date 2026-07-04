@@ -6,7 +6,9 @@ type ContentBlockProps = {
   path: string
   editTipo: EditTipo
   className?: string
-  children: ReactNode
+  value?: string
+  fallback?: string
+  children?: ReactNode
 }
 
 export function H1(props: ContentBlockProps) {
@@ -29,7 +31,12 @@ export function Div(props: ContentBlockProps) {
   return <EditableShell as="div" {...props} />
 }
 
+export function Span(props: ContentBlockProps) {
+  return <EditableShell as="span" {...props} />
+}
+
 export { EditableButton } from "@/components/content/editable-button"
+export { EditableColumnImage } from "@/components/content/editable-column-image"
 export { EditableImage } from "@/components/content/editable-image"
 
 export {

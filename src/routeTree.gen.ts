@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as ProdutosRouteImport } from './routes/produtos'
 import { Route as EditarRouteImport } from './routes/editar'
+import { Route as DemoRouteImport } from './routes/demo'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ApiRpcSplatRouteImport } from './routes/api/rpc/$'
 import { Route as ApiContentAssetsSplatRouteImport } from './routes/api/content-assets/$'
@@ -23,6 +24,11 @@ const ProdutosRoute = ProdutosRouteImport.update({
 const EditarRoute = EditarRouteImport.update({
   id: '/editar',
   path: '/editar',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DemoRoute = DemoRouteImport.update({
+  id: '/demo',
+  path: '/demo',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -43,6 +49,7 @@ const ApiContentAssetsSplatRoute = ApiContentAssetsSplatRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/demo': typeof DemoRoute
   '/editar': typeof EditarRoute
   '/produtos': typeof ProdutosRoute
   '/api/content-assets/$': typeof ApiContentAssetsSplatRoute
@@ -50,6 +57,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/demo': typeof DemoRoute
   '/editar': typeof EditarRoute
   '/produtos': typeof ProdutosRoute
   '/api/content-assets/$': typeof ApiContentAssetsSplatRoute
@@ -58,6 +66,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/demo': typeof DemoRoute
   '/editar': typeof EditarRoute
   '/produtos': typeof ProdutosRoute
   '/api/content-assets/$': typeof ApiContentAssetsSplatRoute
@@ -66,12 +75,24 @@ export interface FileRoutesById {
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
-    '/' | '/editar' | '/produtos' | '/api/content-assets/$' | '/api/rpc/$'
+    | '/'
+    | '/demo'
+    | '/editar'
+    | '/produtos'
+    | '/api/content-assets/$'
+    | '/api/rpc/$'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/editar' | '/produtos' | '/api/content-assets/$' | '/api/rpc/$'
+  to:
+    | '/'
+    | '/demo'
+    | '/editar'
+    | '/produtos'
+    | '/api/content-assets/$'
+    | '/api/rpc/$'
   id:
     | '__root__'
     | '/'
+    | '/demo'
     | '/editar'
     | '/produtos'
     | '/api/content-assets/$'
@@ -80,6 +101,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  DemoRoute: typeof DemoRoute
   EditarRoute: typeof EditarRoute
   ProdutosRoute: typeof ProdutosRoute
   ApiContentAssetsSplatRoute: typeof ApiContentAssetsSplatRoute
@@ -100,6 +122,13 @@ declare module '@tanstack/react-router' {
       path: '/editar'
       fullPath: '/editar'
       preLoaderRoute: typeof EditarRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/demo': {
+      id: '/demo'
+      path: '/demo'
+      fullPath: '/demo'
+      preLoaderRoute: typeof DemoRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -128,6 +157,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  DemoRoute: DemoRoute,
   EditarRoute: EditarRoute,
   ProdutosRoute: ProdutosRoute,
   ApiContentAssetsSplatRoute: ApiContentAssetsSplatRoute,

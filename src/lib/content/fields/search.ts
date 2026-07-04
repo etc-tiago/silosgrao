@@ -5,6 +5,7 @@ export const editSearchSchema = z
   .object({
     editar: z.string().optional(),
     tipo: z.enum(editTipoEnum).optional(),
+    painel: z.enum(["conteudo"]).optional(),
   })
   .refine(
     (search) =>

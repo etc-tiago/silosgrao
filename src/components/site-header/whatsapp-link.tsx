@@ -1,4 +1,4 @@
-import { MessageCircle } from "lucide-react"
+import { WhatsApp } from "@/components/icons/whatsapp"
 import { cn } from "@/lib/utils"
 import { WHATSAPP_LINK } from "@/components/site-header/config"
 
@@ -17,7 +17,7 @@ export function SiteHeaderWhatsappLink({ className }: SiteHeaderWhatsappLinkProp
         className
       )}
     >
-      <MessageCircle className="size-6" aria-hidden />
+      <WhatsApp className="size-6" aria-hidden />
       <span className="sr-only">{WHATSAPP_LINK.label}</span>
     </a>
   )

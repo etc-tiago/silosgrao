@@ -1,10 +1,5 @@
 import { Link } from "@tanstack/react-router"
-import { Pencil } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import {
-  useEditNavigation,
-  useEditorMode,
-} from "@/components/content/editor-mode"
+import { useEditorMode } from "@/components/content/editor-mode"
 import type { ButtonValue } from "@/lib/content/fields/button"
 import { pageSlugToPath } from "@/lib/content/fields/button"
 import { cn } from "@/lib/utils"
@@ -25,35 +20,19 @@ const variantClasses: Record<ButtonValue["variant"], string> = {
 
 export function EditableButton({ path, value }: EditableButtonProps) {
   const { isEditor } = useEditorMode()
-  const { editPath, openEdit } = useEditNavigation()
-  const selected = editPath === path
   const classes = cn(baseClasses, variantClasses[value.variant])
 
-  const content = value.label
+  const isEmpty = !value.label.trim()
+  const content = isEmpty && isEditor ? "Sem texto" : value.label
 
   if (isEditor) {
     return (
-      <div
-        className={cn(
-          "group relative inline-block",
-          selected && "rounded-md ring-2 ring-primary/60"
-        )}
+      <span
+        className={cn(classes, isEmpty && "italic opacity-60")}
+        data-edit-path={path}
       >
-        <span className={cn(classes, "pointer-events-none")}>{content}</span>
-        <Button
-          type="button"
-          variant="secondary"
-          size="icon-xs"
-          className={cn(
-            "absolute -top-2 -right-2 transition-opacity",
-            selected ? "opacity-100" : "opacity-0 group-hover:opacity-100"
-          )}
-          aria-label={`Editar ${path}`}
-          onClick={() => openEdit(path, "button")}
-        >
-          <Pencil className="size-3" />
-        </Button>
-      </div>
+        {content}
+      </span>
     )
   }
 

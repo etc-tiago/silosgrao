@@ -3,15 +3,28 @@ import { SiteHeaderLogo } from "@/components/site-header/logo"
 import { SiteHeaderNavMobile } from "@/components/site-header/nav-mobile"
 import { SiteHeaderProdutosLink } from "@/components/site-header/produtos-link"
 import { SiteHeaderWhatsappLink } from "@/components/site-header/whatsapp-link"
-import { SiteHeaderWrapper } from "@/components/site-header/wrapper"
+import {
+  SiteHeaderWrapper,
+  type SiteHeaderPosition,
+} from "@/components/site-header/wrapper"
 
 type SiteHeaderProps = {
   className?: string
+  position?: SiteHeaderPosition
+  hideOnScroll?: boolean
 }
 
-export function SiteHeader({ className }: SiteHeaderProps) {
+export function SiteHeader({
+  className,
+  position = "fixed",
+  hideOnScroll = true,
+}: SiteHeaderProps) {
   return (
-    <SiteHeaderWrapper className={className}>
+    <SiteHeaderWrapper
+      className={className}
+      position={position}
+      hideOnScroll={hideOnScroll}
+    >
       <div className="flex w-full items-center gap-2 md:gap-4">
         <SiteHeaderLogo className="order-1 min-w-0 flex-1 md:hidden" />
         <SiteHeaderNavMobile className="order-3 shrink-0 md:hidden" />

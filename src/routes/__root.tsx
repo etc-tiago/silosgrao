@@ -1,4 +1,4 @@
-import { HeadContent, Scripts, createRootRoute } from "@tanstack/react-router"
+import { HeadContent, Scripts, createRootRoute, useRouterState } from "@tanstack/react-router"
 
 import { FloatBar } from "@/components/editor/float-bar"
 import { SiteHeader } from "@/components/site-header"
@@ -18,11 +18,39 @@ export const Route = createRootRoute({
       {
         title: "Silos Grãos",
       },
+      {
+        name: "apple-mobile-web-app-title",
+        content: "Silos Grão",
+      },
     ],
     links: [
       {
         rel: "stylesheet",
         href: appCss,
+      },
+      {
+        rel: "icon",
+        type: "image/png",
+        href: "/icones/favicon-96x96.png",
+        sizes: "96x96",
+      },
+      {
+        rel: "icon",
+        type: "image/svg+xml",
+        href: "/icones/favicon.svg",
+      },
+      {
+        rel: "shortcut icon",
+        href: "/icones/favicon.ico",
+      },
+      {
+        rel: "apple-touch-icon",
+        sizes: "180x180",
+        href: "/icones/apple-touch-icon.png",
+      },
+      {
+        rel: "manifest",
+        href: "/icones/site.webmanifest",
       },
     ],
   }),
@@ -38,6 +66,8 @@ export const Route = createRootRoute({
 
 function RootDocument({ children }: { children: React.ReactNode }) {
   const session = Route.useLoaderData()
+  const pathname = useRouterState({ select: (s) => s.location.pathname })
+  const showSiteHeader = pathname !== "/demo"
 
   return (
     <html lang="pt-BR">
@@ -45,7 +75,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         <HeadContent />
       </head>
       <body>
-        <SiteHeader />
+        {showSiteHeader ? <SiteHeader /> : null}
         {children}
         {session.editor && session.editorState ? (
           <FloatBar

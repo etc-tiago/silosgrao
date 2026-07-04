@@ -1,9 +1,10 @@
 import { ConfirmDialog } from "@/components/editor/confirm-dialog"
+import { useEditorPageChrome } from "@/components/editor/editor-page-chrome"
 import { Button } from "@/components/ui/button"
 import { refreshEditorData } from "@/lib/content/refresh-editor-data"
 import { orpc } from "@/orpc/browser-client"
 import { useRouter } from "@tanstack/react-router"
-import { LogOut, RotateCcw, RotateCw, Trash2, Upload } from "lucide-react"
+import { LogOut, PanelRight, RotateCcw, RotateCw, Trash2, Upload } from "lucide-react"
 import { useState } from "react"
 
 interface FloatBarProps {
@@ -14,6 +15,7 @@ interface FloatBarProps {
 
 export function FloatBar({ canUndo, canRedo, hasDevChanges }: FloatBarProps) {
   const router = useRouter()
+  const editorPage = useEditorPageChrome()
   const [confirmAction, setConfirmAction] = useState<
     "discard" | "publish" | null
   >(null)
@@ -98,6 +100,24 @@ export function FloatBar({ canUndo, canRedo, hasDevChanges }: FloatBarProps) {
         </Button>
 
         <div className="mx-1 h-6 w-px bg-border" />
+
+        {editorPage ? (
+          <>
+            <Button
+              size="sm"
+              variant={editorPage.isContentBrowserOpen ? "secondary" : "ghost"}
+              className="rounded-full"
+              disabled={loading}
+              onClick={editorPage.openContentBrowser}
+              title="Conteúdo da página"
+            >
+              <PanelRight className="size-4" />
+              <span className="hidden sm:inline">Conteúdo</span>
+            </Button>
+
+            <div className="mx-1 h-6 w-px bg-border" />
+          </>
+        ) : null}
 
         <Button
           size="sm"
