@@ -1,6 +1,6 @@
 import type { ContentType } from "@/db/schema"
 
-export const editTipoEnum = ["text", "img", "video", "button"] as const
+export const editTipoEnum = ["text", "img", "bg-image", "video", "button"] as const
 export type EditTipo = (typeof editTipoEnum)[number]
 
 export type FieldDef = {

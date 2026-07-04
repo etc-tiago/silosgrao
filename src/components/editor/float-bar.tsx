@@ -1,10 +1,10 @@
-import { useRouter } from "@tanstack/react-router"
-import { useState } from "react"
-import { RotateCcw, RotateCw, Trash2, Upload, LogOut } from "lucide-react"
-import { Button } from "@/components/ui/button"
 import { ConfirmDialog } from "@/components/editor/confirm-dialog"
-import { orpc } from "@/orpc/browser-client"
+import { Button } from "@/components/ui/button"
 import { refreshEditorData } from "@/lib/content/refresh-editor-data"
+import { orpc } from "@/orpc/browser-client"
+import { useRouter } from "@tanstack/react-router"
+import { LogOut, RotateCcw, RotateCw, Trash2, Upload } from "lucide-react"
+import { useState } from "react"
 
 interface FloatBarProps {
   canUndo: boolean
@@ -141,7 +141,7 @@ export function FloatBar({ canUndo, canRedo, hasDevChanges }: FloatBarProps) {
       <ConfirmDialog
         open={confirmAction === "discard"}
         title="Descartar alterações?"
-        description="Todas as alterações em modo dev serão removidas. Esta ação não pode ser desfeita."
+        description="Todas as alteraçõe serão removidas. Esta ação não pode ser desfeita."
         confirmLabel="Descartar"
         onConfirm={handleDiscard}
         onCancel={() => setConfirmAction(null)}
@@ -151,7 +151,7 @@ export function FloatBar({ canUndo, canRedo, hasDevChanges }: FloatBarProps) {
       <ConfirmDialog
         open={confirmAction === "publish"}
         title="Publicar alterações?"
-        description="Todas as alterações em modo dev serão aplicadas à produção."
+        description="Todas as alteraçõe serão aplicadas à no site."
         confirmLabel="Publicar"
         onConfirm={handlePublish}
         onCancel={() => setConfirmAction(null)}

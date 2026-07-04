@@ -4,24 +4,54 @@ import {
   useEditNavigation,
   useEditorMode,
 } from "@/components/content/editor-mode"
+import type { EditTipo } from "@/lib/content/fields/types"
+import type {
+  HeroImageObjectFit,
+  HeroImageObjectPosition,
+} from "@/lib/content/fields/hero-image"
 import { cn } from "@/lib/utils"
 
 type EditableImageProps = {
   path: string
   src: string
   alt: string
+  editTipo?: EditTipo
+  objectFit?: HeroImageObjectFit
+  objectPosition?: HeroImageObjectPosition
   className?: string
 }
 
-export function EditableImage({ path, src, alt, className }: EditableImageProps) {
+export function EditableImage({
+  path,
+  src,
+  alt,
+  editTipo = "img",
+  objectFit,
+  objectPosition,
+  className,
+}: EditableImageProps) {
   const { isEditor } = useEditorMode()
   const { editPath, openEdit } = useEditNavigation()
   const selected = editPath === path
 
+  const imgStyle =
+    objectFit || objectPosition
+      ? {
+          objectFit: objectFit ?? "cover",
+          objectPosition: objectPosition ?? "center",
+        }
+      : undefined
+
+  const imgClassName = cn(
+    "size-full",
+    !objectFit && "object-cover",
+    className
+  )
+
   return (
     <>
       <div className="absolute inset-0 z-0">
-        <img src={src} alt={alt} className={cn("size-full object-cover", className)} />
+        <img src={src} alt={alt} className={imgClassName} style={imgStyle} />
       </div>
       {isEditor ? (
         <div
@@ -39,7 +69,7 @@ export function EditableImage({ path, src, alt, className }: EditableImageProps)
               selected ? "opacity-100" : "opacity-0 group-hover:opacity-100"
             )}
             aria-label={`Editar ${path}`}
-            onClick={() => openEdit(path, "img")}
+            onClick={() => openEdit(path, editTipo)}
           >
             <Pencil className="size-3" />
           </Button>

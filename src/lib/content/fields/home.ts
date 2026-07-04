@@ -5,9 +5,9 @@ export const HERO_IMAGE_DEFAULT =
 
 export const homeEditableFields = {
   "hero.image": {
-    label: "Imagem do hero",
-    editTipo: "img",
-    contentType: "image",
+    label: "Imagem de fundo",
+    editTipo: "bg-image",
+    contentType: "json",
     pageSlug: "home",
   },
   "hero.title": {

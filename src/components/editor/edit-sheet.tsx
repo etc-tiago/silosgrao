@@ -8,6 +8,15 @@ import {
   serializeButtonValue,
   type ButtonValue,
 } from "@/lib/content/fields/button"
+import { HERO_IMAGE_DEFAULT } from "@/lib/content/fields/home"
+import {
+  heroImageObjectFitOptions,
+  heroImageObjectPositionOptions,
+  heroImageValueSchema,
+  parseHeroImageValue,
+  serializeHeroImageValue,
+  type HeroImageValue,
+} from "@/lib/content/fields/hero-image"
 import type { EditSearch } from "@/lib/content/fields/search"
 import type { EditableFields } from "@/lib/content/fields/types"
 import { refreshEditorData } from "@/lib/content/refresh-editor-data"
@@ -15,7 +24,7 @@ import { cn } from "@/lib/utils"
 import { orpc } from "@/orpc/browser-client"
 import { Dialog } from "@base-ui/react/dialog"
 import { useRouter } from "@tanstack/react-router"
-import { useEffect, useRef, useState, type ChangeEvent } from "react"
+import { useEffect, useRef, useState, type ChangeEvent, type RefObject } from "react"
 
 type EditSheetProps = {
   content: Record<string, string>
@@ -50,6 +59,119 @@ function fileToBase64(file: File): Promise<string> {
     reader.onerror = () => reject(reader.error ?? new Error("Falha ao ler arquivo."))
     reader.readAsDataURL(file)
   })
+}
+
+function HeroImageFieldEditor({
+  draft,
+  previewSrc,
+  loading,
+  fileInputRef,
+  onChange,
+  onImageChange,
+  imageFile,
+}: {
+  draft: HeroImageValue
+  previewSrc: string
+  loading: boolean
+  fileInputRef: RefObject<HTMLInputElement | null>
+  onChange: (value: HeroImageValue) => void
+  onImageChange: (event: ChangeEvent<HTMLInputElement>) => void
+  imageFile: File | null
+}) {
+  return (
+    <div className="space-y-6">
+      <div className="space-y-2">
+        <p className="text-sm font-medium">Pré-visualização</p>
+        <div className="relative aspect-video w-full overflow-hidden rounded-xl border bg-muted/30">
+          <img
+            src={previewSrc}
+            alt="Pré-visualização da imagem de fundo"
+            className="size-full"
+            style={{
+              objectFit: draft.objectFit,
+              objectPosition: draft.objectPosition,
+            }}
+          />
+        </div>
+      </div>
+
+      <div className="space-y-2">
+        <p className="text-sm font-medium">Enviar nova imagem</p>
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept="image/jpeg,image/png,image/webp"
+          className="hidden"
+          onChange={onImageChange}
+        />
+        <button
+          type="button"
+          className="flex min-h-28 w-full flex-col items-center justify-center gap-2 rounded-xl border border-dashed bg-muted/30 px-4 py-6 text-sm text-muted-foreground transition-colors hover:bg-muted/50"
+          onClick={() => fileInputRef.current?.click()}
+          disabled={loading}
+        >
+          {imageFile ? imageFile.name : "Clique ou arraste uma imagem"}
+        </button>
+      </div>
+
+      <fieldset className="space-y-3">
+        <legend className="text-sm font-medium">Como a imagem preenche a tela</legend>
+        <div className="flex flex-col gap-3">
+          {heroImageObjectFitOptions.map((option) => (
+            <label
+              key={option.value}
+              className={cn(
+                "flex cursor-pointer gap-3 rounded-xl border bg-input/20 p-3",
+                draft.objectFit === option.value && "border-primary bg-primary/5"
+              )}
+            >
+              <input
+                type="radio"
+                name="hero-object-fit"
+                className="mt-1"
+                checked={draft.objectFit === option.value}
+                onChange={() =>
+                  onChange({ ...draft, objectFit: option.value })
+                }
+                disabled={loading}
+              />
+              <span className="space-y-1">
+                <span className="block text-sm font-medium">{option.label}</span>
+                <span className="block text-xs text-muted-foreground">
+                  {option.description}
+                </span>
+              </span>
+            </label>
+          ))}
+        </div>
+      </fieldset>
+
+      <label className="block space-y-2">
+        <span className="text-sm font-medium">Ponto de foco da imagem</span>
+        <span className="block text-xs text-muted-foreground">
+          Define qual parte da imagem fica visível quando houver corte nas bordas.
+        </span>
+        <select
+          className="w-full rounded-xl border bg-input/30 px-3 py-2 text-sm outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50"
+          value={draft.objectPosition}
+          onChange={(event) =>
+            onChange({
+              ...draft,
+              objectPosition: event.target
+                .value as HeroImageValue["objectPosition"],
+            })
+          }
+          disabled={loading}
+        >
+          {heroImageObjectPositionOptions.map((option) => (
+            <option key={option.value} value={option.value}>
+              {option.label}
+            </option>
+          ))}
+        </select>
+      </label>
+    </div>
+  )
 }
 
 function ButtonFieldEditor({
@@ -245,8 +367,12 @@ export function EditSheet({ content, fields, search }: EditSheetProps) {
     ? buttonFallbackForPath(search.editar)
     : heroCtaPrimaryDefault
 
+  const heroImageFallback = parseHeroImageValue("", HERO_IMAGE_DEFAULT)
+
   const [draft, setDraft] = useState(currentValue)
   const [buttonDraft, setButtonDraft] = useState<ButtonValue>(buttonFallback)
+  const [bgImageDraft, setBgImageDraft] =
+    useState<HeroImageValue>(heroImageFallback)
   const [pages, setPages] = useState<PageOption[]>([])
   const [imageFile, setImageFile] = useState<File | null>(null)
   const [imagePreview, setImagePreview] = useState<string | null>(null)
@@ -258,6 +384,7 @@ export function EditSheet({ content, fields, search }: EditSheetProps) {
     if (!open) return
     setDraft(currentValue)
     setButtonDraft(parseButtonValue(currentValue, buttonFallback))
+    setBgImageDraft(parseHeroImageValue(currentValue, HERO_IMAGE_DEFAULT))
     setImageFile(null)
     setImagePreview(null)
     setError(null)
@@ -337,6 +464,26 @@ export function EditSheet({ content, fields, search }: EditSheetProps) {
           dataBase64: await fileToBase64(imageFile),
         })
         value = upload.url
+      } else if (tipo === "bg-image") {
+        let url = bgImageDraft.url
+
+        if (imageFile) {
+          const upload = await orpc.content.uploadImage({
+            pageSlug: field.pageSlug,
+            path: search.editar,
+            mimeType: imageFile.type,
+            dataBase64: await fileToBase64(imageFile),
+          })
+          url = upload.url
+        }
+
+        const parsed = heroImageValueSchema.safeParse({ ...bgImageDraft, url })
+        if (!parsed.success) {
+          setError("Configuração da imagem de fundo inválida.")
+          return
+        }
+
+        value = serializeHeroImageValue(parsed.data)
       } else if (tipo === "button") {
         const parsed = buttonValueSchema.safeParse(buttonDraft)
         if (!parsed.success) {
@@ -370,11 +517,20 @@ export function EditSheet({ content, fields, search }: EditSheetProps) {
   )
   const draftButtonSerialized = serializeButtonValue(buttonDraft)
 
+  const currentBgImageSerialized = serializeHeroImageValue(
+    parseHeroImageValue(currentValue, HERO_IMAGE_DEFAULT)
+  )
+  const draftBgImageSerialized = serializeHeroImageValue(bgImageDraft)
+
   const canSave =
     tipo === "text"
       ? draft !== currentValue
       : tipo === "img"
         ? imageFile !== null
+        : tipo === "bg-image"
+          ? (imageFile !== null ||
+              draftBgImageSerialized !== currentBgImageSerialized) &&
+            heroImageValueSchema.safeParse(bgImageDraft).success
         : tipo === "button"
           ? draftButtonSerialized !== currentButtonSerialized &&
           buttonValueSchema.safeParse(buttonDraft).success
@@ -452,6 +608,18 @@ export function EditSheet({ content, fields, search }: EditSheetProps) {
                   </button>
                 </div>
               </div>
+            ) : null}
+
+            {tipo === "bg-image" ? (
+              <HeroImageFieldEditor
+                draft={bgImageDraft}
+                previewSrc={imagePreview ?? bgImageDraft.url}
+                loading={loading}
+                fileInputRef={fileInputRef}
+                onChange={setBgImageDraft}
+                onImageChange={handleImageChange}
+                imageFile={imageFile}
+              />
             ) : null}
 
             {tipo === "button" ? (

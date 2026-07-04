@@ -7,13 +7,14 @@ import {
   parseButtonValue,
 } from "@/lib/content/fields/button"
 import { HERO_IMAGE_DEFAULT } from "@/lib/content/fields/home"
+import { parseHeroImageValue } from "@/lib/content/fields/hero-image"
 
 type HeroSectionProps = {
   content: Record<string, string>
 }
 
 export function HeroSection({ content }: HeroSectionProps) {
-  const imageSrc = content["hero.image"] || HERO_IMAGE_DEFAULT
+  const heroImage = parseHeroImageValue(content["hero.image"], HERO_IMAGE_DEFAULT)
   const ctaPrimary = parseButtonValue(
     content["hero.cta.primary"],
     heroCtaPrimaryDefault
@@ -27,7 +28,10 @@ export function HeroSection({ content }: HeroSectionProps) {
     <section className="relative flex min-h-svh items-center justify-center overflow-hidden">
       <EditableImage
         path="hero.image"
-        src={imageSrc}
+        editTipo="bg-image"
+        src={heroImage.url}
+        objectFit={heroImage.objectFit}
+        objectPosition={heroImage.objectPosition}
         alt="Silos Grãos - Silo de armazenamento industrial"
       />
       <div
