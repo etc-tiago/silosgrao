@@ -1,0 +1,19 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "silosgraos-site",
+  "compatibility_date": "2026-06-01",
+  "compatibility_flags": ["nodejs_compat"],
+  "main": "@tanstack/react-start/server-entry",
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "silosgraos-cms",
+      "database_id": "00000000-0000-0000-0000-000000000001",
+    },
+  ],
+  "send_email": [{ "name": "EMAIL" }],
+  "vars": {
+    "OTP_FROM_EMAIL": "login@seudominio.com",
+    "TURNSTILE_SITE_KEY": "1x00000000000000000000AA",
+  },
+}
