@@ -28,7 +28,7 @@ function DemoPage() {
       search={search}
     >
       <main className="min-h-screen bg-background">
-        <HomeHeroSection content={content} framed />
+        <HomeHeroSection content={content} />
         <HomeHeroIntro content={content} framed />
         <HomeIntentsSection framed />
       </main>

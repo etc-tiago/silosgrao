@@ -1,9 +1,15 @@
-import { WhatsApp } from "@/components/icons/whatsapp"
+import {
+  homeCardClass,
+  homeCardImageWrapClass,
+  homeSectionClass,
+  homeSectionHeadingClass,
+} from "@/components/home/home-section"
 import {
   HOME_INTENT_DEFAULTS,
   type HomeIntent,
 } from "@/lib/content/fields/home-intents"
 import { cn } from "@/lib/utils"
+import { WhatsApp } from "@/components/icons/whatsapp"
 import { ArrowUpRight } from "lucide-react"
 
 type HomeIntentsSectionProps = {
@@ -18,37 +24,24 @@ export function HomeIntentsSection({
   className,
 }: HomeIntentsSectionProps) {
   return (
-    <section
-      className={cn(
-        "bg-surface px-6 py-14 md:px-14 md:py-20",
-        framed ? "mx-3 mt-10 rounded-[2rem] md:mx-6" : "mt-10",
-        className
-      )}
-    >
+    <section className={homeSectionClass({ framed, className })}>
       <div className="flex flex-wrap items-start justify-between gap-6">
-        <div>
-          <h2 className="font-display text-5xl text-ink md:text-7xl">
-            O que você <span className="font-bold">Busca</span>?
-          </h2>
-        </div>
-        <div className="flex items-center gap-3">
-          <button
-            type="button"
-            className="flex items-center gap-2 rounded-full border border-border bg-card px-5 py-3 text-sm font-medium"
-          >
-            <span>Falar conosco</span>
-            <WhatsApp className="size-4" />
-          </button>
-        </div>
+        <h2 className={homeSectionHeadingClass}>
+          O que você <span className="font-bold">Busca</span>?
+        </h2>
+        <button
+          type="button"
+          className="flex items-center gap-2 rounded-full border border-border bg-card px-5 py-3 text-sm font-medium"
+        >
+          <span>Falar conosco</span>
+          <WhatsApp className="size-4" />
+        </button>
       </div>
 
       <div className="mt-10 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
         {intents.map((intent) => (
-          <article
-            key={intent.title}
-            className="group cursor-pointer rounded-3xl bg-card p-3 transition-all hover:-translate-y-1 hover:shadow-xl"
-          >
-            <div className="relative overflow-hidden rounded-2xl">
+          <article key={intent.title} className={cn(homeCardClass, "cursor-pointer p-3")}>
+            <div className={homeCardImageWrapClass}>
               <img
                 src={intent.img}
                 alt={intent.title}

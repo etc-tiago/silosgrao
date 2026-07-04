@@ -1,6 +1,7 @@
 import { HeadContent, Scripts, createRootRoute } from "@tanstack/react-router"
 
 import { FloatBar } from "@/components/editor/float-bar"
+import { SiteFooter } from "@/components/site-footer"
 import { SiteHeader } from "@/components/site-header"
 import { usePageLogoPreset } from "@/components/site-header/use-page-logo-preset"
 import { loadRootSession } from "@/lib/auth/session.fn"
@@ -81,6 +82,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
       <body>
         <RootSiteHeader />
         {children}
+        <SiteFooter />
         {session.editor && session.editorState ? (
           <FloatBar
             canUndo={session.editorState.canUndo}

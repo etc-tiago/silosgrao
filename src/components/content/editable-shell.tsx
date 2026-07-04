@@ -14,7 +14,6 @@ type EditableShellProps = {
   editTipo: EditTipo
   className?: string
   value?: string
-  fallback?: string
   children?: ReactNode
 }
 
@@ -27,7 +26,6 @@ export function EditableShell({
   path,
   className,
   value,
-  fallback,
   children,
 }: EditableShellProps) {
   const { isEditor } = useEditorMode()
@@ -41,10 +39,8 @@ export function EditableShell({
   const displayContent =
     isEditor && isEmpty ? (
       <span className="italic opacity-60">{EDITOR_EMPTY_LABEL}</span>
-    ) : isEmpty && fallback != null ? (
-      fallback
-    ) : (
-      (cmsValue ?? children)
+    ) : isEmpty ? null : (
+      cmsValue
     )
 
   return (

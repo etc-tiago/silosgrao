@@ -7,7 +7,6 @@ type ContentBlockProps = {
   editTipo: EditTipo
   className?: string
   value?: string
-  fallback?: string
   children?: ReactNode
 }
 
