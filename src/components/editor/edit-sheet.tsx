@@ -1,18 +1,34 @@
+import { useEditNavigation } from "@/components/content/editor-mode"
+import { Button } from "@/components/ui/button"
+import {
+  buttonValueSchema,
+  heroCtaPrimaryDefault,
+  heroCtaWhatsappDefault,
+  parseButtonValue,
+  serializeButtonValue,
+  type ButtonValue,
+} from "@/lib/content/fields/button"
+import type { EditSearch } from "@/lib/content/fields/search"
+import type { EditableFields } from "@/lib/content/fields/types"
+import { refreshEditorData } from "@/lib/content/refresh-editor-data"
+import { cn } from "@/lib/utils"
+import { orpc } from "@/orpc/browser-client"
 import { Dialog } from "@base-ui/react/dialog"
 import { useRouter } from "@tanstack/react-router"
 import { useEffect, useRef, useState, type ChangeEvent } from "react"
-import { Button } from "@/components/ui/button"
-import { useEditNavigation } from "@/components/content/editor-mode"
-import type { EditableFields } from "@/lib/content/fields/types"
-import type { EditSearch } from "@/lib/content/fields/search"
-import { orpc } from "@/orpc/browser-client"
-import { refreshEditorData } from "@/lib/content/refresh-editor-data"
-import { cn } from "@/lib/utils"
 
 type EditSheetProps = {
   content: Record<string, string>
   fields: EditableFields
   search: EditSearch
+}
+
+type PageOption = { slug: string; title: string }
+
+function buttonFallbackForPath(path: string): ButtonValue {
+  return path === "hero.cta.whatsapp"
+    ? heroCtaWhatsappDefault
+    : heroCtaPrimaryDefault
 }
 
 function fileToBase64(file: File): Promise<string> {
@@ -36,6 +52,188 @@ function fileToBase64(file: File): Promise<string> {
   })
 }
 
+function ButtonFieldEditor({
+  draft,
+  pages,
+  loading,
+  onChange,
+}: {
+  draft: ButtonValue
+  pages: PageOption[]
+  loading: boolean
+  onChange: (value: ButtonValue) => void
+}) {
+  return (
+    <div className="space-y-6">
+      <label className="block space-y-2">
+        <span className="text-sm font-medium">Texto do botão</span>
+        <input
+          type="text"
+          className="w-full rounded-xl border bg-input/30 px-3 py-2 text-sm outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50"
+          value={draft.label}
+          onChange={(event) =>
+            onChange({ ...draft, label: event.target.value })
+          }
+          disabled={loading}
+        />
+      </label>
+
+      <fieldset className="space-y-3">
+        <legend className="text-sm font-medium">Destino</legend>
+        <div className="flex gap-4">
+          <label className="flex items-center gap-2 text-sm">
+            <input
+              type="radio"
+              name="link-kind"
+              checked={draft.link.kind === "page"}
+              onChange={() =>
+                onChange({
+                  ...draft,
+                  link: {
+                    kind: "page",
+                    pageSlug: pages[0]?.slug ?? "home",
+                    hash: "",
+                  },
+                })
+              }
+              disabled={loading}
+            />
+            Página
+          </label>
+          <label className="flex items-center gap-2 text-sm">
+            <input
+              type="radio"
+              name="link-kind"
+              checked={draft.link.kind === "external"}
+              onChange={() =>
+                onChange({
+                  ...draft,
+                  link: {
+                    kind: "external",
+                    url: "https://",
+                    openInNewTab: true,
+                  },
+                })
+              }
+              disabled={loading}
+            />
+            Link externo
+          </label>
+        </div>
+
+        {draft.link.kind === "page" ? (
+          <div className="space-y-3">
+            <label className="block space-y-2">
+              <span className="text-sm text-muted-foreground">Página</span>
+              <select
+                className="w-full rounded-xl border bg-input/30 px-3 py-2 text-sm outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50"
+                value={draft.link.pageSlug}
+                onChange={(event) => {
+                  if (draft.link.kind !== "page") return
+                  onChange({
+                    ...draft,
+                    link: { ...draft.link, pageSlug: event.target.value },
+                  })
+                }}
+                disabled={loading}
+              >
+                {pages.map((page) => (
+                  <option key={page.slug} value={page.slug}>
+                    {page.title}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label className="block space-y-2">
+              <span className="text-sm text-muted-foreground">
+                Âncora (opcional)
+              </span>
+              <input
+                type="text"
+                placeholder="ex: solucoes"
+                className="w-full rounded-xl border bg-input/30 px-3 py-2 text-sm outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50"
+                value={draft.link.hash ?? ""}
+                onChange={(event) => {
+                  if (draft.link.kind !== "page") return
+                  onChange({
+                    ...draft,
+                    link: {
+                      ...draft.link,
+                      hash: event.target.value || undefined,
+                    },
+                  })
+                }}
+                disabled={loading}
+              />
+            </label>
+          </div>
+        ) : (
+          <div className="space-y-3">
+            <label className="block space-y-2">
+              <span className="text-sm text-muted-foreground">URL</span>
+              <input
+                type="url"
+                className="w-full rounded-xl border bg-input/30 px-3 py-2 text-sm outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50"
+                value={draft.link.url}
+                onChange={(event) => {
+                  if (draft.link.kind !== "external") return
+                  onChange({
+                    ...draft,
+                    link: { ...draft.link, url: event.target.value },
+                  })
+                }}
+                disabled={loading}
+              />
+            </label>
+            <label className="flex items-center gap-2 text-sm">
+              <input
+                type="checkbox"
+                checked={draft.link.openInNewTab}
+                onChange={(event) => {
+                  if (draft.link.kind !== "external") return
+                  onChange({
+                    ...draft,
+                    link: {
+                      ...draft.link,
+                      openInNewTab: event.target.checked,
+                    },
+                  })
+                }}
+                disabled={loading}
+              />
+              Abrir em nova aba
+            </label>
+          </div>
+        )}
+      </fieldset>
+
+      <fieldset className="space-y-3">
+        <legend className="text-sm font-medium">Estilo</legend>
+        <div className="flex flex-col gap-2">
+          {(
+            [
+              ["primary", "Cor primária"],
+              ["secondary", "Cor secundária"],
+              ["link", "Link"],
+            ] as const
+          ).map(([variant, label]) => (
+            <label key={variant} className="flex items-center gap-2 text-sm">
+              <input
+                type="radio"
+                name="button-variant"
+                checked={draft.variant === variant}
+                onChange={() => onChange({ ...draft, variant })}
+                disabled={loading}
+              />
+              {label}
+            </label>
+          ))}
+        </div>
+      </fieldset>
+    </div>
+  )
+}
+
 export function EditSheet({ content, fields, search }: EditSheetProps) {
   const router = useRouter()
   const { closeEdit } = useEditNavigation()
@@ -43,7 +241,13 @@ export function EditSheet({ content, fields, search }: EditSheetProps) {
   const field = search.editar ? fields[search.editar] : undefined
   const tipo = search.tipo
   const currentValue = search.editar ? (content[search.editar] ?? "") : ""
+  const buttonFallback = search.editar
+    ? buttonFallbackForPath(search.editar)
+    : heroCtaPrimaryDefault
+
   const [draft, setDraft] = useState(currentValue)
+  const [buttonDraft, setButtonDraft] = useState<ButtonValue>(buttonFallback)
+  const [pages, setPages] = useState<PageOption[]>([])
   const [imageFile, setImageFile] = useState<File | null>(null)
   const [imagePreview, setImagePreview] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
@@ -53,10 +257,30 @@ export function EditSheet({ content, fields, search }: EditSheetProps) {
   useEffect(() => {
     if (!open) return
     setDraft(currentValue)
+    setButtonDraft(parseButtonValue(currentValue, buttonFallback))
     setImageFile(null)
     setImagePreview(null)
     setError(null)
-  }, [open, currentValue, search.editar])
+  }, [open, currentValue, search.editar, buttonFallback])
+
+  useEffect(() => {
+    if (!open || tipo !== "button") return
+
+    let cancelled = false
+
+    orpc.content
+      .listPages()
+      .then((result) => {
+        if (!cancelled) setPages(result)
+      })
+      .catch(() => {
+        if (!cancelled) setPages([{ slug: "home", title: "Início" }])
+      })
+
+    return () => {
+      cancelled = true
+    }
+  }, [open, tipo])
 
   useEffect(() => {
     if (!imageFile) {
@@ -113,6 +337,13 @@ export function EditSheet({ content, fields, search }: EditSheetProps) {
           dataBase64: await fileToBase64(imageFile),
         })
         value = upload.url
+      } else if (tipo === "button") {
+        const parsed = buttonValueSchema.safeParse(buttonDraft)
+        if (!parsed.success) {
+          setError("Dados do botão inválidos.")
+          return
+        }
+        value = serializeButtonValue(parsed.data)
       } else if (tipo === "video") {
         setError("Editor de vídeo em breve.")
         return
@@ -134,12 +365,20 @@ export function EditSheet({ content, fields, search }: EditSheetProps) {
     }
   }
 
+  const currentButtonSerialized = serializeButtonValue(
+    parseButtonValue(currentValue, buttonFallback)
+  )
+  const draftButtonSerialized = serializeButtonValue(buttonDraft)
+
   const canSave =
     tipo === "text"
       ? draft !== currentValue
       : tipo === "img"
         ? imageFile !== null
-        : false
+        : tipo === "button"
+          ? draftButtonSerialized !== currentButtonSerialized &&
+          buttonValueSchema.safeParse(buttonDraft).success
+          : false
 
   if (!open || !field || !tipo) {
     return null
@@ -148,11 +387,11 @@ export function EditSheet({ content, fields, search }: EditSheetProps) {
   return (
     <Dialog.Root open={open} onOpenChange={handleOpenChange}>
       <Dialog.Portal>
-        <Dialog.Backdrop className="fixed inset-0 z-[90] bg-black/40 transition-opacity data-[ending-style]:opacity-0 data-[starting-style]:opacity-0" />
+        <Dialog.Backdrop className="fixed inset-0 z-99 bg-black/40 transition-opacity data-ending-style:opacity-0 data-starting-style:opacity-0" />
         <Dialog.Popup
           className={cn(
-            "fixed inset-y-0 right-0 z-[100] flex w-full max-w-md flex-col border-l bg-background shadow-2xl",
-            "transition-transform duration-200 data-[ending-style]:translate-x-full data-[starting-style]:translate-x-full"
+            "fixed inset-y-0 right-0 z-10000 flex w-full max-w-md flex-col border-l bg-background shadow-2xl",
+            "transition-transform duration-200 data-ending-style:translate-x-full data-starting-style:translate-x-full"
           )}
         >
           <div className="flex items-center justify-between border-b px-6 py-4">
@@ -213,6 +452,15 @@ export function EditSheet({ content, fields, search }: EditSheetProps) {
                   </button>
                 </div>
               </div>
+            ) : null}
+
+            {tipo === "button" ? (
+              <ButtonFieldEditor
+                draft={buttonDraft}
+                pages={pages}
+                loading={loading}
+                onChange={setButtonDraft}
+              />
             ) : null}
 
             {tipo === "video" ? (

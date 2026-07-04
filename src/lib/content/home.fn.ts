@@ -9,12 +9,13 @@ export const loadHomeContent = createServerFn({ method: "GET" }).handler(
     const editor = await getSessionEditor(db)
     const mode = editor ? "editor" : "public"
 
-    const content = await readContent(
-      db,
-      "home",
-      ["hero.title", "hero.subtitle"],
-      mode
-    )
+    const content = await readContent(db, "home", [
+      "hero.image",
+      "hero.title",
+      "hero.subtitle",
+      "hero.cta.primary",
+      "hero.cta.whatsapp",
+    ], mode)
 
     return { content, mode }
   }

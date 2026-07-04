@@ -1,16 +1,15 @@
-import { loadHomeContent } from "@/lib/content/home.fn"
+import {
+  EditNavigationProvider,
+  EditorModeProvider,
+} from "@/components/content"
+import { EditSheet } from "@/components/editor/edit-sheet"
+import { HeroSection } from "@/components/home/hero-section"
 import { homeEditableFields, type HomeFieldPath } from "@/lib/content/fields/home"
 import { editSearchSchema } from "@/lib/content/fields/search"
-import { EditSheet } from "@/components/editor/edit-sheet"
-import {
-  EditorModeProvider,
-  EditNavigationProvider,
-  H1,
-  P,
-} from "@/components/content"
+import type { EditTipo } from "@/lib/content/fields/types"
+import { loadHomeContent } from "@/lib/content/home.fn"
 import { createFileRoute, useNavigate } from "@tanstack/react-router"
 import { useCallback, useEffect } from "react"
-import type { EditTipo } from "@/lib/content/fields/types"
 
 export const Route = createFileRoute("/")({
   validateSearch: editSearchSchema,
@@ -53,23 +52,8 @@ function HomePage() {
         openEdit={openEdit}
         closeEdit={closeEdit}
       >
-        <main className="flex min-h-svh flex-col items-center justify-center p-6">
-          <div className="max-w-2xl space-y-4 text-center">
-            <H1
-              path="hero.title"
-              editTipo="text"
-              className="text-4xl font-semibold tracking-tight"
-            >
-              {content["hero.title"] ?? "Silos Grãos"}
-            </H1>
-            <P
-              path="hero.subtitle"
-              editTipo="text"
-              className="text-lg text-muted-foreground"
-            >
-              {content["hero.subtitle"] ?? "Soluções em armazenagem de grãos"}
-            </P>
-          </div>
+        <main>
+          <HeroSection content={content} />
         </main>
         <EditSheet
           content={content}

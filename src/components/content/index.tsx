@@ -29,6 +29,9 @@ export function Div(props: ContentBlockProps) {
   return <EditableShell as="div" {...props} />
 }
 
+export { EditableButton } from "@/components/content/editable-button"
+export { EditableImage } from "@/components/content/editable-image"
+
 export {
   EditorModeProvider,
   EditNavigationProvider,

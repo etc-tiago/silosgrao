@@ -1,6 +1,15 @@
 import type { EditableFields } from "@/lib/content/fields/types"
 
+export const HERO_IMAGE_DEFAULT =
+  "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/PHOTO-2026-07-03-17-11-49%202-I6gTLjbHgz46DFOg9LglSdNaboEAF4.jpg"
+
 export const homeEditableFields = {
+  "hero.image": {
+    label: "Imagem do hero",
+    editTipo: "img",
+    contentType: "image",
+    pageSlug: "home",
+  },
   "hero.title": {
     label: "Título",
     editTipo: "text",
@@ -13,6 +22,22 @@ export const homeEditableFields = {
     contentType: "text",
     pageSlug: "home",
   },
+  "hero.cta.primary": {
+    label: "Botão principal",
+    editTipo: "button",
+    contentType: "json",
+    pageSlug: "home",
+  },
+  "hero.cta.whatsapp": {
+    label: "Botão WhatsApp",
+    editTipo: "button",
+    contentType: "json",
+    pageSlug: "home",
+  },
 } satisfies EditableFields
 
 export type HomeFieldPath = keyof typeof homeEditableFields
+
+export const homeContentPaths = Object.keys(
+  homeEditableFields
+) as HomeFieldPath[]

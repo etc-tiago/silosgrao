@@ -1,6 +1,7 @@
 import { ORPCError, os } from "@orpc/server"
+import { asc } from "drizzle-orm"
 import { z } from "zod"
-import { contentTypeEnum } from "@/db/schema"
+import { contentTypeEnum, pages } from "@/db/schema"
 import { setField as setFieldValue } from "@/lib/content/write"
 import { getEditorState } from "@/lib/content/write"
 import type { ORPCContext } from "@/orpc/context"
@@ -118,7 +119,15 @@ const uploadImage = authed
     return { url: contentAssetUrl(context.request, key) }
   })
 
+const listPages = authed.handler(async ({ context }) => {
+  return context.db
+    .select({ slug: pages.slug, title: pages.title })
+    .from(pages)
+    .orderBy(asc(pages.title))
+})
+
 export const contentRouter = {
   setField,
   uploadImage,
+  listPages,
 }

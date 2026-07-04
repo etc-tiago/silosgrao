@@ -1,11 +1,9 @@
 import { HeadContent, Scripts, createRootRoute } from "@tanstack/react-router"
-import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools"
-import { TanStackDevtools } from "@tanstack/react-devtools"
 
-import appCss from "../styles.css?url"
 import { FloatBar } from "@/components/editor/float-bar"
 import { SiteHeader } from "@/components/site-header"
 import { loadRootSession } from "@/lib/auth/session.fn"
+import appCss from "../styles.css?url"
 
 export const Route = createRootRoute({
   head: () => ({
@@ -56,17 +54,6 @@ function RootDocument({ children }: { children: React.ReactNode }) {
             hasDevChanges={session.editorState.hasDevChanges}
           />
         ) : null}
-        <TanStackDevtools
-          config={{
-            position: "bottom-right",
-          }}
-          plugins={[
-            {
-              name: "Tanstack Router",
-              render: <TanStackRouterDevtoolsPanel />,
-            },
-          ]}
-        />
         <Scripts />
       </body>
     </html>
