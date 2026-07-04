@@ -4,30 +4,19 @@ import { SiteHeaderLogo } from "@/components/site-header/logo"
 import { SiteHeaderNavMobile } from "@/components/site-header/nav-mobile"
 import { SiteHeaderProdutosLink } from "@/components/site-header/produtos-link"
 import { SiteHeaderWhatsappLink } from "@/components/site-header/whatsapp-link"
-import {
-  SiteHeaderWrapper,
-  type SiteHeaderPosition,
-} from "@/components/site-header/wrapper"
+import { SiteHeaderWrapper } from "@/components/site-header/wrapper"
 
 type SiteHeaderProps = {
   className?: string
-  position?: SiteHeaderPosition
-  hideOnScroll?: boolean
   logoPreset?: LogoColorPreset
 }
 
 export function SiteHeader({
   className,
-  position = "fixed",
-  hideOnScroll = true,
   logoPreset,
 }: SiteHeaderProps) {
   return (
-    <SiteHeaderWrapper
-      className={className}
-      position={position}
-      hideOnScroll={hideOnScroll}
-    >
+    <SiteHeaderWrapper className={className}>
       <div className="flex w-full items-center gap-2 md:gap-4">
         <SiteHeaderLogo
           preset={logoPreset}

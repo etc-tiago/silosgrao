@@ -1,10 +1,5 @@
 import { Span } from "@/components/content"
 import { EditableColumnImage } from "@/components/content/editable-column-image"
-import { SiteHeader } from "@/components/site-header"
-import {
-  DEFAULT_LOGO_PRESET,
-  parseLogoPresetValue,
-} from "@/lib/content/fields/logo-preset"
 import {
   HERO_CATEGORY_DEFAULTS,
   HERO_CATEGORY_PATHS,
@@ -17,19 +12,12 @@ import { cn } from "@/lib/utils"
 type HomeHeroSectionProps = {
   content: Record<string, string>
   framed?: boolean
-  embeddedHeader?: boolean
 }
 
 export function HomeHeroSection({
   content,
   framed = false,
-  embeddedHeader = false,
 }: HomeHeroSectionProps) {
-  const logoPreset = parseLogoPresetValue(
-    content["header.logoPreset"],
-    DEFAULT_LOGO_PRESET
-  )
-
   return (
     <section
       className={cn(
@@ -54,15 +42,6 @@ export function HomeHeroSection({
       </div>
 
       <div className="absolute inset-0 bg-linear-to-b from-black/50 via-black/10 to-black/40" />
-
-      {embeddedHeader ? (
-        <SiteHeader
-          position="embedded"
-          hideOnScroll={false}
-          logoPreset={logoPreset}
-          className="px-5 py-5 md:px-8 md:py-8"
-        />
-      ) : null}
 
       <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 px-6 text-center text-white">
         <h1 className="font-display text-6xl leading-[0.95] md:text-8xl">

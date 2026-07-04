@@ -56,7 +56,7 @@ function DemoPage() {
       search={search}
     >
       <main className="min-h-screen bg-background">
-        <HomeHeroSection content={content} framed embeddedHeader />
+        <HomeHeroSection content={content} framed />
         <HomeHeroIntro content={content} framed />
 
         <section className="mx-3 mt-10 rounded-[2rem] bg-surface px-6 py-14 md:mx-6 md:px-14 md:py-20">

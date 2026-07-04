@@ -1,4 +1,4 @@
-import { HeadContent, Scripts, createRootRoute, useRouterState } from "@tanstack/react-router"
+import { HeadContent, Scripts, createRootRoute } from "@tanstack/react-router"
 
 import { FloatBar } from "@/components/editor/float-bar"
 import { SiteHeader } from "@/components/site-header"
@@ -72,8 +72,6 @@ function RootSiteHeader() {
 
 function RootDocument({ children }: { children: React.ReactNode }) {
   const session = Route.useLoaderData()
-  const pathname = useRouterState({ select: (s) => s.location.pathname })
-  const showSiteHeader = pathname !== "/demo"
 
   return (
     <html lang="pt-BR">
@@ -81,7 +79,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         <HeadContent />
       </head>
       <body>
-        {showSiteHeader ? <RootSiteHeader /> : null}
+        <RootSiteHeader />
         {children}
         {session.editor && session.editorState ? (
           <FloatBar
