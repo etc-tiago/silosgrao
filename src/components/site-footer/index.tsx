@@ -1,5 +1,8 @@
+import { SilosGraosLogomarca } from "@/components/icons/silos-graos-logomarca"
 import { WhatsApp } from "@/components/icons/whatsapp"
-import { PRODUCT_CATEGORY_TITLES } from "@/lib/content/fields/home-products"
+import {
+  PRODUCT_CATEGORIES,
+} from "@/lib/content/fields/home-products"
 import {
   SITE_FOOTER_ABOUT,
   SITE_LOCATION,
@@ -7,9 +10,10 @@ import {
   SITE_WHATSAPP_DISPLAY,
   SITE_WHATSAPP_URL,
 } from "@/lib/site/contact"
+import { Link } from "@tanstack/react-router"
 import { MapPin, Phone } from "lucide-react"
 
-const footerCategories = Object.entries(PRODUCT_CATEGORY_TITLES)
+const footerCategories = PRODUCT_CATEGORIES
 
 export function SiteFooter() {
   const year = new Date().getFullYear()
@@ -19,9 +23,16 @@ export function SiteFooter() {
       <div className="mx-auto max-w-7xl">
         <div className="mb-8 grid gap-8 md:grid-cols-3">
           <div>
-            <h3 className="font-display text-xl text-primary-foreground">
-              Silos Grãos
-            </h3>
+            <Link
+              to="/"
+              className="inline-block transition-opacity hover:opacity-85"
+            >
+              <SilosGraosLogomarca
+                preset="white"
+                className="h-20 w-auto"
+              />
+              <span className="sr-only">Silos Grãos</span>
+            </Link>
             <p className="mt-4 text-sm leading-relaxed text-primary-foreground/80">
               {SITE_FOOTER_ABOUT}
             </p>
@@ -57,14 +68,23 @@ export function SiteFooter() {
               Categorias
             </h3>
             <ul className="mt-4 space-y-2 text-sm text-primary-foreground/80">
-              {footerCategories.map(([, label]) => (
-                <li key={label}>
-                  <a
-                    href="/#products"
+              <li>
+                <Link
+                  to="/produtos"
+                  className="transition-colors hover:text-primary-foreground"
+                >
+                  Catálogo completo
+                </Link>
+              </li>
+              {footerCategories.map((category) => (
+                <li key={category.id}>
+                  <Link
+                    to="/produtos/$categoria"
+                    params={{ categoria: category.id }}
                     className="transition-colors hover:text-primary-foreground"
                   >
-                    {label}
-                  </a>
+                    {category.label}
+                  </Link>
                 </li>
               ))}
             </ul>

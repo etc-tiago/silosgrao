@@ -42,6 +42,32 @@ export function productCategoryIconPath(id: ProductCategoryId) {
   return `products.categories.${id}.icon` as const
 }
 
+export function productCategorySectionId(id: ProductCategoryId) {
+  return `products-${id}` as const
+}
+
+export function productPagePath(
+  categoryId: ProductCategoryId,
+  productId: number
+) {
+  return `/produtos/${categoryId}/${productId}` as const
+}
+
+export function productCategoryPagePath(categoryId: ProductCategoryId) {
+  return `/produtos/${categoryId}` as const
+}
+
+export function isProductCategoryId(value: string): value is ProductCategoryId {
+  return PRODUCT_CATEGORIES.some((category) => category.id === value)
+}
+
+export function findProduct(
+  categoryId: ProductCategoryId,
+  productId: number
+): Product | undefined {
+  return HOME_PRODUCTS[categoryId]?.find((product) => product.id === productId)
+}
+
 export const HOME_PRODUCTS: Record<ProductCategoryId, Product[]> = {
   silos: [
     {

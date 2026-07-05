@@ -24,7 +24,7 @@ export function SiteHeaderNavMobile({ className }: SiteHeaderNavMobileProps) {
     setOpen(false)
   }
 
-  const produtosActive = location.pathname === PRODUTOS_LINK.to
+  const produtosActive = location.pathname.startsWith(PRODUTOS_LINK.to)
 
   return (
     <Dialog.Root open={open} onOpenChange={setOpen}>

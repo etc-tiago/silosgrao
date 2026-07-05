@@ -9,7 +9,7 @@ type SiteHeaderProdutosLinkProps = {
 
 export function SiteHeaderProdutosLink({ className }: SiteHeaderProdutosLinkProps) {
   const { location } = useRouterState()
-  const active = location.pathname === PRODUTOS_LINK.to
+  const active = location.pathname.startsWith(PRODUTOS_LINK.to)
 
   return (
     <Link
