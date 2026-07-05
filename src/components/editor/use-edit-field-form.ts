@@ -18,6 +18,12 @@ import {
   logoPresetSchema,
   parseLogoPresetValue,
 } from "@/lib/content/fields/logo-preset"
+import {
+  categoryIconFallbackForPath,
+  categoryIconSchema,
+  parseCategoryIconValue,
+  type CategoryIconId,
+} from "@/lib/content/fields/category-icon"
 import type { LogoColorPreset } from "@/components/icons/logo-presets"
 import type { EditSearch } from "@/lib/content/fields/search"
 import type { EditableFields, FieldDef } from "@/lib/content/fields/types"
@@ -65,6 +71,8 @@ export function useEditFieldForm({
     useState<HeroImageValue>(heroImageFallback)
   const [logoPresetDraft, setLogoPresetDraft] =
     useState<LogoColorPreset>(DEFAULT_LOGO_PRESET)
+  const [categoryIconDraft, setCategoryIconDraft] =
+    useState<CategoryIconId>("building-2")
   const [pages, setPages] = useState<PageOption[]>([])
   const [imageFile, setImageFile] = useState<File | null>(null)
   const [imagePreview, setImagePreview] = useState<string | null>(null)
@@ -78,6 +86,14 @@ export function useEditFieldForm({
     setButtonDraft(parseButtonValue(currentValue, buttonFallback))
     setBgImageDraft(parseHeroImageValue(currentValue, HERO_COLUMN_DEFAULTS[0]))
     setLogoPresetDraft(parseLogoPresetValue(currentValue, DEFAULT_LOGO_PRESET))
+    setCategoryIconDraft(
+      parseCategoryIconValue(
+        currentValue,
+        search.editar
+          ? categoryIconFallbackForPath(search.editar)
+          : "building-2"
+      )
+    )
     setImageFile(null)
     setImagePreview(null)
     setError(null)
@@ -181,6 +197,13 @@ export function useEditFieldForm({
           return
         }
         value = parsed.data
+      } else if (tipo === "category-icon") {
+        const parsed = categoryIconSchema.safeParse(categoryIconDraft)
+        if (!parsed.success) {
+          setError("Ícone inválido.")
+          return
+        }
+        value = parsed.data
       } else if (tipo === "video") {
         setError("Editor de vídeo em breve.")
         return
@@ -213,6 +236,10 @@ export function useEditFieldForm({
   const draftBgImageSerialized = serializeHeroImageValue(bgImageDraft)
 
   const currentLogoPreset = parseLogoPresetValue(currentValue, DEFAULT_LOGO_PRESET)
+  const iconFallback = search.editar
+    ? categoryIconFallbackForPath(search.editar)
+    : "building-2"
+  const currentCategoryIcon = parseCategoryIconValue(currentValue, iconFallback)
 
   const canSave =
     tipo === "text"
@@ -229,7 +256,10 @@ export function useEditFieldForm({
             : tipo === "logo-preset"
               ? logoPresetDraft !== currentLogoPreset &&
                 logoPresetSchema.safeParse(logoPresetDraft).success
-              : false
+              : tipo === "category-icon"
+                ? categoryIconDraft !== currentCategoryIcon &&
+                  categoryIconSchema.safeParse(categoryIconDraft).success
+                : false
 
   return {
     open,
@@ -244,6 +274,8 @@ export function useEditFieldForm({
     setBgImageDraft,
     logoPresetDraft,
     setLogoPresetDraft,
+    categoryIconDraft,
+    setCategoryIconDraft,
     pages,
     loading,
     error,
@@ -260,6 +292,7 @@ export function groupEditableFields(fields: EditableFields) {
   const textFields: Array<[string, FieldDef]> = []
   const imageFields: Array<[string, FieldDef]> = []
   const logoFields: Array<[string, FieldDef]> = []
+  const iconFields: Array<[string, FieldDef]> = []
 
   for (const [path, field] of Object.entries(fields)) {
     if (field.editTipo === "text" || field.editTipo === "button") {
@@ -268,8 +301,10 @@ export function groupEditableFields(fields: EditableFields) {
       imageFields.push([path, field])
     } else if (field.editTipo === "logo-preset") {
       logoFields.push([path, field])
+    } else if (field.editTipo === "category-icon") {
+      iconFields.push([path, field])
     }
   }
 
-  return { textFields, imageFields, logoFields }
+  return { textFields, imageFields, logoFields, iconFields }
 }

@@ -1,3 +1,5 @@
+import { EditableCategoryIcon } from "@/components/content/editable-category-icon"
+import { H2, H3, Span } from "@/components/content"
 import {
   homeCardClass,
   homeCardImageWrapClass,
@@ -5,32 +7,25 @@ import {
   homeSectionHeadingClass,
   homeSectionSubheadingClass,
 } from "@/components/home/home-section"
+import {
+  DEFAULT_CATEGORY_ICONS,
+  parseCategoryIconValue,
+} from "@/lib/content/fields/category-icon"
 import type { ProductCategoryId } from "@/lib/content/fields/home-products"
 import {
   HOME_PRODUCTS,
   PRODUCT_CATEGORIES,
-  PRODUCT_CATEGORY_TITLES,
-  whatsappProductUrl
+  productCategoryIconPath,
+  productCategoryPath,
+  PRODUCTS_SECTION_TITLE_PATH,
+  whatsappProductUrl,
 } from "@/lib/content/fields/home-products"
 import { cn } from "@/lib/utils"
-import {
-  Building2,
-  ChevronDown,
-  Droplets,
-  Wind,
-  Zap,
-  type LucideIcon,
-} from "lucide-react"
+import { ChevronDown } from "lucide-react"
 import { useState } from "react"
 
-const CATEGORY_ICONS: Record<ProductCategoryId, LucideIcon> = {
-  silos: Building2,
-  secadores: Wind,
-  transportadores: Droplets,
-  infraestrutura: Zap,
-}
-
 type HomeProductsSectionProps = {
+  content: Record<string, string>
   activeCategory?: ProductCategoryId
   onCategoryChange?: (category: ProductCategoryId) => void
   framed?: boolean
@@ -38,6 +33,7 @@ type HomeProductsSectionProps = {
 }
 
 export function HomeProductsSection({
+  content,
   activeCategory: activeCategoryProp,
   onCategoryChange,
   framed = false,
@@ -49,6 +45,7 @@ export function HomeProductsSection({
 
   const activeCategory = activeCategoryProp ?? internalCategory
   const categoryProducts = HOME_PRODUCTS[activeCategory] ?? []
+  const activeCategoryPath = productCategoryPath(activeCategory)
 
   function setActiveCategory(category: ProductCategoryId) {
     onCategoryChange?.(category)
@@ -63,19 +60,25 @@ export function HomeProductsSection({
       id="products"
       className={homeSectionClass({ framed, className })}
     >
-      <h2
+      <H2
+        path={PRODUCTS_SECTION_TITLE_PATH}
+        editTipo="text"
         className={cn(
           homeSectionHeadingClass,
           "mb-8 text-center text-3xl md:text-4xl"
         )}
-      >
-        Nossas Categorias de Produtos
-      </h2>
+        value={content[PRODUCTS_SECTION_TITLE_PATH]}
+      />
 
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
         {PRODUCT_CATEGORIES.map((category) => {
-          const Icon = CATEGORY_ICONS[category.id]
           const isActive = activeCategory === category.id
+          const path = productCategoryPath(category.id)
+          const iconPath = productCategoryIconPath(category.id)
+          const icon = parseCategoryIconValue(
+            content[iconPath],
+            DEFAULT_CATEGORY_ICONS[category.id]
+          )
 
           return (
             <button
@@ -89,16 +92,19 @@ export function HomeProductsSection({
                   : "border border-border bg-card text-ink hover:border-primary hover:bg-primary/10"
               )}
             >
-              <Icon className="size-6 shrink-0" />
-              <span>{category.label}</span>
+              <EditableCategoryIcon path={iconPath} icon={icon} />
+              <Span path={path} editTipo="text" value={content[path]} />
             </button>
           )
         })}
       </div>
 
-      <h3 className={cn(homeSectionSubheadingClass, "mb-12 mt-14 font-bold")}>
-        {PRODUCT_CATEGORY_TITLES[activeCategory]}
-      </h3>
+      <H3
+        path={activeCategoryPath}
+        editTipo="text"
+        className={cn(homeSectionSubheadingClass, "mb-12 mt-14 font-bold")}
+        value={content[activeCategoryPath]}
+      />
 
       <div className="grid gap-6 md:grid-cols-2">
         {categoryProducts.map((product) => {

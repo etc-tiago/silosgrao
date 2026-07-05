@@ -35,6 +35,7 @@ export function Span(props: ContentBlockProps) {
 }
 
 export { EditableButton } from "@/components/content/editable-button"
+export { EditableCategoryIcon } from "@/components/content/editable-category-icon"
 export { EditableColumnImage } from "@/components/content/editable-column-image"
 export { EditableImage } from "@/components/content/editable-image"
 

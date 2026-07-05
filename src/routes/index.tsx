@@ -29,7 +29,7 @@ function HomePage() {
       <main className="min-h-screen bg-background">
         <HomeHeroSection content={content} />
         <HomeHeroIntro content={content} framed />
-        <HomeProductsSection framed />
+        <HomeProductsSection content={content} framed />
         <HomeIntentsSection framed />
         <HomeProductGallery framed />
       </main>

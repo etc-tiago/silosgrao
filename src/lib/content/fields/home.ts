@@ -1,4 +1,5 @@
 import type { EditableFields } from "@/lib/content/fields/types"
+import { PRODUCT_CATEGORIES } from "@/lib/content/fields/home-products"
 
 const columnIndices = [1, 2, 3, 4, 5] as const
 
@@ -20,6 +21,30 @@ const categoryFields = Object.fromEntries(
     {
       label: `Categoria coluna ${i}`,
       editTipo: "text" as const,
+      contentType: "text" as const,
+      pageSlug: "home",
+    },
+  ])
+)
+
+const productCategoryFields = Object.fromEntries(
+  PRODUCT_CATEGORIES.map(({ id, label }) => [
+    `products.categories.${id}`,
+    {
+      label: `Produtos — ${label}`,
+      editTipo: "text" as const,
+      contentType: "text" as const,
+      pageSlug: "home",
+    },
+  ])
+)
+
+const productCategoryIconFields = Object.fromEntries(
+  PRODUCT_CATEGORIES.map(({ id, label }) => [
+    `products.categories.${id}.icon`,
+    {
+      label: `Produtos — ícone ${label}`,
+      editTipo: "category-icon" as const,
       contentType: "text" as const,
       pageSlug: "home",
     },
@@ -51,6 +76,14 @@ export const homeEditableFields = {
     contentType: "text",
     pageSlug: "home",
   },
+  "products.sectionTitle": {
+    label: "Produtos — título da seção",
+    editTipo: "text",
+    contentType: "text",
+    pageSlug: "home",
+  },
+  ...productCategoryFields,
+  ...productCategoryIconFields,
   ...columnFields,
   ...categoryFields,
 } satisfies EditableFields

@@ -1,6 +1,8 @@
 import { useEditNavigation } from "@/components/content/editor-mode"
 import { EditFieldDrawer } from "@/components/editor/edit-field-drawer"
 import { groupEditableFields } from "@/components/editor/use-edit-field-form"
+import { CategoryIcon } from "@/components/icons/category-icon"
+import { SilosGraosSymbol } from "@/components/icons/silos-graos-symbol"
 import { Button } from "@/components/ui/button"
 import {
   Drawer,
@@ -12,15 +14,19 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { parseButtonValue } from "@/lib/content/fields/button"
 import {
+  CATEGORY_ICON_LABELS,
+  categoryIconFallbackForPath,
+  parseCategoryIconValue,
+} from "@/lib/content/fields/category-icon"
+import {
   DEFAULT_LOGO_PRESET,
   LOGO_PRESET_LABELS,
   parseLogoPresetValue,
 } from "@/lib/content/fields/logo-preset"
 import type { EditSearch } from "@/lib/content/fields/search"
 import type { EditableFields } from "@/lib/content/fields/types"
-import { SilosGraosSymbol } from "@/components/icons/silos-graos-symbol"
 import { cn } from "@/lib/utils"
-import { ChevronRight, ImageIcon, Palette, Type } from "lucide-react"
+import { ChevronRight, ImageIcon, Palette, Shapes, Type } from "lucide-react"
 
 type ContentBrowserDrawerProps = {
   content: Record<string, string>
@@ -88,7 +94,8 @@ export function ContentBrowserDrawer({
   onOpenChange,
 }: ContentBrowserDrawerProps) {
   const { editPath, openEdit } = useEditNavigation()
-  const { textFields, imageFields, logoFields } = groupEditableFields(fields)
+  const { textFields, imageFields, logoFields, iconFields } =
+    groupEditableFields(fields)
 
   return (
     <Drawer open={open} onOpenChange={onOpenChange} swipeDirection="right">
@@ -100,32 +107,27 @@ export function ContentBrowserDrawer({
           </DrawerClose>
         </DrawerHeader>
 
-        <Tabs defaultValue="textos" className="flex min-h-0 flex-1 flex-col px-4">
-          <TabsList className="w-full">
+        <Tabs defaultValue="textos" className="flex min-h-0 flex-1 flex-col">
+          <TabsList className="w-full bg-muted px-4 rounded-none">
             <TabsTrigger value="textos" className="flex-1 gap-1.5">
               <Type className="size-4" />
-              Textos
-              <span className="text-xs text-muted-foreground">
-                ({textFields.length})
-              </span>
+              <span>Textos</span>
             </TabsTrigger>
             <TabsTrigger value="imagens" className="flex-1 gap-1.5">
               <ImageIcon className="size-4" />
-              Imagens
-              <span className="text-xs text-muted-foreground">
-                ({imageFields.length})
-              </span>
+              <span>Imagens</span>
+            </TabsTrigger>
+            <TabsTrigger value="icones" className="flex-1 gap-1.5">
+              <Shapes className="size-4" />
+              <span>Ícones</span>
             </TabsTrigger>
             <TabsTrigger value="logo" className="flex-1 gap-1.5">
               <Palette className="size-4" />
-              Logo
-              <span className="text-xs text-muted-foreground">
-                ({logoFields.length})
-              </span>
+              <span>Logo</span>
             </TabsTrigger>
           </TabsList>
 
-          <TabsContent value="textos" className="flex-1 overflow-y-auto pb-4">
+          <TabsContent value="textos" className="flex-1 overflow-y-auto pb-4 px-4">
             <div className="space-y-2 pt-2">
               {textFields.length === 0 ? (
                 <p className="py-8 text-center text-sm text-muted-foreground">
@@ -162,7 +164,7 @@ export function ContentBrowserDrawer({
             </div>
           </TabsContent>
 
-          <TabsContent value="imagens" className="flex-1 overflow-y-auto pb-4">
+          <TabsContent value="imagens" className="flex-1 overflow-y-auto pb-4 px-4">
             <div className="space-y-2 pt-2">
               {imageFields.length === 0 ? (
                 <p className="py-8 text-center text-sm text-muted-foreground">
@@ -198,7 +200,43 @@ export function ContentBrowserDrawer({
             </div>
           </TabsContent>
 
-          <TabsContent value="logo" className="flex-1 overflow-y-auto pb-4">
+          <TabsContent value="icones" className="flex-1 overflow-y-auto pb-4 px-4">
+            <div className="space-y-2 pt-2">
+              {iconFields.length === 0 ? (
+                <p className="py-8 text-center text-sm text-muted-foreground">
+                  Nenhum ícone editável nesta página.
+                </p>
+              ) : (
+                iconFields.map(([path, field]) => {
+                  const icon = parseCategoryIconValue(
+                    content[path],
+                    categoryIconFallbackForPath(path)
+                  )
+                  return (
+                    <FieldListItem
+                      key={path}
+                      path={path}
+                      label={field.label}
+                      selected={editPath === path}
+                      onSelect={() => openEdit(path, field.editTipo)}
+                      thumbnail={
+                        <div className="flex size-12 items-center justify-center rounded-lg border bg-muted/30">
+                          <CategoryIcon icon={icon} className="size-6" />
+                        </div>
+                      }
+                      subtitle={
+                        <p className="text-xs text-muted-foreground">
+                          {CATEGORY_ICON_LABELS[icon]}
+                        </p>
+                      }
+                    />
+                  )
+                })
+              )}
+            </div>
+          </TabsContent>
+
+          <TabsContent value="logo" className="flex-1 overflow-y-auto pb-4 px-4">
             <div className="space-y-2 pt-2">
               {logoFields.length === 0 ? (
                 <p className="py-8 text-center text-sm text-muted-foreground">

@@ -32,6 +32,16 @@ export const PRODUCT_CATEGORIES = [
   label: string
 }>
 
+export const PRODUCTS_SECTION_TITLE_PATH = "products.sectionTitle" as const
+
+export function productCategoryPath(id: ProductCategoryId) {
+  return `products.categories.${id}` as const
+}
+
+export function productCategoryIconPath(id: ProductCategoryId) {
+  return `products.categories.${id}.icon` as const
+}
+
 export const HOME_PRODUCTS: Record<ProductCategoryId, Product[]> = {
   silos: [
     {

@@ -7,6 +7,7 @@ export const editTipoEnum = [
   "video",
   "button",
   "logo-preset",
+  "category-icon",
 ] as const
 export type EditTipo = (typeof editTipoEnum)[number]
 

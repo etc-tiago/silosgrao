@@ -8,8 +8,14 @@ import {
   LOGO_PRESET_LABELS,
   logoPresetSchema,
 } from "@/lib/content/fields/logo-preset"
+import {
+  CATEGORY_ICON_LABELS,
+  categoryIconSchema,
+  type CategoryIconId,
+} from "@/lib/content/fields/category-icon"
 import type { LogoColorPreset } from "@/components/icons/logo-presets"
 import { LOGO_COLOR_PRESETS } from "@/components/icons/logo-presets"
+import { CategoryIcon } from "@/components/icons/category-icon"
 import { SilosGraosLogomarca } from "@/components/icons/silos-graos-logomarca"
 import { cn } from "@/lib/utils"
 import type { ChangeEvent, RefObject } from "react"
@@ -385,6 +391,57 @@ export function LogoPresetFieldEditor({
   )
 }
 
+const categoryIconOptions = categoryIconSchema.options
+
+export function CategoryIconFieldEditor({
+  draft,
+  loading,
+  onChange,
+}: {
+  draft: CategoryIconId
+  loading: boolean
+  onChange: (value: CategoryIconId) => void
+}) {
+  return (
+    <div className="space-y-6">
+      <div className="space-y-2">
+        <p className="text-sm font-medium">Pré-visualização</p>
+        <div className="flex items-center justify-center rounded-xl border bg-muted/30 p-8">
+          <CategoryIcon icon={draft} className="size-10" />
+        </div>
+      </div>
+
+      <fieldset className="space-y-3">
+        <legend className="text-sm font-medium">Ícone</legend>
+        <div className="grid grid-cols-4 gap-2">
+          {categoryIconOptions.map((icon) => (
+            <label
+              key={icon}
+              className={cn(
+                "flex cursor-pointer flex-col items-center gap-2 rounded-xl border bg-input/20 p-3",
+                draft === icon && "border-primary bg-primary/5"
+              )}
+            >
+              <input
+                type="radio"
+                name="category-icon"
+                className="sr-only"
+                checked={draft === icon}
+                onChange={() => onChange(icon)}
+                disabled={loading}
+              />
+              <CategoryIcon icon={icon} className="size-6" />
+              <span className="text-center text-[10px] leading-tight font-medium">
+                {CATEGORY_ICON_LABELS[icon]}
+              </span>
+            </label>
+          ))}
+        </div>
+      </fieldset>
+    </div>
+  )
+}
+
 type EditFieldFormProps = {
   fieldLabel: string
   tipo: string
@@ -397,6 +454,8 @@ type EditFieldFormProps = {
   setBgImageDraft: (value: HeroImageValue) => void
   logoPresetDraft: LogoColorPreset
   setLogoPresetDraft: (value: LogoColorPreset) => void
+  categoryIconDraft: CategoryIconId
+  setCategoryIconDraft: (value: CategoryIconId) => void
   pages: PageOption[]
   loading: boolean
   error: string | null
@@ -418,6 +477,8 @@ export function EditFieldForm({
   setBgImageDraft,
   logoPresetDraft,
   setLogoPresetDraft,
+  categoryIconDraft,
+  setCategoryIconDraft,
   pages,
   loading,
   error,
@@ -500,6 +561,14 @@ export function EditFieldForm({
           draft={logoPresetDraft}
           loading={loading}
           onChange={setLogoPresetDraft}
+        />
+      ) : null}
+
+      {tipo === "category-icon" ? (
+        <CategoryIconFieldEditor
+          draft={categoryIconDraft}
+          loading={loading}
+          onChange={setCategoryIconDraft}
         />
       ) : null}
 
