@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/drawer"
 import type { EditSearch } from "@/lib/content/fields/search"
 import type { EditableFields } from "@/lib/content/fields/types"
+import { cn } from "@/lib/utils"
 
 type EditFieldDrawerProps = {
   content: Record<string, string>
@@ -45,7 +46,14 @@ export function EditFieldDrawer({
       }}
       swipeDirection="right"
     >
-      <DrawerContent className="h-full max-h-none data-[swipe-axis=x]:w-full data-[swipe-axis=x]:sm:max-w-md">
+      <DrawerContent
+        className={cn(
+          "h-full max-h-none data-[swipe-axis=x]:w-full",
+          form.tipo === "gallery"
+            ? "data-[swipe-axis=x]:sm:max-w-xl"
+            : "data-[swipe-axis=x]:sm:max-w-md"
+        )}
+      >
         <DrawerHeader className="border-b pb-4">
           <DrawerTitle>Editar {form.field.label}</DrawerTitle>
         </DrawerHeader>
@@ -65,6 +73,12 @@ export function EditFieldDrawer({
             setLogoPresetDraft={form.setLogoPresetDraft}
             categoryIconDraft={form.categoryIconDraft}
             setCategoryIconDraft={form.setCategoryIconDraft}
+            intentLinkDraft={form.intentLinkDraft}
+            setIntentLinkDraft={form.setIntentLinkDraft}
+            galleryDraft={form.galleryDraft}
+            setGalleryDraft={form.setGalleryDraft}
+            galleryPageSlug={form.field.pageSlug}
+            galleryFieldPath={search.editar ?? ""}
             pages={form.pages}
             loading={form.loading}
             error={form.error}

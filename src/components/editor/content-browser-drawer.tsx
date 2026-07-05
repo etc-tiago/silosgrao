@@ -14,6 +14,11 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { parseButtonValue } from "@/lib/content/fields/button"
 import {
+  intentLinkFallbackForPath,
+  intentsCtaDefault,
+  parseIntentLinkValue,
+} from "@/lib/content/fields/home-intents"
+import {
   CATEGORY_ICON_LABELS,
   categoryIconFallbackForPath,
   parseCategoryIconValue,
@@ -23,10 +28,14 @@ import {
   LOGO_PRESET_LABELS,
   parseLogoPresetValue,
 } from "@/lib/content/fields/logo-preset"
+import {
+  galleryItemCover,
+  parseGalleryValue,
+} from "@/lib/content/fields/home-gallery"
 import type { EditSearch } from "@/lib/content/fields/search"
 import type { EditableFields } from "@/lib/content/fields/types"
 import { cn } from "@/lib/utils"
-import { ChevronRight, ImageIcon, Palette, Shapes, Type } from "lucide-react"
+import { ChevronRight, ImageIcon, Images, Palette, Shapes, Type } from "lucide-react"
 
 type ContentBrowserDrawerProps = {
   content: Record<string, string>
@@ -94,7 +103,7 @@ export function ContentBrowserDrawer({
   onOpenChange,
 }: ContentBrowserDrawerProps) {
   const { editPath, openEdit } = useEditNavigation()
-  const { textFields, imageFields, logoFields, iconFields } =
+  const { textFields, imageFields, logoFields, iconFields, galleryFields } =
     groupEditableFields(fields)
 
   return (
@@ -125,6 +134,12 @@ export function ContentBrowserDrawer({
               <Palette className="size-4" />
               <span>Logo</span>
             </TabsTrigger>
+            {galleryFields.length > 0 ? (
+              <TabsTrigger value="galeria" className="flex-1 gap-1.5">
+                <Images className="size-4" />
+                <span>Galeria</span>
+              </TabsTrigger>
+            ) : null}
           </TabsList>
 
           <TabsContent value="textos" className="flex-1 overflow-y-auto pb-4 px-4">
@@ -139,11 +154,30 @@ export function ContentBrowserDrawer({
                   const preview =
                     field.editTipo === "button" ? (
                       <TextPreview
-                        value={parseButtonValue(raw, {
-                          label: "",
-                          variant: "primary",
-                          link: { kind: "page", pageSlug: "home" },
-                        }).label}
+                        value={
+                          parseButtonValue(
+                            raw,
+                            path === "intents.cta"
+                              ? intentsCtaDefault
+                              : {
+                                  label: "",
+                                  variant: "primary",
+                                  link: { kind: "page", pageSlug: "home" },
+                                }
+                          ).label
+                        }
+                      />
+                    ) : field.editTipo === "intent-link" ? (
+                      <TextPreview
+                        value={(() => {
+                          const link = parseIntentLinkValue(
+                            raw,
+                            intentLinkFallbackForPath(path)
+                          )
+                          return link.kind === "route"
+                            ? `${link.to}${link.hash ? `#${link.hash}` : ""}`
+                            : link.href
+                        })()}
                       />
                     ) : (
                       <TextPreview value={raw} />
@@ -272,6 +306,65 @@ export function ContentBrowserDrawer({
               )}
             </div>
           </TabsContent>
+
+          {galleryFields.length > 0 ? (
+            <TabsContent
+              value="galeria"
+              className="flex-1 overflow-y-auto pb-4 px-4"
+            >
+              <div className="space-y-2 pt-2">
+                {galleryFields.map(([path, field]) => {
+                  const gallery = parseGalleryValue(content[path])
+                  const visibleItems = gallery.items.filter(
+                    (item) => item.photos.length > 0
+                  )
+                  const previewItems = visibleItems.slice(0, 3)
+
+                  return (
+                    <FieldListItem
+                      key={path}
+                      path={path}
+                      label={field.label}
+                      selected={editPath === path}
+                      onSelect={() => openEdit(path, field.editTipo)}
+                      thumbnail={
+                        previewItems.length > 0 ? (
+                          <div className="flex size-12 overflow-hidden rounded-lg border">
+                            {previewItems.map((item, index) => (
+                              <img
+                                key={item.id}
+                                src={galleryItemCover(item)}
+                                alt=""
+                                className={cn(
+                                  "size-full object-cover",
+                                  previewItems.length > 1 && "w-1/3"
+                                )}
+                                style={
+                                  previewItems.length > 1
+                                    ? { marginLeft: index > 0 ? -8 : 0 }
+                                    : undefined
+                                }
+                              />
+                            ))}
+                          </div>
+                        ) : (
+                          <div className="flex size-12 items-center justify-center rounded-lg border bg-muted/30">
+                            <Images className="size-5 text-muted-foreground" />
+                          </div>
+                        )
+                      }
+                      subtitle={
+                        <p className="text-xs text-muted-foreground">
+                          {visibleItems.length}{" "}
+                          {visibleItems.length === 1 ? "item" : "itens"}
+                        </p>
+                      }
+                    />
+                  )
+                })}
+              </div>
+            </TabsContent>
+          ) : null}
         </Tabs>
 
         <EditFieldDrawer content={content} fields={fields} search={search} />

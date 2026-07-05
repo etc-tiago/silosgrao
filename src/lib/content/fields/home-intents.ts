@@ -1,14 +1,38 @@
 import { SITE_WHATSAPP_URL } from "@/lib/site/contact"
+import { z } from "zod"
 
-export type HomeIntentLink =
-  | { kind: "route"; to: "/produtos" | "/"; hash?: string }
-  | { kind: "external"; href: string }
+export const intentLinkSchema = z.discriminatedUnion("kind", [
+  z.object({
+    kind: z.literal("route"),
+    to: z.enum(["/", "/produtos"]),
+    hash: z.string().optional(),
+  }),
+  z.object({
+    kind: z.literal("external"),
+    href: z.string().min(1),
+  }),
+])
+
+export type HomeIntentLink = z.infer<typeof intentLinkSchema>
 
 export type HomeIntent = {
   title: string
   description: string
   img: string
   link: HomeIntentLink
+}
+
+export const INTENT_INDICES = [1, 2, 3, 4] as const
+
+export const INTENTS_HEADING_LINE1_PATH = "intents.heading.line1" as const
+export const INTENTS_HEADING_LINE2_PATH = "intents.heading.line2" as const
+export const INTENTS_CTA_PATH = "intents.cta" as const
+
+export function intentItemPath(
+  index: number,
+  field: "title" | "description" | "image" | "link"
+) {
+  return `intents.items.${index}.${field}` as const
 }
 
 export const HOME_INTENT_DEFAULTS = [
@@ -44,3 +68,44 @@ export const HOME_INTENT_DEFAULTS = [
     link: { kind: "route", to: "/produtos" },
   },
 ] as const satisfies readonly HomeIntent[]
+
+export const INTENT_IMAGE_DEFAULTS = HOME_INTENT_DEFAULTS.map(
+  (intent) => intent.img
+)
+
+export function serializeIntentLinkValue(value: HomeIntentLink) {
+  return JSON.stringify(value)
+}
+
+export function parseIntentLinkValue(
+  raw: string | undefined,
+  fallback: HomeIntentLink
+): HomeIntentLink {
+  if (!raw) return fallback
+  try {
+    const parsed = intentLinkSchema.safeParse(JSON.parse(raw))
+    return parsed.success ? parsed.data : fallback
+  } catch {
+    return fallback
+  }
+}
+
+export function intentLinkFallbackForPath(path: string): HomeIntentLink {
+  const match = path.match(/^intents\.items\.(\d+)\.link$/)
+  if (!match) {
+    return { kind: "route", to: "/" }
+  }
+
+  const index = Number(match[1]) - 1
+  return HOME_INTENT_DEFAULTS[index]?.link ?? { kind: "route", to: "/" }
+}
+
+export const intentsCtaDefault = {
+  label: "Falar conosco",
+  variant: "secondary" as const,
+  link: {
+    kind: "external" as const,
+    url: SITE_WHATSAPP_URL,
+    openInNewTab: true,
+  },
+}

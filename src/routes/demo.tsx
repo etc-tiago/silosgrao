@@ -30,7 +30,7 @@ function DemoPage() {
       <main className="min-h-screen bg-background">
         <HomeHeroSection content={content} />
         <HomeHeroIntro content={content} framed />
-        <HomeIntentsSection framed />
+        <HomeIntentsSection content={content} framed />
       </main>
     </EditorPageProvider>
   )

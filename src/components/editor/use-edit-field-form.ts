@@ -24,6 +24,21 @@ import {
   parseCategoryIconValue,
   type CategoryIconId,
 } from "@/lib/content/fields/category-icon"
+import {
+  DEFAULT_GALLERY_VALUE,
+  galleryValueSchema,
+  parseGalleryValue,
+  serializeGalleryValue,
+  type GalleryValue,
+} from "@/lib/content/fields/home-gallery"
+import {
+  intentLinkFallbackForPath,
+  intentLinkSchema,
+  intentsCtaDefault,
+  parseIntentLinkValue,
+  serializeIntentLinkValue,
+  type HomeIntentLink,
+} from "@/lib/content/fields/home-intents"
 import type { LogoColorPreset } from "@/components/icons/logo-presets"
 import type { EditSearch } from "@/lib/content/fields/search"
 import type { EditableFields, FieldDef } from "@/lib/content/fields/types"
@@ -34,6 +49,7 @@ import { useEffect, useRef, useState, type ChangeEvent } from "react"
 import { fileToBase64, type PageOption } from "@/components/editor/edit-field-editors"
 
 function buttonFallbackForPath(path: string): ButtonValue {
+  if (path === "intents.cta") return intentsCtaDefault
   return path === "hero.cta.whatsapp"
     ? heroCtaWhatsappDefault
     : heroCtaPrimaryDefault
@@ -73,6 +89,11 @@ export function useEditFieldForm({
     useState<LogoColorPreset>(DEFAULT_LOGO_PRESET)
   const [categoryIconDraft, setCategoryIconDraft] =
     useState<CategoryIconId>("building-2")
+  const [intentLinkDraft, setIntentLinkDraft] = useState<HomeIntentLink>({
+    kind: "route",
+    to: "/",
+  })
+  const [galleryDraft, setGalleryDraft] = useState<GalleryValue>(DEFAULT_GALLERY_VALUE)
   const [pages, setPages] = useState<PageOption[]>([])
   const [imageFile, setImageFile] = useState<File | null>(null)
   const [imagePreview, setImagePreview] = useState<string | null>(null)
@@ -94,6 +115,15 @@ export function useEditFieldForm({
           : "building-2"
       )
     )
+    setIntentLinkDraft(
+      parseIntentLinkValue(
+        currentValue,
+        search.editar
+          ? intentLinkFallbackForPath(search.editar)
+          : { kind: "route", to: "/" }
+      )
+    )
+    setGalleryDraft(parseGalleryValue(currentValue))
     setImageFile(null)
     setImagePreview(null)
     setError(null)
@@ -204,6 +234,27 @@ export function useEditFieldForm({
           return
         }
         value = parsed.data
+      } else if (tipo === "intent-link") {
+        const parsed = intentLinkSchema.safeParse(intentLinkDraft)
+        if (!parsed.success) {
+          setError("Destino do card inválido.")
+          return
+        }
+        value = serializeIntentLinkValue(parsed.data)
+      } else if (tipo === "gallery") {
+        const itemsWithPhotos = galleryDraft.items.filter(
+          (item) => item.photos.length > 0
+        )
+        if (itemsWithPhotos.length === 0) {
+          setError("Adicione ao menos um item com foto.")
+          return
+        }
+        const parsed = galleryValueSchema.safeParse({ items: itemsWithPhotos })
+        if (!parsed.success) {
+          setError("Dados da galeria inválidos.")
+          return
+        }
+        value = serializeGalleryValue(parsed.data)
       } else if (tipo === "video") {
         setError("Editor de vídeo em breve.")
         return
@@ -240,6 +291,28 @@ export function useEditFieldForm({
     ? categoryIconFallbackForPath(search.editar)
     : "building-2"
   const currentCategoryIcon = parseCategoryIconValue(currentValue, iconFallback)
+  const intentLinkFallback = search.editar
+    ? intentLinkFallbackForPath(search.editar)
+    : { kind: "route" as const, to: "/" as const }
+  const currentIntentLink = parseIntentLinkValue(
+    currentValue,
+    intentLinkFallback
+  )
+  const draftIntentLinkSerialized = serializeIntentLinkValue(intentLinkDraft)
+  const currentIntentLinkSerialized = serializeIntentLinkValue(currentIntentLink)
+
+  const currentGallerySerialized = serializeGalleryValue(
+    parseGalleryValue(currentValue)
+  )
+  const draftGallerySerialized = serializeGalleryValue(
+    galleryValueSchema.safeParse({
+      items: galleryDraft.items.filter((item) => item.photos.length > 0),
+    }).success
+      ? {
+          items: galleryDraft.items.filter((item) => item.photos.length > 0),
+        }
+      : DEFAULT_GALLERY_VALUE
+  )
 
   const canSave =
     tipo === "text"
@@ -259,7 +332,13 @@ export function useEditFieldForm({
               : tipo === "category-icon"
                 ? categoryIconDraft !== currentCategoryIcon &&
                   categoryIconSchema.safeParse(categoryIconDraft).success
-                : false
+                : tipo === "intent-link"
+                  ? draftIntentLinkSerialized !== currentIntentLinkSerialized &&
+                    intentLinkSchema.safeParse(intentLinkDraft).success
+                  : tipo === "gallery"
+                    ? draftGallerySerialized !== currentGallerySerialized &&
+                      galleryDraft.items.some((item) => item.photos.length > 0)
+                    : false
 
   return {
     open,
@@ -276,6 +355,10 @@ export function useEditFieldForm({
     setLogoPresetDraft,
     categoryIconDraft,
     setCategoryIconDraft,
+    intentLinkDraft,
+    setIntentLinkDraft,
+    galleryDraft,
+    setGalleryDraft,
     pages,
     loading,
     error,
@@ -293,9 +376,10 @@ export function groupEditableFields(fields: EditableFields) {
   const imageFields: Array<[string, FieldDef]> = []
   const logoFields: Array<[string, FieldDef]> = []
   const iconFields: Array<[string, FieldDef]> = []
+  const galleryFields: Array<[string, FieldDef]> = []
 
   for (const [path, field] of Object.entries(fields)) {
-    if (field.editTipo === "text" || field.editTipo === "button") {
+    if (field.editTipo === "text" || field.editTipo === "button" || field.editTipo === "intent-link") {
       textFields.push([path, field])
     } else if (field.editTipo === "img" || field.editTipo === "bg-image") {
       imageFields.push([path, field])
@@ -303,8 +387,10 @@ export function groupEditableFields(fields: EditableFields) {
       logoFields.push([path, field])
     } else if (field.editTipo === "category-icon") {
       iconFields.push([path, field])
+    } else if (field.editTipo === "gallery") {
+      galleryFields.push([path, field])
     }
   }
 
-  return { textFields, imageFields, logoFields, iconFields }
+  return { textFields, imageFields, logoFields, iconFields, galleryFields }
 }

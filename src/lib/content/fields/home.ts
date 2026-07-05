@@ -1,4 +1,5 @@
 import type { EditableFields } from "@/lib/content/fields/types"
+import { INTENT_INDICES, intentItemPath } from "@/lib/content/fields/home-intents"
 import { PRODUCT_CATEGORIES } from "@/lib/content/fields/home-products"
 
 const columnIndices = [1, 2, 3, 4, 5] as const
@@ -51,6 +52,50 @@ const productCategoryIconFields = Object.fromEntries(
   ])
 )
 
+const intentItemFields = Object.fromEntries(
+  INTENT_INDICES.flatMap((index) => {
+    const label = `Intenções — item ${index}`
+    return [
+      [
+        intentItemPath(index, "title"),
+        {
+          label: `${label} — título`,
+          editTipo: "text" as const,
+          contentType: "text" as const,
+          pageSlug: "home",
+        },
+      ],
+      [
+        intentItemPath(index, "description"),
+        {
+          label: `${label} — descrição`,
+          editTipo: "text" as const,
+          contentType: "text" as const,
+          pageSlug: "home",
+        },
+      ],
+      [
+        intentItemPath(index, "image"),
+        {
+          label: `${label} — imagem`,
+          editTipo: "img" as const,
+          contentType: "image" as const,
+          pageSlug: "home",
+        },
+      ],
+      [
+        intentItemPath(index, "link"),
+        {
+          label: `${label} — destino`,
+          editTipo: "intent-link" as const,
+          contentType: "text" as const,
+          pageSlug: "home",
+        },
+      ],
+    ]
+  })
+)
+
 export const homeEditableFields = {
   "header.logoPreset": {
     label: "Cor da logo",
@@ -82,6 +127,49 @@ export const homeEditableFields = {
     contentType: "text",
     pageSlug: "home",
   },
+  "intents.heading.line1": {
+    label: "Intenções — título linha 1",
+    editTipo: "text",
+    contentType: "text",
+    pageSlug: "home",
+  },
+  "intents.heading.line2": {
+    label: "Intenções — título linha 2",
+    editTipo: "text",
+    contentType: "text",
+    pageSlug: "home",
+  },
+  "intents.cta": {
+    label: "Intenções — botão Falar conosco",
+    editTipo: "button",
+    contentType: "text",
+    pageSlug: "home",
+  },
+  "gallery.heading.line1": {
+    label: "Galeria — título linha 1",
+    editTipo: "text",
+    contentType: "text",
+    pageSlug: "home",
+  },
+  "gallery.heading.line2": {
+    label: "Galeria — título linha 2",
+    editTipo: "text",
+    contentType: "text",
+    pageSlug: "home",
+  },
+  "gallery.lead": {
+    label: "Galeria — texto de apoio",
+    editTipo: "text",
+    contentType: "text",
+    pageSlug: "home",
+  },
+  "gallery.items": {
+    label: "Galeria — itens e fotos",
+    editTipo: "gallery",
+    contentType: "text",
+    pageSlug: "home",
+  },
+  ...intentItemFields,
   ...productCategoryFields,
   ...productCategoryIconFields,
   ...columnFields,

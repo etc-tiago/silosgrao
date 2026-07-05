@@ -30,8 +30,8 @@ function HomePage() {
         <HomeHeroSection content={content} />
         <HomeHeroIntro content={content} framed />
         <HomeProductsSection content={content} framed />
-        <HomeIntentsSection framed />
-        <HomeProductGallery framed />
+        <HomeIntentsSection content={content} framed />
+        <HomeProductGallery content={content} framed />
       </main>
     </EditorPageProvider>
   )

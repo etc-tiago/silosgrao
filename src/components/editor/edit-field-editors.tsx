@@ -13,11 +13,17 @@ import {
   categoryIconSchema,
   type CategoryIconId,
 } from "@/lib/content/fields/category-icon"
+import {
+  intentLinkSchema,
+  type HomeIntentLink,
+} from "@/lib/content/fields/home-intents"
 import type { LogoColorPreset } from "@/components/icons/logo-presets"
 import { LOGO_COLOR_PRESETS } from "@/components/icons/logo-presets"
 import { CategoryIcon } from "@/components/icons/category-icon"
 import { SilosGraosLogomarca } from "@/components/icons/silos-graos-logomarca"
+import { GalleryFieldEditor } from "@/components/editor/gallery-field-editor"
 import { cn } from "@/lib/utils"
+import type { GalleryValue } from "@/lib/content/fields/home-gallery"
 import type { ChangeEvent, RefObject } from "react"
 
 export type PageOption = { slug: string; title: string }
@@ -442,6 +448,102 @@ export function CategoryIconFieldEditor({
   )
 }
 
+export function IntentLinkFieldEditor({
+  draft,
+  loading,
+  onChange,
+}: {
+  draft: HomeIntentLink
+  loading: boolean
+  onChange: (value: HomeIntentLink) => void
+}) {
+  return (
+    <fieldset className="space-y-6">
+      <legend className="text-sm font-medium">Destino do card</legend>
+
+      <div className="flex flex-col gap-2">
+        <label className="flex items-center gap-2 text-sm">
+          <input
+            type="radio"
+            name="intent-link-kind"
+            checked={draft.kind === "route"}
+            onChange={() => onChange({ kind: "route", to: "/" })}
+            disabled={loading}
+          />
+          Página interna
+        </label>
+        <label className="flex items-center gap-2 text-sm">
+          <input
+            type="radio"
+            name="intent-link-kind"
+            checked={draft.kind === "external"}
+            onChange={() =>
+              onChange({ kind: "external", href: "https://" })
+            }
+            disabled={loading}
+          />
+          Link externo
+        </label>
+      </div>
+
+      {draft.kind === "route" ? (
+        <div className="space-y-3">
+          <label className="block space-y-2">
+            <span className="text-sm text-muted-foreground">Página</span>
+            <select
+              className="w-full rounded-xl border bg-input/30 px-3 py-2 text-sm outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50"
+              value={draft.to}
+              onChange={(event) =>
+                onChange({
+                  kind: "route",
+                  to: event.target.value as "/" | "/produtos",
+                  hash: draft.hash,
+                })
+              }
+              disabled={loading}
+            >
+              <option value="/">Início</option>
+              <option value="/produtos">Produtos</option>
+            </select>
+          </label>
+          <label className="block space-y-2">
+            <span className="text-sm text-muted-foreground">
+              Âncora (opcional)
+            </span>
+            <input
+              type="text"
+              placeholder="ex: products-silos"
+              className="w-full rounded-xl border bg-input/30 px-3 py-2 text-sm outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50"
+              value={draft.hash ?? ""}
+              onChange={(event) =>
+                onChange({
+                  kind: "route",
+                  to: draft.to,
+                  hash: event.target.value || undefined,
+                })
+              }
+              disabled={loading}
+            />
+          </label>
+        </div>
+      ) : (
+        <label className="block space-y-2">
+          <span className="text-sm text-muted-foreground">URL</span>
+          <input
+            type="url"
+            className="w-full rounded-xl border bg-input/30 px-3 py-2 text-sm outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50"
+            value={draft.href}
+            onChange={(event) =>
+              onChange({ kind: "external", href: event.target.value })
+            }
+            disabled={loading}
+          />
+        </label>
+      )}
+    </fieldset>
+  )
+}
+
 type EditFieldFormProps = {
   fieldLabel: string
   tipo: string
@@ -456,6 +558,12 @@ type EditFieldFormProps = {
   setLogoPresetDraft: (value: LogoColorPreset) => void
   categoryIconDraft: CategoryIconId
   setCategoryIconDraft: (value: CategoryIconId) => void
+  intentLinkDraft: HomeIntentLink
+  setIntentLinkDraft: (value: HomeIntentLink) => void
+  galleryDraft: GalleryValue
+  setGalleryDraft: (value: GalleryValue) => void
+  galleryPageSlug: string
+  galleryFieldPath: string
   pages: PageOption[]
   loading: boolean
   error: string | null
@@ -479,6 +587,12 @@ export function EditFieldForm({
   setLogoPresetDraft,
   categoryIconDraft,
   setCategoryIconDraft,
+  intentLinkDraft,
+  setIntentLinkDraft,
+  galleryDraft,
+  setGalleryDraft,
+  galleryPageSlug,
+  galleryFieldPath,
   pages,
   loading,
   error,
@@ -569,6 +683,24 @@ export function EditFieldForm({
           draft={categoryIconDraft}
           loading={loading}
           onChange={setCategoryIconDraft}
+        />
+      ) : null}
+
+      {tipo === "intent-link" ? (
+        <IntentLinkFieldEditor
+          draft={intentLinkDraft}
+          loading={loading}
+          onChange={setIntentLinkDraft}
+        />
+      ) : null}
+
+      {tipo === "gallery" ? (
+        <GalleryFieldEditor
+          draft={galleryDraft}
+          loading={loading}
+          pageSlug={galleryPageSlug}
+          fieldPath={galleryFieldPath}
+          onChange={setGalleryDraft}
         />
       ) : null}
 
