@@ -1,4 +1,6 @@
 import { H3 } from "@/components/content"
+import { EditorSafeRouteLink } from "@/components/content/content-link"
+import { useEditNavigation, useEditorMode } from "@/components/content/editor-mode"
 import { CategoryIcon } from "@/components/icons/category-icon"
 import { ProductCard } from "@/components/products/product-card"
 import {
@@ -15,7 +17,6 @@ import {
   productCategorySectionId,
 } from "@/lib/content/fields/home-products"
 import { cn } from "@/lib/utils"
-import { Link } from "@tanstack/react-router"
 
 type HomeProductsSectionProps = {
   content: Record<string, string>
@@ -28,7 +29,10 @@ export function HomeProductsSection({
   framed = false,
   className,
 }: HomeProductsSectionProps) {
+  const { isEditor } = useEditorMode()
+  const { editPath, openEdit } = useEditNavigation()
   const catalog = parseCatalogValue(content[PRODUTOS_CATALOG_PATH], content)
+  const catalogSelected = editPath === PRODUTOS_CATALOG_PATH
 
   return (
     <section
@@ -45,15 +49,40 @@ export function HomeProductsSection({
             PRODUCTS_SECTION_TITLE_DEFAULT
           }
         />
-        <Link
+        <EditorSafeRouteLink
           to="/produtos"
           className="text-sm font-semibold text-primary transition-colors hover:text-primary/80"
         >
           Ver catálogo completo →
-        </Link>
+        </EditorSafeRouteLink>
       </div>
 
-      <div className="space-y-16">
+      <div
+        className={cn(
+          "space-y-16",
+          isEditor &&
+            catalogSelected &&
+            "rounded-3xl outline outline-2 outline-offset-4 outline-primary/60"
+        )}
+        {...(isEditor ? { "data-edit-path": PRODUTOS_CATALOG_PATH } : {})}
+        onClick={
+          isEditor
+            ? () => openEdit(PRODUTOS_CATALOG_PATH, "catalog")
+            : undefined
+        }
+        onKeyDown={
+          isEditor
+            ? (event) => {
+                if (event.key === "Enter" || event.key === " ") {
+                  event.preventDefault()
+                  openEdit(PRODUTOS_CATALOG_PATH, "catalog")
+                }
+              }
+            : undefined
+        }
+        role={isEditor ? "button" : undefined}
+        tabIndex={isEditor ? 0 : undefined}
+      >
         {catalog.categories.map((category) => (
           <section
             key={category.id}
@@ -67,13 +96,13 @@ export function HomeProductsSection({
                   {category.label}
                 </h3>
               </div>
-              <Link
+              <EditorSafeRouteLink
                 to="/produtos/$categoria"
                 params={{ categoria: category.id }}
                 className="text-sm font-semibold text-primary transition-colors hover:text-primary/80"
               >
                 Ver categoria →
-              </Link>
+              </EditorSafeRouteLink>
             </div>
 
             <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">

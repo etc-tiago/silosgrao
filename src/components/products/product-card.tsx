@@ -2,12 +2,11 @@ import {
   homeCardClass,
   homeCardImageWrapClass,
 } from "@/components/home/home-section"
-import { ContentActionButton } from "@/components/content/content-link"
+import { ContentActionButton, EditorSafeRouteLink } from "@/components/content/content-link"
 import type { CatalogProduct } from "@/lib/content/fields/catalog"
 import type { ProductCategoryId } from "@/lib/content/fields/home-products"
 import { whatsappProductUrl } from "@/lib/content/fields/home-products"
 import { cn } from "@/lib/utils"
-import { Link } from "@tanstack/react-router"
 
 type ProductCardProps = {
   product: CatalogProduct
@@ -29,11 +28,13 @@ export function ProductCard({
     },
   }
 
+  const detailParams = { categoria: categoryId, id: String(product.id) }
+
   return (
     <article className={cn(homeCardClass, "p-3", className)}>
-      <Link
+      <EditorSafeRouteLink
         to="/produtos/$categoria/$id"
-        params={{ categoria: categoryId, id: String(product.id) }}
+        params={detailParams}
         className="block"
       >
         <div className={cn(homeCardImageWrapClass, "h-64")}>
@@ -46,16 +47,16 @@ export function ProductCard({
             className="size-full object-cover transition-transform duration-700 group-hover:scale-105"
           />
         </div>
-      </Link>
+      </EditorSafeRouteLink>
 
       <div className="p-4">
-        <Link
+        <EditorSafeRouteLink
           to="/produtos/$categoria/$id"
-          params={{ categoria: categoryId, id: String(product.id) }}
+          params={detailParams}
           className="block transition-opacity hover:opacity-80"
         >
           <h3 className="font-display text-xl text-ink">{product.name}</h3>
-        </Link>
+        </EditorSafeRouteLink>
         <p className="mt-1 text-sm font-semibold text-primary">
           Capacidade: {product.capacity}
         </p>
@@ -89,13 +90,13 @@ export function ProductCard({
         </details>
 
         <div className="mt-4 flex flex-col gap-2 sm:flex-row">
-          <Link
+          <EditorSafeRouteLink
             to="/produtos/$categoria/$id"
-            params={{ categoria: categoryId, id: String(product.id) }}
+            params={detailParams}
             className="flex flex-1 items-center justify-center rounded-full border border-border bg-card px-5 py-3 text-sm font-medium transition-colors hover:bg-muted"
           >
             Ver mais
-          </Link>
+          </EditorSafeRouteLink>
           <ContentActionButton
             label={quoteAction.label}
             link={quoteAction.link}

@@ -9,7 +9,7 @@ import {
   PRODUTOS_CATALOG_PATH,
   parseCatalogValue,
 } from "@/lib/content/fields/catalog"
-import { mergeEditableFields } from "@/lib/content/fields"
+import { mergeProdutosEditorFields } from "@/lib/content/fields"
 import { editSearchSchema } from "@/lib/content/fields/search"
 import {
   isProductCategoryId,
@@ -57,7 +57,7 @@ export const Route = createFileRoute("/produtos/$categoria")({
 function ProductCategoryPage() {
   const { content, mode, categoryId, category, catalog } = Route.useLoaderData()
   const search = Route.useSearch()
-  const fields = mergeEditableFields("produtos", "site")
+  const fields = mergeProdutosEditorFields()
 
   return (
     <EditorPageProvider

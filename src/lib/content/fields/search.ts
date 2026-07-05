@@ -5,7 +5,6 @@ export const contentGroupIdEnum = [
   "textos",
   "imagens",
   "secoes",
-  "icones",
   "logo",
 ] as const
 

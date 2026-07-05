@@ -10,7 +10,7 @@ import {
   PRODUTOS_CATALOG_PATH,
   parseCatalogValue,
 } from "@/lib/content/fields/catalog"
-import { mergeEditableFields } from "@/lib/content/fields"
+import { mergeProdutosEditorFields } from "@/lib/content/fields"
 import { editSearchSchema } from "@/lib/content/fields/search"
 import {
   isProductCategoryId,
@@ -67,7 +67,7 @@ function ProductDetailPage() {
   const { content, mode, product, categoryId, categoryLabel } =
     Route.useLoaderData()
   const search = Route.useSearch()
-  const fields = mergeEditableFields("produtos", "site")
+  const fields = mergeProdutosEditorFields()
   const quoteAction = product.primaryAction ?? {
     label: "Solicitar Orçamento",
     link: {

@@ -1,12 +1,18 @@
 import { Link } from "@tanstack/react-router"
-import { useEditorMode } from "@/components/content/editor-mode"
+import {
+  useEditNavigation,
+  useEditorMode,
+} from "@/components/content/editor-mode"
 import type { ButtonValue } from "@/lib/content/fields/button"
 import { pageSlugToPath } from "@/lib/content/fields/button"
 import { cn } from "@/lib/utils"
+import type { ReactNode } from "react"
 
 type EditableButtonProps = {
   path: string
   value: ButtonValue
+  className?: string
+  children?: ReactNode
 }
 
 const baseClasses =
@@ -18,9 +24,16 @@ const variantClasses: Record<ButtonValue["variant"], string> = {
   link: "bg-transparent px-0 py-0 text-white underline-offset-4 hover:underline",
 }
 
-export function EditableButton({ path, value }: EditableButtonProps) {
+export function EditableButton({
+  path,
+  value,
+  className,
+  children,
+}: EditableButtonProps) {
   const { isEditor } = useEditorMode()
-  const classes = cn(baseClasses, variantClasses[value.variant])
+  const { editPath } = useEditNavigation()
+  const selected = editPath === path
+  const classes = cn(baseClasses, variantClasses[value.variant], className)
 
   const isEmpty = !value.label.trim()
   const content = isEmpty && isEditor ? "Sem texto" : value.label
@@ -28,10 +41,15 @@ export function EditableButton({ path, value }: EditableButtonProps) {
   if (isEditor) {
     return (
       <span
-        className={cn(classes, isEmpty && "italic opacity-60")}
+        className={cn(
+          classes,
+          isEmpty && "italic opacity-60",
+          selected && "outline outline-2 outline-offset-2 outline-primary/60"
+        )}
         data-edit-path={path}
       >
-        {content}
+        <span>{content}</span>
+        {children}
       </span>
     )
   }
@@ -43,7 +61,8 @@ export function EditableButton({ path, value }: EditableButtonProps) {
         hash={value.link.hash}
         className={classes}
       >
-        {content}
+        <span>{content}</span>
+        {children}
       </Link>
     )
   }
@@ -56,7 +75,8 @@ export function EditableButton({ path, value }: EditableButtonProps) {
         ? { target: "_blank", rel: "noopener noreferrer" }
         : {})}
     >
-      {content}
+      <span>{content}</span>
+      {children}
     </a>
   )
 }

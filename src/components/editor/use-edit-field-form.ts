@@ -453,7 +453,8 @@ export function groupEditableFields(fields: EditableFields) {
       field.editTipo === "gallery" ||
       field.editTipo === "item-list" ||
       field.editTipo === "hero-strip" ||
-      field.editTipo === "catalog"
+      field.editTipo === "catalog" ||
+      field.editTipo === "video"
     ) {
       sectionFields.push([path, field])
     } else if (field.editTipo === "logo-preset") {

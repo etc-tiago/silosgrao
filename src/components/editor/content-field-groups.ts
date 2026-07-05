@@ -4,7 +4,6 @@ import {
   ImageIcon,
   Layers,
   Palette,
-  Shapes,
   Type,
   type LucideIcon,
 } from "lucide-react"
@@ -24,7 +23,6 @@ const GROUP_META: Record<
   textos: { label: "Textos", panelTitle: "Textos da página", icon: Type },
   imagens: { label: "Imagens", panelTitle: "Imagens da página", icon: ImageIcon },
   secoes: { label: "Seções", panelTitle: "Seções da página", icon: Layers },
-  icones: { label: "Ícones", panelTitle: "Ícones da página", icon: Shapes },
   logo: { label: "Logo", panelTitle: "Logo da página", icon: Palette },
 }
 
@@ -35,11 +33,12 @@ export function getContentGroupIdForField(field: FieldDef): ContentGroupId | nul
     field.editTipo === "gallery" ||
     field.editTipo === "item-list" ||
     field.editTipo === "hero-strip" ||
-    field.editTipo === "catalog"
+    field.editTipo === "catalog" ||
+    field.editTipo === "video" ||
+    field.editTipo === "category-icon"
   ) {
     return "secoes"
   }
-  if (field.editTipo === "category-icon") return "icones"
   if (field.editTipo === "logo-preset") return "logo"
   return null
 }
@@ -51,11 +50,15 @@ export function buildContentFieldGroups(grouped: {
   logoFields: Array<[string, FieldDef]>
   iconFields: Array<[string, FieldDef]>
 }): ContentFieldGroup[] {
+  const sectionFields = [
+    ...grouped.sectionFields,
+    ...grouped.iconFields,
+  ]
+
   const groups: Array<[ContentGroupId, Array<[string, FieldDef]>]> = [
     ["textos", grouped.textFields],
     ["imagens", grouped.imageFields],
-    ["secoes", grouped.sectionFields],
-    ["icones", grouped.iconFields],
+    ["secoes", sectionFields],
     ["logo", grouped.logoFields],
   ]
 

@@ -82,3 +82,29 @@ export function ContentActionButton({
     </Link>
   )
 }
+
+type EditorSafeRouteLinkProps = {
+  to: string
+  params?: Record<string, string>
+  className?: string
+  children: ReactNode
+}
+
+export function EditorSafeRouteLink({
+  to,
+  params,
+  className,
+  children,
+}: EditorSafeRouteLinkProps) {
+  const { isEditor } = useEditorMode()
+
+  if (isEditor) {
+    return <span className={className}>{children}</span>
+  }
+
+  return (
+    <Link to={to} params={params} className={className}>
+      {children}
+    </Link>
+  )
+}

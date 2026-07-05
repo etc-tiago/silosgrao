@@ -2,6 +2,7 @@ import { EditorPageProvider } from "@/components/editor/editor-page-provider"
 import { ProductsCatalog, ProductsCategoryNav } from "@/components/products/products-catalog"
 import { ProductBreadcrumb } from "@/components/products/product-breadcrumb"
 import { P, Span } from "@/components/content"
+import { useEditNavigation, useEditorMode } from "@/components/content/editor-mode"
 import { homeSectionHeadingClass } from "@/components/home/home-section"
 import {
   PRODUTOS_CATALOG_PATH,
@@ -10,8 +11,9 @@ import {
   PRODUTOS_HEADING_DEFAULT,
   PRODUTOS_LEAD_DEFAULT,
   parseCatalogValue,
+  type CatalogValue,
 } from "@/lib/content/fields/catalog"
-import { mergeEditableFields } from "@/lib/content/fields"
+import { mergeProdutosEditorFields } from "@/lib/content/fields"
 import { editSearchSchema } from "@/lib/content/fields/search"
 import { loadProdutosContent } from "@/lib/content/home.fn"
 import { cn } from "@/lib/utils"
@@ -30,7 +32,7 @@ function ProdutosPage() {
   const { content, mode } = Route.useLoaderData()
   const search = Route.useSearch()
   const catalog = parseCatalogValue(content[PRODUTOS_CATALOG_PATH], content)
-  const fields = mergeEditableFields("produtos", "site")
+  const fields = mergeProdutosEditorFields()
 
   return (
     <EditorPageProvider
@@ -66,9 +68,43 @@ function ProdutosPage() {
           </header>
 
           <ProductsCategoryNav catalog={catalog} className="mb-14" />
-          <ProductsCatalog catalog={catalog} />
+          <ProdutosCatalogSection catalog={catalog} />
         </div>
       </main>
     </EditorPageProvider>
+  )
+}
+
+function ProdutosCatalogSection({ catalog }: { catalog: CatalogValue }) {
+  const { isEditor } = useEditorMode()
+  const { editPath, openEdit } = useEditNavigation()
+  const catalogSelected = editPath === PRODUTOS_CATALOG_PATH
+
+  return (
+    <div
+      className={cn(
+        isEditor &&
+          catalogSelected &&
+          "rounded-3xl outline outline-2 outline-offset-4 outline-primary/60"
+      )}
+      {...(isEditor ? { "data-edit-path": PRODUTOS_CATALOG_PATH } : {})}
+      onClick={
+        isEditor ? () => openEdit(PRODUTOS_CATALOG_PATH, "catalog") : undefined
+      }
+      onKeyDown={
+        isEditor
+          ? (event) => {
+              if (event.key === "Enter" || event.key === " ") {
+                event.preventDefault()
+                openEdit(PRODUTOS_CATALOG_PATH, "catalog")
+              }
+            }
+          : undefined
+      }
+      role={isEditor ? "button" : undefined}
+      tabIndex={isEditor ? 0 : undefined}
+    >
+      <ProductsCatalog catalog={catalog} />
+    </div>
   )
 }

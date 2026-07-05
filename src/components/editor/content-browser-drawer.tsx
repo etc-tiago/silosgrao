@@ -5,7 +5,6 @@ import {
 } from "@/components/editor/content-field-groups"
 import { EditFieldDrawer } from "@/components/editor/edit-field-drawer"
 import { groupEditableFields } from "@/components/editor/use-edit-field-form"
-import { CategoryIcon } from "@/components/icons/category-icon"
 import { SilosGraosSymbol } from "@/components/icons/silos-graos-symbol"
 import { Button } from "@/components/ui/button"
 import {
@@ -17,11 +16,6 @@ import {
 } from "@/components/ui/drawer"
 import { parseButtonValue } from "@/lib/content/fields/button"
 import { parseCatalogValue } from "@/lib/content/fields/catalog"
-import {
-  CATEGORY_ICON_LABELS,
-  categoryIconFallbackForPath,
-  parseCategoryIconValue,
-} from "@/lib/content/fields/category-icon"
 import { parseGalleryValue } from "@/lib/content/fields/gallery"
 import { parseHeroStripValue } from "@/lib/content/fields/hero-strip"
 import { intentsCtaDefault } from "@/lib/content/fields/home-intents"
@@ -192,7 +186,6 @@ const EMPTY_MESSAGES: Record<ContentGroupId, string> = {
   textos: "Nenhum campo de texto nesta página.",
   imagens: "Nenhuma imagem editável nesta página.",
   secoes: "Nenhuma seção editável nesta página.",
-  icones: "Nenhum ícone editável nesta página.",
   logo: "Nenhuma configuração de logo nesta página.",
 }
 
@@ -292,32 +285,6 @@ function CategoryFieldList({
               subtitle={
                 <p className="text-xs text-muted-foreground">
                   {sectionPreview(path, field.editTipo, content)}
-                </p>
-              }
-            />
-          )
-        }
-
-        if (categoria === "icones") {
-          const icon = parseCategoryIconValue(
-            content[path],
-            categoryIconFallbackForPath(path)
-          )
-          return (
-            <FieldListItem
-              key={path}
-              path={path}
-              label={field.label}
-              selected={editPath === path}
-              onSelect={() => onSelect(path, field.editTipo)}
-              thumbnail={
-                <div className="flex size-12 items-center justify-center rounded-lg border bg-muted/30">
-                  <CategoryIcon icon={icon} className="size-6" />
-                </div>
-              }
-              subtitle={
-                <p className="text-xs text-muted-foreground">
-                  {CATEGORY_ICON_LABELS[icon]}
                 </p>
               }
             />

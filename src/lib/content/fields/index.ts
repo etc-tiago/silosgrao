@@ -40,5 +40,13 @@ export function mergeEditableFields(
   }, {})
 }
 
+export function mergeHomeEditorFields() {
+  return mergeEditableFields("home", "site", "produtos")
+}
+
+export function mergeProdutosEditorFields() {
+  return mergeEditableFields("produtos", "site")
+}
+
 /** @deprecated use homeEditableFields from pages/home.ts */
 export { homeEditableFields, homeContentPaths }

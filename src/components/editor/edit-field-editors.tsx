@@ -8,16 +8,12 @@ import {
   LOGO_PRESET_LABELS,
   logoPresetSchema,
 } from "@/lib/content/fields/logo-preset"
-import {
-  CATEGORY_ICON_LABELS,
-  categoryIconSchema,
-  type CategoryIconId,
-} from "@/lib/content/fields/category-icon"
+import { CategoryIconPicker } from "@/components/editor/category-icon-picker"
 import { CatalogFieldEditor } from "@/components/editor/catalog-field-editor"
 import { GalleryFieldEditor } from "@/components/editor/gallery-field-editor"
 import { HeroStripFieldEditor } from "@/components/editor/hero-strip-field-editor"
 import { ItemListFieldEditor } from "@/components/editor/item-list-field-editor"
-import { CategoryIcon } from "@/components/icons/category-icon"
+import type { CategoryIconId } from "@/lib/content/fields/category-icon"
 import {
   LOGO_COLOR_PRESETS,
   type LogoColorPreset,
@@ -401,8 +397,6 @@ export function LogoPresetFieldEditor({
   )
 }
 
-const categoryIconOptions = categoryIconSchema.options
-
 export function CategoryIconFieldEditor({
   draft,
   loading,
@@ -413,42 +407,11 @@ export function CategoryIconFieldEditor({
   onChange: (value: CategoryIconId) => void
 }) {
   return (
-    <div className="space-y-6">
-      <div className="space-y-2">
-        <p className="text-sm font-medium">Pré-visualização</p>
-        <div className="flex items-center justify-center rounded-xl border bg-muted/30 p-8">
-          <CategoryIcon icon={draft} className="size-10" />
-        </div>
-      </div>
-
-      <fieldset className="space-y-3">
-        <legend className="text-sm font-medium">Ícone</legend>
-        <div className="grid grid-cols-4 gap-2">
-          {categoryIconOptions.map((icon) => (
-            <label
-              key={icon}
-              className={cn(
-                "flex cursor-pointer flex-col items-center gap-2 rounded-xl border bg-input/20 p-3",
-                draft === icon && "border-primary bg-primary/5"
-              )}
-            >
-              <input
-                type="radio"
-                name="category-icon"
-                className="sr-only"
-                checked={draft === icon}
-                onChange={() => onChange(icon)}
-                disabled={loading}
-              />
-              <CategoryIcon icon={icon} className="size-6" />
-              <span className="text-center text-[10px] leading-tight font-medium">
-                {CATEGORY_ICON_LABELS[icon]}
-              </span>
-            </label>
-          ))}
-        </div>
-      </fieldset>
-    </div>
+    <CategoryIconPicker
+      value={draft}
+      onChange={onChange}
+      disabled={loading}
+    />
   )
 }
 

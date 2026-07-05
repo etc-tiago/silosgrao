@@ -4,7 +4,7 @@ import { HomeHeroSection } from "@/components/home/home-hero-section"
 import { HomeIntentsSection } from "@/components/home/home-intents-section"
 import { HomeProductGallery } from "@/components/home/home-product-gallery"
 import { HomeProductsSection } from "@/components/home/home-products-section"
-import { mergeEditableFields } from "@/lib/content/fields"
+import { mergeHomeEditorFields } from "@/lib/content/fields"
 import { editSearchSchema } from "@/lib/content/fields/search"
 import { loadHomeContent } from "@/lib/content/home.fn"
 import { createFileRoute } from "@tanstack/react-router"
@@ -18,7 +18,7 @@ export const Route = createFileRoute("/")({
 function HomePage() {
   const { content, mode } = Route.useLoaderData()
   const search = Route.useSearch()
-  const fields = mergeEditableFields("home", "site")
+  const fields = mergeHomeEditorFields()
 
   return (
     <EditorPageProvider

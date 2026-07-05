@@ -1,0 +1,80 @@
+---
+description: Conteúdo de página editável via CMS — registro, renderização e painel
+globs: src/components/home/**,src/components/products/**,src/routes/**,src/lib/content/fields/**
+alwaysApply: false
+---
+
+# Conteúdo de página editável (CMS)
+
+Campos globais (`pages/site.ts`, header/footer em `__root.tsx`) ficam fora desta regra. Todo conteúdo de **página** (`home`, `produtos`) deve ser editável pelo painel no modo editor.
+
+## 1. Registro obrigatório
+
+Todo `content[path]` renderizado deve existir em `pages/home.ts` ou `pages/produtos.ts` com `editTipo`, `label` e `pageSlug` corretos.
+
+```typescript
+// ✅ GOOD — path registrado antes de renderizar
+[PRODUCTS_SECTION_TITLE_PATH]: {
+  label: "Produtos — título da seção",
+  editTipo: "text",
+  contentType: "text",
+  pageSlug: "home",
+}
+```
+
+## 2. Merge na rota
+
+Use os helpers de merge — inclua todos os slugs cujo conteúdo a rota exibe:
+
+- Home/demo: `mergeHomeEditorFields()` → `home` + `site` + `produtos` (catálogo na home)
+- Produtos: `mergeProdutosEditorFields()` → `produtos` + `site`
+
+```typescript
+const fields = mergeHomeEditorFields()
+```
+
+## 3. Renderização por tipo
+
+| editTipo | Componente / padrão |
+|----------|---------------------|
+| `text` | `H1`–`H3`, `P`, `Span` com `path`, `editTipo`, `value` |
+| `button` | `EditableButton` com `path`, `value` |
+| `hero-strip`, `gallery`, `item-list`, `catalog` | Container com `data-edit-path`, outline quando `editPath === path`, `openEdit(path, tipo)` no modo editor |
+| `img`, `bg-image` | `EditableImage` |
+| `category-icon` | `EditableCategoryIcon` |
+
+Imagens e ícones dentro de seções compostas são editados **no editor da seção**, não como campos soltos.
+
+## 4. Painel por categoria
+
+Campos devem mapear para `contentGroupIdEnum` via `getContentGroupIdForField`:
+
+- `textos` — text, button
+- `imagens` — img, bg-image
+- `secoes` — gallery, item-list, hero-strip, catalog, video
+- `secoes` — gallery, item-list, hero-strip, catalog, video, category-icon (ícones de categoria ficam no editor de catálogo)
+- `logo` — logo-preset
+
+## 5. Modo editor — sem navegação acidental
+
+Links internos devem usar `EditorSafeRouteLink` ou `ContentLinkWrapper`. Não usar `Link` direto em conteúdo de página.
+
+```tsx
+// ❌ BAD
+<Link to="/produtos">Ver catálogo</Link>
+
+// ✅ GOOD
+<EditorSafeRouteLink to="/produtos">Ver catálogo</EditorSafeRouteLink>
+```
+
+## 6. Proibido
+
+Strings de conteúdo de negócio hardcoded que deveriam vir do CMS. Labels fixos de UI (ex.: "Capacidade:", breadcrumbs) são permitidos.
+
+## 7. Checklist ao adicionar seção
+
+1. Registrar campo em `pages/home.ts` ou `pages/produtos.ts`
+2. Atualizar merge na rota se necessário
+3. Renderizar com wrapper Content ou `openEdit` na seção composta
+4. Verificar categoria no dropdown da float bar
+5. Rodar `bun run typecheck`

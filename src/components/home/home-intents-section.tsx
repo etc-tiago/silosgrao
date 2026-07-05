@@ -1,4 +1,4 @@
-import { Span } from "@/components/content"
+import { EditableButton, Span } from "@/components/content"
 import {
   ContentActionButton,
   ContentLinkWrapper,
@@ -22,64 +22,11 @@ import {
 } from "@/lib/content/fields/home-intents"
 import { cn } from "@/lib/utils"
 import { ArrowUpRight } from "lucide-react"
-import { Link } from "@tanstack/react-router"
-import { pageSlugToPath } from "@/lib/content/fields/link"
 
 type HomeIntentsSectionProps = {
   content: Record<string, string>
   framed?: boolean
   className?: string
-}
-
-function EditableIntentCta({
-  content,
-}: {
-  content: Record<string, string>
-}) {
-  const { isEditor } = useEditorMode()
-  const value = parseButtonValue(content[INTENTS_CTA_PATH], intentsCtaDefault)
-  const isEmpty = !value.label.trim()
-  const label = isEmpty && isEditor ? "Sem texto" : value.label
-  const className =
-    "flex items-center gap-2 rounded-full border border-border bg-card px-5 py-3 text-sm font-medium"
-
-  if (isEditor) {
-    return (
-      <span
-        data-edit-path={INTENTS_CTA_PATH}
-        className={cn(className, isEmpty && "italic opacity-60")}
-      >
-        <span>{label}</span>
-        <WhatsApp className="size-4" />
-      </span>
-    )
-  }
-
-  if (value.link.kind === "page") {
-    return (
-      <Link
-        to={pageSlugToPath(value.link.pageSlug)}
-        hash={value.link.hash}
-        className={className}
-      >
-        <span>{label}</span>
-        <WhatsApp className="size-4" />
-      </Link>
-    )
-  }
-
-  return (
-    <a
-      href={value.link.url}
-      className={className}
-      {...(value.link.openInNewTab
-        ? { target: "_blank", rel: "noopener noreferrer" }
-        : {})}
-    >
-      <span>{label}</span>
-      <WhatsApp className="size-4" />
-    </a>
-  )
 }
 
 type IntentCardProps = {
@@ -158,7 +105,13 @@ export function HomeIntentsSection({
           />
           ?
         </h2>
-        <EditableIntentCta content={content} />
+        <EditableButton
+          path={INTENTS_CTA_PATH}
+          value={parseButtonValue(content[INTENTS_CTA_PATH], intentsCtaDefault)}
+          className="flex items-center gap-2 rounded-full border border-border bg-card px-5 py-3 text-sm font-medium"
+        >
+          <WhatsApp className="size-4" />
+        </EditableButton>
       </div>
 
       <div

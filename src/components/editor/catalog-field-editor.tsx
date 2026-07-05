@@ -1,8 +1,5 @@
+import { CategoryIconPicker } from "@/components/editor/category-icon-picker"
 import { fileToBase64 } from "@/components/editor/edit-field-editors"
-import {
-  CATEGORY_ICON_LABELS,
-  type CategoryIconId,
-} from "@/lib/content/fields/category-icon"
 import { CategoryIcon } from "@/components/icons/category-icon"
 import {
   createCatalogProduct,
@@ -123,25 +120,14 @@ export function CatalogFieldEditor({
             />
           </label>
 
-          <label className="block space-y-1.5">
-            <span className="text-xs font-medium text-muted-foreground">Ícone</span>
-            <select
-              className="w-full rounded-xl border bg-input/30 px-3 py-2 text-sm"
+          <div className="space-y-1.5">
+            <p className="text-xs font-medium text-muted-foreground">Ícone</p>
+            <CategoryIconPicker
               value={category.icon}
-              onChange={(event) => {
-                updateCategory(categoryIndex, {
-                  icon: event.target.value as CategoryIconId,
-                })
-              }}
+              onChange={(icon) => updateCategory(categoryIndex, { icon })}
               disabled={busy}
-            >
-              {(Object.keys(CATEGORY_ICON_LABELS) as CategoryIconId[]).map((icon) => (
-                <option key={icon} value={icon}>
-                  {CATEGORY_ICON_LABELS[icon]}
-                </option>
-              ))}
-            </select>
-          </label>
+            />
+          </div>
 
           <div className="space-y-3">
             <p className="text-xs font-medium text-muted-foreground">Produtos</p>
