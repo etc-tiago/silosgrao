@@ -1,8 +1,15 @@
+import type { ContentFieldGroup } from "@/components/editor/content-field-groups"
+import type { ContentGroupId } from "@/lib/content/fields/search"
+import type { EditTipo } from "@/lib/content/fields/types"
 import { useEffect, useState } from "react"
 
-type EditorPageChromeValue = {
-  openContentBrowser: () => void
+export type EditorPageChromeValue = {
+  openContentCategory: (categoria: ContentGroupId) => void
   isContentBrowserOpen: boolean
+  activeCategory?: ContentGroupId
+  openEdit: (path: string, editTipo: EditTipo) => void
+  editPath?: string
+  fieldGroups: ContentFieldGroup[]
 }
 
 let activeChrome: EditorPageChromeValue | null = null

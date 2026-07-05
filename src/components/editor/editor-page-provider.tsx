@@ -2,9 +2,11 @@ import {
   EditNavigationProvider,
   EditorModeProvider,
 } from "@/components/content"
+import { buildContentFieldGroups, getContentGroupIdForField } from "@/components/editor/content-field-groups"
 import { ContentBrowserDrawer } from "@/components/editor/content-browser-drawer"
 import { registerEditorPageChrome } from "@/components/editor/editor-page-chrome"
-import type { EditSearch } from "@/lib/content/fields/search"
+import { groupEditableFields } from "@/components/editor/use-edit-field-form"
+import { contentGroupIdEnum, type ContentGroupId, type EditSearch } from "@/lib/content/fields/search"
 import type { EditTipo } from "@/lib/content/fields/types"
 import type { EditableFields } from "@/lib/content/fields/types"
 import type { ContentReadMode } from "@/lib/content/read"
@@ -33,7 +35,8 @@ export function EditorPageProvider({
 }: EditorPageProviderProps) {
   const router = useRouter()
 
-  const isContentBrowserOpen = search.painel === "conteudo"
+  const isContentBrowserOpen =
+    search.painel === "conteudo" && Boolean(search.categoria)
 
   const setSearch = useCallback(
     (next: EditSearch | ((prev: EditSearch) => EditSearch), replace = false) => {
@@ -49,9 +52,12 @@ export function EditorPageProvider({
     [router]
   )
 
-  const openContentBrowser = useCallback(() => {
-    setSearch((prev) => ({ ...prev, painel: "conteudo" }))
-  }, [setSearch])
+  const openContentCategory = useCallback(
+    (categoria: ContentGroupId) => {
+      setSearch({ painel: "conteudo", categoria })
+    },
+    [setSearch]
+  )
 
   const closeContentBrowser = useCallback(() => {
     setSearch({})
@@ -59,19 +65,24 @@ export function EditorPageProvider({
 
   const openEdit = useCallback(
     (path: string, editTipo: EditTipo) => {
+      const field = fields[path]
+      const categoria = field ? getContentGroupIdForField(field) : undefined
+
       setSearch((prev) => ({
         ...prev,
         painel: "conteudo",
+        categoria: categoria ?? prev.categoria,
         editar: path,
         tipo: editTipo,
       }))
     },
-    [setSearch]
+    [setSearch, fields]
   )
 
   const closeEdit = useCallback(() => {
     setSearch((prev) => ({
       painel: prev.painel,
+      categoria: prev.categoria,
     }))
   }, [setSearch])
 
@@ -87,18 +98,49 @@ export function EditorPageProvider({
   useEffect(() => {
     if (!search.editar || !search.tipo || search.painel === "conteudo") return
 
+    const field = fields[search.editar]
+    const categoria = field ? getContentGroupIdForField(field) : undefined
+
     setSearch(
       (prev) => ({
         ...prev,
         painel: "conteudo",
+        categoria: categoria ?? prev.categoria,
       }),
       true
     )
-  }, [search.editar, search.tipo, search.painel, setSearch])
+  }, [search.editar, search.tipo, search.painel, fields, setSearch])
+
+  const fieldGroups = useMemo(
+    () => buildContentFieldGroups(groupEditableFields(fields)),
+    [fields]
+  )
+
+  useEffect(() => {
+    if (search.painel !== "conteudo" || !search.categoria) return
+
+    if (!contentGroupIdEnum.includes(search.categoria)) {
+      closeContentBrowser()
+    }
+  }, [search.painel, search.categoria, closeContentBrowser])
 
   const chromeValue = useMemo(
-    () => ({ openContentBrowser, isContentBrowserOpen }),
-    [openContentBrowser, isContentBrowserOpen]
+    () => ({
+      openContentCategory,
+      isContentBrowserOpen,
+      activeCategory: search.categoria,
+      openEdit,
+      editPath: search.editar,
+      fieldGroups,
+    }),
+    [
+      openContentCategory,
+      isContentBrowserOpen,
+      search.categoria,
+      openEdit,
+      search.editar,
+      fieldGroups,
+    ]
   )
 
   useEffect(() => {

@@ -4,7 +4,7 @@ import { FloatBar } from "@/components/editor/float-bar"
 import { SiteFooter } from "@/components/site-footer"
 import { SiteHeader } from "@/components/site-header"
 import { usePageLogoPreset } from "@/components/site-header/use-page-logo-preset"
-import { loadRootSession } from "@/lib/auth/session.fn"
+import { loadRootContent } from "@/lib/content/home.fn"
 import appCss from "../styles.css?url"
 
 export const Route = createRootRoute({
@@ -56,7 +56,7 @@ export const Route = createRootRoute({
       },
     ],
   }),
-  loader: () => loadRootSession(),
+  loader: () => loadRootContent(),
   notFoundComponent: () => (
     <main className="container mx-auto p-4 pt-16">
       <h1>404</h1>
@@ -67,12 +67,16 @@ export const Route = createRootRoute({
 })
 
 function RootSiteHeader() {
-  const logoPreset = usePageLogoPreset()
-  return <SiteHeader logoPreset={logoPreset} />
+  const { content } = Route.useLoaderData()
+  const logoPreset = usePageLogoPreset(content)
+  const whatsappUrl =
+    content["header.whatsappUrl"]?.trim() || "https://wa.me/5585987654321"
+
+  return <SiteHeader logoPreset={logoPreset} whatsappUrl={whatsappUrl} />
 }
 
 function RootDocument({ children }: { children: React.ReactNode }) {
-  const session = Route.useLoaderData()
+  const { editor, editorState, content } = Route.useLoaderData()
 
   return (
     <html lang="pt-BR">
@@ -82,12 +86,12 @@ function RootDocument({ children }: { children: React.ReactNode }) {
       <body>
         <RootSiteHeader />
         {children}
-        <SiteFooter />
-        {session.editor && session.editorState ? (
+        <SiteFooter content={content} />
+        {editor && editorState ? (
           <FloatBar
-            canUndo={session.editorState.canUndo}
-            canRedo={session.editorState.canRedo}
-            hasDevChanges={session.editorState.hasDevChanges}
+            canUndo={editorState.canUndo}
+            canRedo={editorState.canRedo}
+            hasDevChanges={editorState.hasDevChanges}
           />
         ) : null}
         <Scripts />

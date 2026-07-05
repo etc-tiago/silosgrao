@@ -14,6 +14,13 @@ import type { EditSearch } from "@/lib/content/fields/search"
 import type { EditableFields } from "@/lib/content/fields/types"
 import { cn } from "@/lib/utils"
 
+const WIDE_EDITOR_TIPOS = new Set([
+  "gallery",
+  "item-list",
+  "hero-strip",
+  "catalog",
+])
+
 type EditFieldDrawerProps = {
   content: Record<string, string>
   fields: EditableFields
@@ -38,6 +45,8 @@ export function EditFieldDrawer({
     return null
   }
 
+  const isWide = WIDE_EDITOR_TIPOS.has(form.tipo)
+
   return (
     <Drawer
       open={form.open}
@@ -49,8 +58,8 @@ export function EditFieldDrawer({
       <DrawerContent
         className={cn(
           "h-full max-h-none data-[swipe-axis=x]:w-full",
-          form.tipo === "gallery"
-            ? "data-[swipe-axis=x]:sm:max-w-xl"
+          isWide
+            ? "data-[swipe-axis=x]:sm:max-w-2xl"
             : "data-[swipe-axis=x]:sm:max-w-md"
         )}
       >
@@ -73,12 +82,16 @@ export function EditFieldDrawer({
             setLogoPresetDraft={form.setLogoPresetDraft}
             categoryIconDraft={form.categoryIconDraft}
             setCategoryIconDraft={form.setCategoryIconDraft}
-            intentLinkDraft={form.intentLinkDraft}
-            setIntentLinkDraft={form.setIntentLinkDraft}
             galleryDraft={form.galleryDraft}
             setGalleryDraft={form.setGalleryDraft}
-            galleryPageSlug={form.field.pageSlug}
-            galleryFieldPath={search.editar ?? ""}
+            itemListDraft={form.itemListDraft}
+            setItemListDraft={form.setItemListDraft}
+            heroStripDraft={form.heroStripDraft}
+            setHeroStripDraft={form.setHeroStripDraft}
+            catalogDraft={form.catalogDraft}
+            setCatalogDraft={form.setCatalogDraft}
+            compositePageSlug={form.field.pageSlug}
+            compositeFieldPath={search.editar ?? ""}
             pages={form.pages}
             loading={form.loading}
             error={form.error}

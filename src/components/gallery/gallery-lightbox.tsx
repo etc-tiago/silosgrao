@@ -1,27 +1,30 @@
-import type { GalleryItem } from "@/lib/content/fields/home-gallery"
-import { galleryPhotoAlt } from "@/lib/content/fields/home-gallery"
+import type { GallerySlide } from "@/lib/content/fields/gallery"
 import { cn } from "@/lib/utils"
 import { ChevronLeft, ChevronRight, X } from "lucide-react"
 import { useCallback, useEffect, useState } from "react"
 
 type GalleryLightboxProps = {
-  item: GalleryItem
+  slides: GallerySlide[]
+  initialIndex?: number
   onClose: () => void
 }
 
-export function GalleryLightbox({ item, onClose }: GalleryLightboxProps) {
-  const [photoIndex, setPhotoIndex] = useState(0)
-  const photos = item.photos
-  const hasMultiple = photos.length > 1
-  const currentPhoto = photos[photoIndex]
+export function GalleryLightbox({
+  slides,
+  initialIndex = 0,
+  onClose,
+}: GalleryLightboxProps) {
+  const [photoIndex, setPhotoIndex] = useState(initialIndex)
+  const hasMultiple = slides.length > 1
+  const currentSlide = slides[photoIndex]
 
   const goPrev = useCallback(() => {
-    setPhotoIndex((index) => (index === 0 ? photos.length - 1 : index - 1))
-  }, [photos.length])
+    setPhotoIndex((index) => (index === 0 ? slides.length - 1 : index - 1))
+  }, [slides.length])
 
   const goNext = useCallback(() => {
-    setPhotoIndex((index) => (index === photos.length - 1 ? 0 : index + 1))
-  }, [photos.length])
+    setPhotoIndex((index) => (index === slides.length - 1 ? 0 : index + 1))
+  }, [slides.length])
 
   useEffect(() => {
     function onKeyDown(event: KeyboardEvent) {
@@ -38,7 +41,7 @@ export function GalleryLightbox({ item, onClose }: GalleryLightboxProps) {
     }
   }, [goNext, goPrev, onClose])
 
-  if (!currentPhoto) return null
+  if (!currentSlide) return null
 
   return (
     <div
@@ -54,18 +57,13 @@ export function GalleryLightbox({ item, onClose }: GalleryLightboxProps) {
         onClick={(event) => event.stopPropagation()}
         role="dialog"
         aria-modal="true"
-        aria-label={item.title || "Galeria de fotos"}
+        aria-label={currentSlide.caption || "Galeria de fotos"}
       >
         <div className="flex items-center justify-between border-b border-border px-4 py-3 md:px-6">
           <div className="min-w-0 pr-4">
             <p className="truncate font-display text-base text-ink md:text-lg">
-              {item.title || "Galeria"}
+              {currentSlide.caption || "Galeria"}
             </p>
-            {item.category ? (
-              <p className="truncate text-xs text-muted-foreground md:text-sm">
-                {item.category}
-              </p>
-            ) : null}
           </div>
           <button
             type="button"
@@ -79,8 +77,8 @@ export function GalleryLightbox({ item, onClose }: GalleryLightboxProps) {
 
         <div className="relative min-h-0 flex-1 bg-muted/20">
           <img
-            src={currentPhoto.url}
-            alt={galleryPhotoAlt(currentPhoto, item)}
+            src={currentSlide.url}
+            alt={currentSlide.caption}
             width={1200}
             height={800}
             className="mx-auto max-h-[55dvh] w-full object-contain sm:max-h-[60dvh] md:max-h-[65dvh]"
@@ -112,12 +110,12 @@ export function GalleryLightbox({ item, onClose }: GalleryLightboxProps) {
           <div className="border-t border-border px-4 py-3 md:px-6">
             <div className="flex items-center justify-between gap-4">
               <p className="text-sm font-medium text-muted-foreground">
-                {photoIndex + 1} / {photos.length}
+                {photoIndex + 1} / {slides.length}
               </p>
               <div className="flex gap-2 overflow-x-auto pb-1">
-                {photos.map((photo, index) => (
+                {slides.map((slide, index) => (
                   <button
-                    key={`${photo.url}-${index}`}
+                    key={slide.id}
                     type="button"
                     onClick={() => setPhotoIndex(index)}
                     className={cn(
@@ -130,7 +128,7 @@ export function GalleryLightbox({ item, onClose }: GalleryLightboxProps) {
                     aria-current={index === photoIndex}
                   >
                     <img
-                      src={photo.url}
+                      src={slide.url}
                       alt=""
                       className="size-full object-cover"
                     />

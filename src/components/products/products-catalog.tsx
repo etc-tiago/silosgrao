@@ -1,39 +1,35 @@
 import { CategoryIcon } from "@/components/icons/category-icon"
 import { ProductCard } from "@/components/products/product-card"
 import { homeSectionSubheadingClass } from "@/components/home/home-section"
-import {
-  DEFAULT_CATEGORY_ICONS,
-} from "@/lib/content/fields/category-icon"
+import type { CatalogValue } from "@/lib/content/fields/catalog"
 import type { ProductCategoryId } from "@/lib/content/fields/home-products"
-import {
-  HOME_PRODUCTS,
-  PRODUCT_CATEGORIES,
-  PRODUCT_CATEGORY_TITLES,
-} from "@/lib/content/fields/home-products"
 import { cn } from "@/lib/utils"
 import { Link } from "@tanstack/react-router"
 
 type ProductsCategorySectionProps = {
   categoryId: ProductCategoryId
+  catalog: CatalogValue
   showViewAll?: boolean
   className?: string
 }
 
 export function ProductsCategorySection({
   categoryId,
+  catalog,
   showViewAll = true,
   className,
 }: ProductsCategorySectionProps) {
-  const products = HOME_PRODUCTS[categoryId] ?? []
-  const title = PRODUCT_CATEGORY_TITLES[categoryId]
-  const icon = DEFAULT_CATEGORY_ICONS[categoryId]
+  const category = catalog.categories.find((item) => item.id === categoryId)
+  if (!category) return null
 
   return (
     <section className={cn("scroll-mt-36", className)}>
       <div className="mb-8 flex flex-wrap items-center justify-between gap-4">
         <div className="flex items-center gap-3">
-          <CategoryIcon icon={icon} className="size-8" />
-          <h2 className={cn(homeSectionSubheadingClass, "font-bold")}>{title}</h2>
+          <CategoryIcon icon={category.icon} className="size-8" />
+          <h2 className={cn(homeSectionSubheadingClass, "font-bold")}>
+            {category.label}
+          </h2>
         </div>
         {showViewAll ? (
           <Link
@@ -47,7 +43,7 @@ export function ProductsCategorySection({
       </div>
 
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {products.map((product) => (
+        {category.products.map((product) => (
           <ProductCard
             key={`${categoryId}-${product.id}`}
             product={product}
@@ -60,22 +56,28 @@ export function ProductsCategorySection({
 }
 
 type ProductsCatalogProps = {
+  catalog: CatalogValue
   categoryIds?: ProductCategoryId[]
   showCategoryLinks?: boolean
   className?: string
 }
 
 export function ProductsCatalog({
-  categoryIds = PRODUCT_CATEGORIES.map((category) => category.id),
+  catalog,
+  categoryIds,
   showCategoryLinks = true,
   className,
 }: ProductsCatalogProps) {
+  const ids =
+    categoryIds ?? catalog.categories.map((category) => category.id)
+
   return (
     <div className={cn("space-y-16", className)}>
-      {categoryIds.map((categoryId) => (
+      {ids.map((categoryId) => (
         <ProductsCategorySection
           key={categoryId}
           categoryId={categoryId}
+          catalog={catalog}
           showViewAll={showCategoryLinks}
         />
       ))}
@@ -83,13 +85,19 @@ export function ProductsCatalog({
   )
 }
 
-export function ProductsCategoryNav({ className }: { className?: string }) {
+export function ProductsCategoryNav({
+  catalog,
+  className,
+}: {
+  catalog: CatalogValue
+  className?: string
+}) {
   return (
     <nav
       aria-label="Categorias de produtos"
       className={cn("flex flex-wrap gap-3", className)}
     >
-      {PRODUCT_CATEGORIES.map((category) => (
+      {catalog.categories.map((category) => (
         <Link
           key={category.id}
           to="/produtos/$categoria"

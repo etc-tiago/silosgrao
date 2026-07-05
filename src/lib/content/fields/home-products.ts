@@ -34,6 +34,8 @@ export const PRODUCT_CATEGORIES = [
 
 export const PRODUCTS_SECTION_TITLE_PATH = "products.sectionTitle" as const
 
+export const PRODUCTS_SECTION_TITLE_DEFAULT = "Nossos Produtos"
+
 export function productCategoryPath(id: ProductCategoryId) {
   return `products.categories.${id}` as const
 }

@@ -1,6 +1,9 @@
-import { H3, P, Span } from "@/components/content"
-import { EditableColumnImage } from "@/components/content/editable-column-image"
-import { useEditorMode } from "@/components/content/editor-mode"
+import { Span } from "@/components/content"
+import {
+  ContentActionButton,
+  ContentLinkWrapper,
+} from "@/components/content/content-link"
+import { useEditNavigation, useEditorMode } from "@/components/content/editor-mode"
 import {
   homeCardClass,
   homeCardImageWrapClass,
@@ -10,20 +13,17 @@ import {
 import { WhatsApp } from "@/components/icons/whatsapp"
 import { parseButtonValue } from "@/lib/content/fields/button"
 import {
-  INTENT_IMAGE_DEFAULTS,
-  INTENT_INDICES,
   INTENTS_CTA_PATH,
   INTENTS_HEADING_LINE1_PATH,
   INTENTS_HEADING_LINE2_PATH,
-  intentItemPath,
-  intentLinkFallbackForPath,
+  INTENTS_ITEMS_PATH,
   intentsCtaDefault,
-  parseIntentLinkValue,
-  type HomeIntentLink,
+  parseItemListValue,
 } from "@/lib/content/fields/home-intents"
 import { cn } from "@/lib/utils"
 import { ArrowUpRight } from "lucide-react"
 import { Link } from "@tanstack/react-router"
+import { pageSlugToPath } from "@/lib/content/fields/link"
 
 type HomeIntentsSectionProps = {
   content: Record<string, string>
@@ -56,15 +56,12 @@ function EditableIntentCta({
   }
 
   if (value.link.kind === "page") {
-    const to =
-      value.link.pageSlug === "home"
-        ? "/"
-        : value.link.pageSlug === "produtos"
-          ? "/produtos"
-          : "/"
-
     return (
-      <Link to={to} hash={value.link.hash} className={className}>
+      <Link
+        to={pageSlugToPath(value.link.pageSlug)}
+        hash={value.link.hash}
+        className={className}
+      >
         <span>{label}</span>
         <WhatsApp className="size-4" />
       </Link>
@@ -85,93 +82,53 @@ function EditableIntentCta({
   )
 }
 
-function IntentCardLink({
-  link,
-  className,
-  children,
-}: {
-  link: HomeIntentLink
-  className: string
-  children: React.ReactNode
-}) {
-  const { isEditor } = useEditorMode()
-
-  if (isEditor) {
-    return <div className={className}>{children}</div>
-  }
-
-  if (link.kind === "external") {
-    return (
-      <a
-        href={link.href}
-        target="_blank"
-        rel="noopener noreferrer"
-        className={className}
-      >
-        {children}
-      </a>
-    )
-  }
-
-  return (
-    <Link to={link.to} hash={link.hash} className={className}>
-      {children}
-    </Link>
-  )
-}
-
 type IntentCardProps = {
-  index: number
-  content: Record<string, string>
+  item: ReturnType<typeof parseItemListValue>["items"][number]
 }
 
-function IntentCard({ index, content }: IntentCardProps) {
-  const titlePath = intentItemPath(index, "title")
-  const descriptionPath = intentItemPath(index, "description")
-  const imagePath = intentItemPath(index, "image")
-  const linkPath = intentItemPath(index, "link")
-  const link = parseIntentLinkValue(
-    content[linkPath],
-    intentLinkFallbackForPath(linkPath)
-  )
-  const imageSrc =
-    content[imagePath] || INTENT_IMAGE_DEFAULTS[index - 1] || ""
+function IntentCard({ item }: IntentCardProps) {
+  const cardLink = item.primaryAction?.link
 
   return (
-    <IntentCardLink
-      link={link}
+    <ContentLinkWrapper
+      link={cardLink}
       className={cn(homeCardClass, "group block p-3 transition-colors")}
     >
       <div className={homeCardImageWrapClass}>
-        <EditableColumnImage
-          path={imagePath}
-          src={imageSrc}
-          alt={content[titlePath]?.trim() || `Intenção ${index}`}
+        <img
+          src={item.image}
+          alt={item.title}
+          className="size-full object-cover"
         />
       </div>
       <div className="flex items-end justify-between gap-4 p-4">
         <div>
-          <H3
-            path={titlePath}
-            editTipo="text"
-            className="font-display text-xl text-ink"
-            value={content[titlePath]}
-          />
-          <P
-            path={descriptionPath}
-            editTipo="text"
-            className="mt-1 text-xs leading-relaxed text-muted-foreground"
-            value={content[descriptionPath]}
-          />
+          <h3 className="font-display text-xl text-ink">{item.title}</h3>
+          <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
+            {item.description}
+          </p>
+          <div className="mt-3 flex flex-wrap gap-2">
+            {item.primaryAction ? (
+              <ContentActionButton
+                label={item.primaryAction.label}
+                link={item.primaryAction.link}
+                className="rounded-full border border-border px-3 py-1.5 text-xs font-medium"
+              />
+            ) : null}
+            {item.secondaryAction ? (
+              <ContentActionButton
+                label={item.secondaryAction.label}
+                link={item.secondaryAction.link}
+                className="rounded-full border border-border px-3 py-1.5 text-xs font-medium"
+              />
+            ) : null}
+          </div>
         </div>
-        <span
-          className="grid size-10 shrink-0 place-items-center rounded-full border border-border transition group-hover:bg-ink group-hover:text-white"
-          data-edit-path={linkPath}
-        >
+        <span className="grid size-10 shrink-0 place-items-center rounded-full border border-border transition group-hover:bg-ink group-hover:text-white">
           <ArrowUpRight className="size-4" />
         </span>
       </div>
-    </IntentCardLink>
+    </ContentLinkWrapper>
   )
 }
 
@@ -180,6 +137,10 @@ export function HomeIntentsSection({
   framed = false,
   className,
 }: HomeIntentsSectionProps) {
+  const { isEditor } = useEditorMode()
+  const { openEdit } = useEditNavigation()
+  const items = parseItemListValue(content[INTENTS_ITEMS_PATH], content).items
+
   return (
     <section className={homeSectionClass({ framed, className })}>
       <div className="flex flex-wrap items-start justify-between gap-6">
@@ -200,9 +161,19 @@ export function HomeIntentsSection({
         <EditableIntentCta content={content} />
       </div>
 
-      <div className="mt-10 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-        {INTENT_INDICES.map((index) => (
-          <IntentCard key={index} index={index} content={content} />
+      <div
+        className="mt-10 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4"
+        {...(isEditor ? { "data-edit-path": INTENTS_ITEMS_PATH } : {})}
+      >
+        {items.map((item) => (
+          <div
+            key={item.id}
+            onClick={() => {
+              if (isEditor) openEdit(INTENTS_ITEMS_PATH, "item-list")
+            }}
+          >
+            <IntentCard item={item} />
+          </div>
         ))}
       </div>
     </section>

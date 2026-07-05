@@ -1,15 +1,19 @@
 import { WhatsApp } from "@/components/icons/whatsapp"
-import { cn } from "@/lib/utils"
 import { WHATSAPP_LINK } from "@/components/site-header/config"
+import { cn } from "@/lib/utils"
 
 type SiteHeaderWhatsappLinkProps = {
   className?: string
+  href?: string
 }
 
-export function SiteHeaderWhatsappLink({ className }: SiteHeaderWhatsappLinkProps) {
+export function SiteHeaderWhatsappLink({
+  className,
+  href = WHATSAPP_LINK.href,
+}: SiteHeaderWhatsappLinkProps) {
   return (
     <a
-      href={WHATSAPP_LINK.href}
+      href={href}
       target="_blank"
       rel="noopener noreferrer"
       className={cn(

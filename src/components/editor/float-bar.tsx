@@ -1,10 +1,11 @@
 import { ConfirmDialog } from "@/components/editor/confirm-dialog"
+import { FloatBarContentMenu } from "@/components/editor/float-bar-content-menu"
 import { useEditorPageChrome } from "@/components/editor/editor-page-chrome"
 import { Button } from "@/components/ui/button"
 import { refreshEditorData } from "@/lib/content/refresh-editor-data"
 import { orpc } from "@/orpc/browser-client"
 import { useRouter } from "@tanstack/react-router"
-import { LogOut, PanelRight, RotateCcw, RotateCw, Trash2, Upload } from "lucide-react"
+import { LogOut, RotateCcw, RotateCw, Trash2, Upload } from "lucide-react"
 import { useState } from "react"
 
 interface FloatBarProps {
@@ -103,17 +104,7 @@ export function FloatBar({ canUndo, canRedo, hasDevChanges }: FloatBarProps) {
 
         {editorPage ? (
           <>
-            <Button
-              size="sm"
-              variant={editorPage.isContentBrowserOpen ? "secondary" : "ghost"}
-              className="rounded-full"
-              disabled={loading}
-              onClick={editorPage.openContentBrowser}
-              title="Conteúdo da página"
-            >
-              <PanelRight className="size-4" />
-              <span className="hidden sm:inline">Conteúdo</span>
-            </Button>
+            <FloatBarContentMenu disabled={loading} />
 
             <div className="mx-1 h-6 w-px bg-border" />
           </>

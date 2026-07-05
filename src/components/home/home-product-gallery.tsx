@@ -10,18 +10,14 @@ import {
 import {
   GALLERY_HEADING_LINE1_PATH,
   GALLERY_HEADING_LINE2_PATH,
-  GALLERY_ITEMS_PATH,
   GALLERY_LEAD_PATH,
+  GALLERY_SLIDES_PATH,
   galleryHeadingLine1,
   galleryHeadingLine2,
   galleryLead,
-  galleryItemCover,
-  galleryPhotoAlt,
   parseGalleryValue,
-  type GalleryItem,
-} from "@/lib/content/fields/home-gallery"
+} from "@/lib/content/fields/gallery"
 import { cn } from "@/lib/utils"
-import { Images } from "lucide-react"
 import { useState } from "react"
 
 type HomeProductGalleryProps = {
@@ -37,16 +33,16 @@ export function HomeProductGallery({
 }: HomeProductGalleryProps) {
   const { isEditor } = useEditorMode()
   const { openEdit } = useEditNavigation()
-  const [viewerItem, setViewerItem] = useState<GalleryItem | null>(null)
-  const gallery = parseGalleryValue(content[GALLERY_ITEMS_PATH])
-  const items = gallery.items.filter((item) => item.photos.length > 0)
+  const [viewerIndex, setViewerIndex] = useState<number | null>(null)
+  const gallery = parseGalleryValue(content[GALLERY_SLIDES_PATH], content)
+  const slides = gallery.slides.filter((slide) => slide.url.trim())
 
-  function handleItemClick(item: GalleryItem) {
+  function handleSlideClick(index: number) {
     if (isEditor) {
-      openEdit(GALLERY_ITEMS_PATH, "gallery")
+      openEdit(GALLERY_SLIDES_PATH, "gallery")
       return
     }
-    setViewerItem(item)
+    setViewerIndex(index)
   }
 
   return (
@@ -79,65 +75,47 @@ export function HomeProductGallery({
 
         <div
           className="mt-10 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3"
-          {...(isEditor ? { "data-edit-path": GALLERY_ITEMS_PATH } : {})}
+          {...(isEditor ? { "data-edit-path": GALLERY_SLIDES_PATH } : {})}
         >
-          {items.map((item) => {
-            const cover = item.photos[0]
-            if (!cover) return null
-
-            return (
-              <button
-                key={item.id}
-                type="button"
-                className="group cursor-pointer overflow-hidden rounded-3xl bg-card p-3 text-left transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
-                onClick={() => handleItemClick(item)}
-              >
-                <div className={cn(homeCardImageWrapClass, "relative h-64")}>
-                  <img
-                    src={galleryItemCover(item)}
-                    alt={galleryPhotoAlt(cover, item)}
-                    loading="lazy"
-                    width={1200}
-                    height={800}
-                    className="size-full object-cover transition-transform duration-700 group-hover:scale-105"
-                  />
-                  {item.photos.length > 1 ? (
-                    <span className="absolute right-3 bottom-3 flex items-center gap-1 rounded-full bg-black/65 px-2.5 py-1 text-xs font-medium text-white">
-                      <Images className="size-3.5" />
-                      {item.photos.length}
-                    </span>
-                  ) : null}
-                </div>
-                <div className="px-2 py-3">
-                  <p
-                    className={cn(
-                      "font-display text-sm text-ink",
-                      isEditor && !item.title.trim() && "italic opacity-60"
-                    )}
-                  >
-                    {isEditor && !item.title.trim() ? "Sem texto" : item.title}
-                  </p>
-                  <p
-                    className={cn(
-                      "mt-1 text-xs text-muted-foreground",
-                      isEditor && !item.category.trim() && "italic opacity-60"
-                    )}
-                  >
-                    {isEditor && !item.category.trim()
-                      ? "Sem texto"
-                      : item.category}
-                  </p>
-                </div>
-              </button>
-            )
-          })}
+          {slides.map((slide, index) => (
+            <button
+              key={slide.id}
+              type="button"
+              className="group cursor-pointer overflow-hidden rounded-3xl bg-card p-3 text-left transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
+              onClick={() => handleSlideClick(index)}
+            >
+              <div className={cn(homeCardImageWrapClass, "relative h-64")}>
+                <img
+                  src={slide.url}
+                  alt={slide.caption}
+                  loading="lazy"
+                  width={1200}
+                  height={800}
+                  className="size-full object-cover transition-transform duration-700 group-hover:scale-105"
+                />
+              </div>
+              <div className="px-2 py-3">
+                <p
+                  className={cn(
+                    "font-display text-sm text-ink",
+                    isEditor && !slide.caption.trim() && "italic opacity-60"
+                  )}
+                >
+                  {isEditor && !slide.caption.trim()
+                    ? "Sem texto"
+                    : slide.caption}
+                </p>
+              </div>
+            </button>
+          ))}
         </div>
       </section>
 
-      {viewerItem ? (
+      {viewerIndex !== null ? (
         <GalleryLightbox
-          item={viewerItem}
-          onClose={() => setViewerItem(null)}
+          slides={slides}
+          initialIndex={viewerIndex}
+          onClose={() => setViewerIndex(null)}
         />
       ) : null}
     </>

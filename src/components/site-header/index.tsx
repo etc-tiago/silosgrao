@@ -9,11 +9,13 @@ import { SiteHeaderWrapper } from "@/components/site-header/wrapper"
 type SiteHeaderProps = {
   className?: string
   logoPreset?: LogoColorPreset
+  whatsappUrl?: string
 }
 
 export function SiteHeader({
   className,
   logoPreset,
+  whatsappUrl,
 }: SiteHeaderProps) {
   return (
     <SiteHeaderWrapper className={className}>
@@ -25,7 +27,7 @@ export function SiteHeader({
         <SiteHeaderNavMobile className="order-3 shrink-0 md:hidden" />
         <SiteHeaderCenterGroup logoPreset={logoPreset} className="md:order-2" />
         <SiteHeaderProdutosLink className="order-4 md:order-1" />
-        <SiteHeaderWhatsappLink className="order-2 md:order-3" />
+        <SiteHeaderWhatsappLink className="order-2 md:order-3" href={whatsappUrl} />
       </div>
     </SiteHeaderWrapper>
   )

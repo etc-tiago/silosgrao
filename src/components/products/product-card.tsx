@@ -2,13 +2,15 @@ import {
   homeCardClass,
   homeCardImageWrapClass,
 } from "@/components/home/home-section"
-import type { Product, ProductCategoryId } from "@/lib/content/fields/home-products"
+import { ContentActionButton } from "@/components/content/content-link"
+import type { CatalogProduct } from "@/lib/content/fields/catalog"
+import type { ProductCategoryId } from "@/lib/content/fields/home-products"
 import { whatsappProductUrl } from "@/lib/content/fields/home-products"
 import { cn } from "@/lib/utils"
 import { Link } from "@tanstack/react-router"
 
 type ProductCardProps = {
-  product: Product
+  product: CatalogProduct
   categoryId: ProductCategoryId
   className?: string
 }
@@ -18,6 +20,15 @@ export function ProductCard({
   categoryId,
   className,
 }: ProductCardProps) {
+  const quoteAction = product.primaryAction ?? {
+    label: "Solicitar Orçamento",
+    link: {
+      kind: "external" as const,
+      url: whatsappProductUrl(product.name),
+      openInNewTab: true,
+    },
+  }
+
   return (
     <article className={cn(homeCardClass, "p-3", className)}>
       <Link
@@ -85,14 +96,11 @@ export function ProductCard({
           >
             Ver mais
           </Link>
-          <a
-            href={whatsappProductUrl(product.name)}
-            target="_blank"
-            rel="noopener noreferrer"
+          <ContentActionButton
+            label={quoteAction.label}
+            link={quoteAction.link}
             className="flex flex-1 items-center justify-center rounded-full border border-border bg-card px-5 py-3 text-sm font-medium transition-colors hover:bg-muted"
-          >
-            Solicitar Orçamento
-          </a>
+          />
         </div>
       </div>
     </article>

@@ -1,19 +1,12 @@
 import { fileToBase64 } from "@/components/editor/edit-field-editors"
 import {
-  createGalleryItem,
+  createGallerySlide,
   moveArrayItem,
-  type GalleryItem,
   type GalleryValue,
-} from "@/lib/content/fields/home-gallery"
+} from "@/lib/content/fields/gallery"
 import { cn } from "@/lib/utils"
 import { orpc } from "@/orpc/browser-client"
-import {
-  ChevronDown,
-  ChevronUp,
-  ImagePlus,
-  Plus,
-  Trash2,
-} from "lucide-react"
+import { ChevronDown, ChevronUp, ImagePlus, Plus, Trash2 } from "lucide-react"
 import { useRef, useState } from "react"
 
 type GalleryFieldEditorProps = {
@@ -33,40 +26,26 @@ export function GalleryFieldEditor({
 }: GalleryFieldEditorProps) {
   const [uploading, setUploading] = useState(false)
   const [uploadError, setUploadError] = useState<string | null>(null)
-  const fileInputRefs = useRef<Record<string, HTMLInputElement | null>>({})
+  const fileInputRef = useRef<HTMLInputElement>(null)
 
-  function updateItems(items: GalleryItem[]) {
-    onChange({ items })
+  function updateSlides(slides: GalleryValue["slides"]) {
+    onChange({ slides })
   }
 
-  function updateItem(index: number, patch: Partial<GalleryItem>) {
-    updateItems(
-      draft.items.map((item, itemIndex) =>
-        itemIndex === index ? { ...item, ...patch } : item
-      )
-    )
-  }
-
-  async function uploadPhoto(file: File) {
-    const upload = await orpc.content.uploadImage({
-      pageSlug,
-      path: fieldPath,
-      mimeType: file.type,
-      dataBase64: await fileToBase64(file),
-    })
-    return upload.url
-  }
-
-  async function handleAddPhoto(itemIndex: number, file: File) {
+  async function handleAddPhoto(file: File) {
     setUploading(true)
     setUploadError(null)
     try {
-      const url = await uploadPhoto(file)
-      const item = draft.items[itemIndex]
-      if (!item) return
-      updateItem(itemIndex, {
-        photos: [...item.photos, { url, alt: item.title }],
+      const upload = await orpc.content.uploadImage({
+        pageSlug,
+        path: fieldPath,
+        mimeType: file.type,
+        dataBase64: await fileToBase64(file),
       })
+      updateSlides([
+        ...draft.slides,
+        { ...createGallerySlide(), url: upload.url },
+      ])
     } catch (err) {
       setUploadError(
         err instanceof Error ? err.message : "Falha ao enviar imagem."
@@ -76,204 +55,127 @@ export function GalleryFieldEditor({
     }
   }
 
-  function moveItem(index: number, direction: -1 | 1) {
-    updateItems(moveArrayItem(draft.items, index, index + direction))
-  }
-
-  function movePhoto(itemIndex: number, photoIndex: number, direction: -1 | 1) {
-    const item = draft.items[itemIndex]
-    if (!item) return
-    updateItem(itemIndex, {
-      photos: moveArrayItem(item.photos, photoIndex, photoIndex + direction),
-    })
-  }
-
-  function removeItem(index: number) {
-    updateItems(draft.items.filter((_, itemIndex) => itemIndex !== index))
-  }
-
-  function removePhoto(itemIndex: number, photoIndex: number) {
-    const item = draft.items[itemIndex]
-    if (!item) return
-    updateItem(itemIndex, {
-      photos: item.photos.filter((_, index) => index !== photoIndex),
-    })
-  }
-
   const busy = loading || uploading
 
   return (
     <div className="space-y-4">
       <p className="text-sm text-muted-foreground">
-        Cada item pode ter várias fotos. A primeira é a capa exibida na grade.
+        Cada slide tem uma foto e uma legenda. A ordem define a exibição na
+        grade.
       </p>
 
-      {draft.items.map((item, itemIndex) => (
+      {draft.slides.map((slide, index) => (
         <div
-          key={item.id}
-          className="space-y-4 rounded-2xl border bg-muted/20 p-4"
+          key={slide.id}
+          className="space-y-3 rounded-2xl border bg-muted/20 p-4"
         >
           <div className="flex items-start justify-between gap-3">
-            <p className="text-sm font-medium">Item {itemIndex + 1}</p>
+            <p className="text-sm font-medium">Slide {index + 1}</p>
             <div className="flex shrink-0 gap-1">
               <button
                 type="button"
                 className="grid size-8 place-items-center rounded-lg border bg-background disabled:opacity-40"
-                onClick={() => moveItem(itemIndex, -1)}
-                disabled={busy || itemIndex === 0}
-                aria-label="Mover item para cima"
+                onClick={() =>
+                  updateSlides(moveArrayItem(draft.slides, index, index - 1))
+                }
+                disabled={busy || index === 0}
+                aria-label="Mover para cima"
               >
                 <ChevronUp className="size-4" />
               </button>
               <button
                 type="button"
                 className="grid size-8 place-items-center rounded-lg border bg-background disabled:opacity-40"
-                onClick={() => moveItem(itemIndex, 1)}
-                disabled={busy || itemIndex === draft.items.length - 1}
-                aria-label="Mover item para baixo"
+                onClick={() =>
+                  updateSlides(moveArrayItem(draft.slides, index, index + 1))
+                }
+                disabled={busy || index === draft.slides.length - 1}
+                aria-label="Mover para baixo"
               >
                 <ChevronDown className="size-4" />
               </button>
               <button
                 type="button"
                 className="grid size-8 place-items-center rounded-lg border border-destructive/30 bg-background text-destructive disabled:opacity-40"
-                onClick={() => removeItem(itemIndex)}
-                disabled={busy || draft.items.length <= 1}
-                aria-label="Remover item"
+                onClick={() =>
+                  updateSlides(
+                    draft.slides.filter((_, slideIndex) => slideIndex !== index)
+                  )
+                }
+                disabled={busy}
+                aria-label="Remover slide"
               >
                 <Trash2 className="size-4" />
               </button>
             </div>
           </div>
 
+          {slide.url ? (
+            <img
+              src={slide.url}
+              alt=""
+              className="h-32 w-full rounded-xl border object-cover"
+            />
+          ) : null}
+
           <label className="block space-y-1.5">
             <span className="text-xs font-medium text-muted-foreground">
-              Título
+              Legenda
             </span>
             <input
               type="text"
-              className="w-full rounded-xl border bg-input/30 px-3 py-2 text-sm outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50"
-              value={item.title}
+              className="w-full rounded-xl border bg-input/30 px-3 py-2 text-sm"
+              value={slide.caption}
               onChange={(event) =>
-                updateItem(itemIndex, { title: event.target.value })
+                updateSlides(
+                  draft.slides.map((item, slideIndex) =>
+                    slideIndex === index
+                      ? { ...item, caption: event.target.value }
+                      : item
+                  )
+                )
               }
               disabled={busy}
             />
           </label>
-
-          <label className="block space-y-1.5">
-            <span className="text-xs font-medium text-muted-foreground">
-              Categoria
-            </span>
-            <input
-              type="text"
-              className="w-full rounded-xl border bg-input/30 px-3 py-2 text-sm outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50"
-              value={item.category}
-              onChange={(event) =>
-                updateItem(itemIndex, { category: event.target.value })
-              }
-              disabled={busy}
-            />
-          </label>
-
-          <div className="space-y-2">
-            <p className="text-xs font-medium text-muted-foreground">Fotos</p>
-            {item.photos.length === 0 ? (
-              <p className="text-xs italic text-muted-foreground">
-                Adicione ao menos uma foto para este item.
-              </p>
-            ) : (
-              <div className="space-y-2">
-                {item.photos.map((photo, photoIndex) => (
-                  <div
-                    key={`${photo.url}-${photoIndex}`}
-                    className="flex items-center gap-3 rounded-xl border bg-background p-2"
-                  >
-                    <img
-                      src={photo.url}
-                      alt=""
-                      className="size-16 shrink-0 rounded-lg object-cover"
-                    />
-                    <div className="min-w-0 flex-1">
-                      <p className="text-xs font-medium">
-                        {photoIndex === 0 ? "Capa" : `Foto ${photoIndex + 1}`}
-                      </p>
-                      <p className="truncate text-xs text-muted-foreground">
-                        {photo.alt || item.title || "Sem legenda"}
-                      </p>
-                    </div>
-                    <div className="flex shrink-0 gap-1">
-                      <button
-                        type="button"
-                        className="grid size-8 place-items-center rounded-lg border disabled:opacity-40"
-                        onClick={() => movePhoto(itemIndex, photoIndex, -1)}
-                        disabled={busy || photoIndex === 0}
-                        aria-label="Mover foto para cima"
-                      >
-                        <ChevronUp className="size-4" />
-                      </button>
-                      <button
-                        type="button"
-                        className="grid size-8 place-items-center rounded-lg border disabled:opacity-40"
-                        onClick={() => movePhoto(itemIndex, photoIndex, 1)}
-                        disabled={busy || photoIndex === item.photos.length - 1}
-                        aria-label="Mover foto para baixo"
-                      >
-                        <ChevronDown className="size-4" />
-                      </button>
-                      <button
-                        type="button"
-                        className="grid size-8 place-items-center rounded-lg border border-destructive/30 text-destructive disabled:opacity-40"
-                        onClick={() => removePhoto(itemIndex, photoIndex)}
-                        disabled={busy}
-                        aria-label="Remover foto"
-                      >
-                        <Trash2 className="size-4" />
-                      </button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-
-            <input
-              ref={(node) => {
-                fileInputRefs.current[item.id] = node
-              }}
-              type="file"
-              accept="image/jpeg,image/png,image/webp"
-              className="hidden"
-              onChange={(event) => {
-                const file = event.target.files?.[0]
-                event.target.value = ""
-                if (file) void handleAddPhoto(itemIndex, file)
-              }}
-            />
-            <button
-              type="button"
-              className={cn(
-                "flex w-full items-center justify-center gap-2 rounded-xl border border-dashed px-3 py-3 text-sm text-muted-foreground transition-colors hover:bg-muted/40",
-                busy && "pointer-events-none opacity-60"
-              )}
-              onClick={() => fileInputRefs.current[item.id]?.click()}
-              disabled={busy}
-            >
-              <ImagePlus className="size-4" />
-              {uploading ? "Enviando..." : "Adicionar foto"}
-            </button>
-          </div>
         </div>
       ))}
 
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/jpeg,image/png,image/webp"
+        className="hidden"
+        onChange={(event) => {
+          const file = event.target.files?.[0]
+          event.target.value = ""
+          if (file) void handleAddPhoto(file)
+        }}
+      />
       <button
         type="button"
-        className="flex w-full items-center justify-center gap-2 rounded-xl border bg-background px-3 py-3 text-sm font-medium transition-colors hover:bg-muted/40 disabled:opacity-60"
-        onClick={() => updateItems([...draft.items, createGalleryItem()])}
+        className={cn(
+          "flex w-full items-center justify-center gap-2 rounded-xl border border-dashed px-3 py-3 text-sm text-muted-foreground transition-colors hover:bg-muted/40",
+          busy && "pointer-events-none opacity-60"
+        )}
+        onClick={() => fileInputRef.current?.click()}
         disabled={busy}
       >
-        <Plus className="size-4" />
-        Adicionar item
+        <ImagePlus className="size-4" />
+        {uploading ? "Enviando..." : "Adicionar foto"}
       </button>
+
+      {draft.slides.length === 0 ? (
+        <button
+          type="button"
+          className="flex w-full items-center justify-center gap-2 rounded-xl border bg-background px-3 py-3 text-sm"
+          onClick={() => updateSlides([createGallerySlide()])}
+          disabled={busy}
+        >
+          <Plus className="size-4" />
+          Criar slide vazio
+        </button>
+      ) : null}
 
       {uploadError ? (
         <p className="text-sm text-destructive">{uploadError}</p>

@@ -1,20 +1,11 @@
 import { z } from "zod"
+import { contentLinkSchema } from "@/lib/content/fields/link"
 
 export const buttonVariantEnum = ["primary", "secondary", "link"] as const
 export type ButtonVariant = (typeof buttonVariantEnum)[number]
 
-export const buttonLinkSchema = z.discriminatedUnion("kind", [
-  z.object({
-    kind: z.literal("page"),
-    pageSlug: z.string().min(1),
-    hash: z.string().optional(),
-  }),
-  z.object({
-    kind: z.literal("external"),
-    url: z.string().min(1),
-    openInNewTab: z.boolean(),
-  }),
-])
+export const buttonLinkSchema = contentLinkSchema
+export type ButtonLink = z.infer<typeof buttonLinkSchema>
 
 export const buttonValueSchema = z.object({
   label: z.string().min(1),
@@ -24,9 +15,7 @@ export const buttonValueSchema = z.object({
 
 export type ButtonValue = z.infer<typeof buttonValueSchema>
 
-export function pageSlugToPath(slug: string) {
-  return slug === "home" ? "/" : `/${slug}`
-}
+export { pageSlugToPath } from "@/lib/content/fields/link"
 
 export function serializeButtonValue(value: ButtonValue) {
   return JSON.stringify(value)

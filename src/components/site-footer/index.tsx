@@ -1,10 +1,15 @@
 import { SilosGraosLogomarca } from "@/components/icons/silos-graos-logomarca"
 import { WhatsApp } from "@/components/icons/whatsapp"
 import {
-  PRODUCT_CATEGORIES,
-} from "@/lib/content/fields/home-products"
+  PRODUTOS_CATALOG_PATH,
+  parseCatalogValue,
+} from "@/lib/content/fields/catalog"
 import {
-  SITE_FOOTER_ABOUT,
+  SITE_FOOTER_ABOUT_DEFAULT,
+  SITE_FOOTER_CATEGORIES_TITLE_DEFAULT,
+  SITE_FOOTER_CONTACT_TITLE_DEFAULT,
+} from "@/lib/content/fields/pages/site"
+import {
   SITE_LOCATION,
   SITE_PHONE_DISPLAY,
   SITE_WHATSAPP_DISPLAY,
@@ -13,10 +18,20 @@ import {
 import { Link } from "@tanstack/react-router"
 import { MapPin, Phone } from "lucide-react"
 
-const footerCategories = PRODUCT_CATEGORIES
+type SiteFooterProps = {
+  content?: Record<string, string>
+}
 
-export function SiteFooter() {
+export function SiteFooter({ content = {} }: SiteFooterProps) {
   const year = new Date().getFullYear()
+  const catalog = parseCatalogValue(content[PRODUTOS_CATALOG_PATH], content)
+  const whatsappUrl = content["header.whatsappUrl"]?.trim() || SITE_WHATSAPP_URL
+  const about = content["footer.about"]?.trim() || SITE_FOOTER_ABOUT_DEFAULT
+  const contactTitle =
+    content["footer.contactTitle"]?.trim() || SITE_FOOTER_CONTACT_TITLE_DEFAULT
+  const categoriesTitle =
+    content["footer.categoriesTitle"]?.trim() ||
+    SITE_FOOTER_CATEGORIES_TITLE_DEFAULT
 
   return (
     <footer className="bg-primary px-6 py-12 text-primary-foreground md:px-14">
@@ -27,24 +42,21 @@ export function SiteFooter() {
               to="/"
               className="inline-block transition-opacity hover:opacity-85"
             >
-              <SilosGraosLogomarca
-                preset="white"
-                className="h-20 w-auto"
-              />
+              <SilosGraosLogomarca preset="white" className="h-20 w-auto" />
               <span className="sr-only">Silos Grãos</span>
             </Link>
             <p className="mt-4 text-sm leading-relaxed text-primary-foreground/80">
-              {SITE_FOOTER_ABOUT}
+              {about}
             </p>
           </div>
 
           <div>
             <h3 className="font-display text-xl text-primary-foreground">
-              Entre em Contato
+              {contactTitle}
             </h3>
             <div className="mt-4 space-y-3 text-sm">
               <a
-                href={SITE_WHATSAPP_URL}
+                href={whatsappUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-2 text-primary-foreground/80 transition-colors hover:text-primary-foreground"
@@ -65,7 +77,7 @@ export function SiteFooter() {
 
           <div>
             <h3 className="font-display text-xl text-primary-foreground">
-              Categorias
+              {categoriesTitle}
             </h3>
             <ul className="mt-4 space-y-2 text-sm text-primary-foreground/80">
               <li>
@@ -76,7 +88,7 @@ export function SiteFooter() {
                   Catálogo completo
                 </Link>
               </li>
-              {footerCategories.map((category) => (
+              {catalog.categories.map((category) => (
                 <li key={category.id}>
                   <Link
                     to="/produtos/$categoria"

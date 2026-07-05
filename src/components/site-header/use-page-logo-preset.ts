@@ -6,23 +6,15 @@ import {
   DEFAULT_LOGO_PRESET,
   parseLogoPresetValue,
 } from "@/lib/content/fields/logo-preset"
-import { useMatches } from "@tanstack/react-router"
 
-type PageLoaderData = {
+export function usePageLogoPreset(
   content?: Record<string, string>
-}
+): LogoColorPreset {
+  const raw =
+    content?.["header.logoPreset"] ?? content?.["site.header.logoPreset"]
 
-export function usePageLogoPreset(): LogoColorPreset {
-  const matches = useMatches()
-
-  for (let i = matches.length - 1; i >= 0; i--) {
-    const data = matches[i]?.loaderData as PageLoaderData | undefined
-    if (!data?.content) continue
-
-    return parseLogoPresetValue(
-      data.content["header.logoPreset"],
-      DEFAULT_LOGO_PRESET
-    )
+  if (raw) {
+    return parseLogoPresetValue(raw, DEFAULT_LOGO_PRESET)
   }
 
   return DEFAULT_LOGO_COLOR_PRESET

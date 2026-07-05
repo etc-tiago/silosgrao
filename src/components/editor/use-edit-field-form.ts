@@ -6,18 +6,13 @@ import {
   serializeButtonValue,
   type ButtonValue,
 } from "@/lib/content/fields/button"
-import { HERO_COLUMN_DEFAULTS } from "@/lib/content/fields/home-hero"
 import {
-  heroImageValueSchema,
-  parseHeroImageValue,
-  serializeHeroImageValue,
-  type HeroImageValue,
-} from "@/lib/content/fields/hero-image"
-import {
-  DEFAULT_LOGO_PRESET,
-  logoPresetSchema,
-  parseLogoPresetValue,
-} from "@/lib/content/fields/logo-preset"
+  catalogValueSchema,
+  DEFAULT_CATALOG_VALUE,
+  parseCatalogValue,
+  serializeCatalogValue,
+  type CatalogValue,
+} from "@/lib/content/fields/catalog"
 import {
   categoryIconFallbackForPath,
   categoryIconSchema,
@@ -30,15 +25,34 @@ import {
   parseGalleryValue,
   serializeGalleryValue,
   type GalleryValue,
-} from "@/lib/content/fields/home-gallery"
+} from "@/lib/content/fields/gallery"
 import {
-  intentLinkFallbackForPath,
-  intentLinkSchema,
-  intentsCtaDefault,
-  parseIntentLinkValue,
-  serializeIntentLinkValue,
-  type HomeIntentLink,
-} from "@/lib/content/fields/home-intents"
+  heroImageValueSchema,
+  parseHeroImageValue,
+  serializeHeroImageValue,
+  type HeroImageValue,
+} from "@/lib/content/fields/hero-image"
+import {
+  DEFAULT_HERO_STRIP_VALUE,
+  heroStripValueSchema,
+  parseHeroStripValue,
+  serializeHeroStripValue,
+  type HeroStripValue,
+} from "@/lib/content/fields/hero-strip"
+import { HERO_COLUMN_DEFAULTS } from "@/lib/content/fields/home-hero"
+import { intentsCtaDefault } from "@/lib/content/fields/home-intents"
+import {
+  DEFAULT_ITEM_LIST_VALUE,
+  itemListValueSchema,
+  parseItemListValue,
+  serializeItemListValue,
+  type ItemListValue,
+} from "@/lib/content/fields/item-list"
+import {
+  DEFAULT_LOGO_PRESET,
+  logoPresetSchema,
+  parseLogoPresetValue,
+} from "@/lib/content/fields/logo-preset"
 import type { LogoColorPreset } from "@/components/icons/logo-presets"
 import type { EditSearch } from "@/lib/content/fields/search"
 import type { EditableFields, FieldDef } from "@/lib/content/fields/types"
@@ -60,6 +74,18 @@ type UseEditFieldFormOptions = {
   fields: EditableFields
   search: EditSearch
   onSaved: () => void
+}
+
+function validGalleryDraft(draft: GalleryValue) {
+  return draft.slides.filter((slide) => slide.url.trim())
+}
+
+function validItemListDraft(draft: ItemListValue) {
+  return draft.items.filter((item) => item.image.trim())
+}
+
+function validHeroStripDraft(draft: HeroStripValue) {
+  return draft.tiles.filter((tile) => tile.image.trim())
 }
 
 export function useEditFieldForm({
@@ -89,11 +115,14 @@ export function useEditFieldForm({
     useState<LogoColorPreset>(DEFAULT_LOGO_PRESET)
   const [categoryIconDraft, setCategoryIconDraft] =
     useState<CategoryIconId>("building-2")
-  const [intentLinkDraft, setIntentLinkDraft] = useState<HomeIntentLink>({
-    kind: "route",
-    to: "/",
-  })
-  const [galleryDraft, setGalleryDraft] = useState<GalleryValue>(DEFAULT_GALLERY_VALUE)
+  const [galleryDraft, setGalleryDraft] =
+    useState<GalleryValue>(DEFAULT_GALLERY_VALUE)
+  const [itemListDraft, setItemListDraft] =
+    useState<ItemListValue>(DEFAULT_ITEM_LIST_VALUE)
+  const [heroStripDraft, setHeroStripDraft] =
+    useState<HeroStripValue>(DEFAULT_HERO_STRIP_VALUE)
+  const [catalogDraft, setCatalogDraft] =
+    useState<CatalogValue>(DEFAULT_CATALOG_VALUE)
   const [pages, setPages] = useState<PageOption[]>([])
   const [imageFile, setImageFile] = useState<File | null>(null)
   const [imagePreview, setImagePreview] = useState<string | null>(null)
@@ -115,22 +144,17 @@ export function useEditFieldForm({
           : "building-2"
       )
     )
-    setIntentLinkDraft(
-      parseIntentLinkValue(
-        currentValue,
-        search.editar
-          ? intentLinkFallbackForPath(search.editar)
-          : { kind: "route", to: "/" }
-      )
-    )
-    setGalleryDraft(parseGalleryValue(currentValue))
+    setGalleryDraft(parseGalleryValue(currentValue, content))
+    setItemListDraft(parseItemListValue(currentValue, content))
+    setHeroStripDraft(parseHeroStripValue(currentValue, content))
+    setCatalogDraft(parseCatalogValue(currentValue, content))
     setImageFile(null)
     setImagePreview(null)
     setError(null)
-  }, [open, currentValue, search.editar, buttonFallback])
+  }, [open, currentValue, search.editar, buttonFallback, content])
 
   useEffect(() => {
-    if (!open || tipo !== "button") return
+    if (!open) return
 
     let cancelled = false
 
@@ -140,13 +164,19 @@ export function useEditFieldForm({
         if (!cancelled) setPages(result)
       })
       .catch(() => {
-        if (!cancelled) setPages([{ slug: "home", title: "Início" }])
+        if (!cancelled) {
+          setPages([
+            { slug: "home", title: "Início" },
+            { slug: "produtos", title: "Produtos" },
+            { slug: "site", title: "Site global" },
+          ])
+        }
       })
 
     return () => {
       cancelled = true
     }
-  }, [open, tipo])
+  }, [open])
 
   useEffect(() => {
     if (!imageFile) {
@@ -234,27 +264,49 @@ export function useEditFieldForm({
           return
         }
         value = parsed.data
-      } else if (tipo === "intent-link") {
-        const parsed = intentLinkSchema.safeParse(intentLinkDraft)
-        if (!parsed.success) {
-          setError("Destino do card inválido.")
-          return
-        }
-        value = serializeIntentLinkValue(parsed.data)
       } else if (tipo === "gallery") {
-        const itemsWithPhotos = galleryDraft.items.filter(
-          (item) => item.photos.length > 0
-        )
-        if (itemsWithPhotos.length === 0) {
-          setError("Adicione ao menos um item com foto.")
+        const slides = validGalleryDraft(galleryDraft)
+        if (slides.length === 0) {
+          setError("Adicione ao menos um slide com foto.")
           return
         }
-        const parsed = galleryValueSchema.safeParse({ items: itemsWithPhotos })
+        const parsed = galleryValueSchema.safeParse({ slides })
         if (!parsed.success) {
           setError("Dados da galeria inválidos.")
           return
         }
         value = serializeGalleryValue(parsed.data)
+      } else if (tipo === "item-list") {
+        const items = validItemListDraft(itemListDraft)
+        if (items.length === 0) {
+          setError("Adicione ao menos um item com imagem.")
+          return
+        }
+        const parsed = itemListValueSchema.safeParse({ items })
+        if (!parsed.success) {
+          setError("Dados da lista inválidos.")
+          return
+        }
+        value = serializeItemListValue(parsed.data)
+      } else if (tipo === "hero-strip") {
+        const tiles = validHeroStripDraft(heroStripDraft)
+        if (tiles.length === 0) {
+          setError("Adicione ao menos uma coluna com imagem.")
+          return
+        }
+        const parsed = heroStripValueSchema.safeParse({ tiles })
+        if (!parsed.success) {
+          setError("Dados do hero inválidos.")
+          return
+        }
+        value = serializeHeroStripValue(parsed.data)
+      } else if (tipo === "catalog") {
+        const parsed = catalogValueSchema.safeParse(catalogDraft)
+        if (!parsed.success) {
+          setError("Dados do catálogo inválidos.")
+          return
+        }
+        value = serializeCatalogValue(parsed.data)
       } else if (tipo === "video") {
         setError("Editor de vídeo em breve.")
         return
@@ -291,28 +343,32 @@ export function useEditFieldForm({
     ? categoryIconFallbackForPath(search.editar)
     : "building-2"
   const currentCategoryIcon = parseCategoryIconValue(currentValue, iconFallback)
-  const intentLinkFallback = search.editar
-    ? intentLinkFallbackForPath(search.editar)
-    : { kind: "route" as const, to: "/" as const }
-  const currentIntentLink = parseIntentLinkValue(
-    currentValue,
-    intentLinkFallback
-  )
-  const draftIntentLinkSerialized = serializeIntentLinkValue(intentLinkDraft)
-  const currentIntentLinkSerialized = serializeIntentLinkValue(currentIntentLink)
 
   const currentGallerySerialized = serializeGalleryValue(
-    parseGalleryValue(currentValue)
+    parseGalleryValue(currentValue, content)
   )
-  const draftGallerySerialized = serializeGalleryValue(
-    galleryValueSchema.safeParse({
-      items: galleryDraft.items.filter((item) => item.photos.length > 0),
-    }).success
-      ? {
-          items: galleryDraft.items.filter((item) => item.photos.length > 0),
-        }
-      : DEFAULT_GALLERY_VALUE
+  const draftGallerySerialized = serializeGalleryValue({
+    slides: validGalleryDraft(galleryDraft),
+  })
+
+  const currentItemListSerialized = serializeItemListValue(
+    parseItemListValue(currentValue, content)
   )
+  const draftItemListSerialized = serializeItemListValue({
+    items: validItemListDraft(itemListDraft),
+  })
+
+  const currentHeroStripSerialized = serializeHeroStripValue(
+    parseHeroStripValue(currentValue, content)
+  )
+  const draftHeroStripSerialized = serializeHeroStripValue({
+    tiles: validHeroStripDraft(heroStripDraft),
+  })
+
+  const currentCatalogSerialized = serializeCatalogValue(
+    parseCatalogValue(currentValue, content)
+  )
+  const draftCatalogSerialized = serializeCatalogValue(catalogDraft)
 
   const canSave =
     tipo === "text"
@@ -332,13 +388,19 @@ export function useEditFieldForm({
               : tipo === "category-icon"
                 ? categoryIconDraft !== currentCategoryIcon &&
                   categoryIconSchema.safeParse(categoryIconDraft).success
-                : tipo === "intent-link"
-                  ? draftIntentLinkSerialized !== currentIntentLinkSerialized &&
-                    intentLinkSchema.safeParse(intentLinkDraft).success
-                  : tipo === "gallery"
-                    ? draftGallerySerialized !== currentGallerySerialized &&
-                      galleryDraft.items.some((item) => item.photos.length > 0)
-                    : false
+                : tipo === "gallery"
+                  ? draftGallerySerialized !== currentGallerySerialized &&
+                    validGalleryDraft(galleryDraft).length > 0
+                  : tipo === "item-list"
+                    ? draftItemListSerialized !== currentItemListSerialized &&
+                      validItemListDraft(itemListDraft).length > 0
+                    : tipo === "hero-strip"
+                      ? draftHeroStripSerialized !== currentHeroStripSerialized &&
+                        validHeroStripDraft(heroStripDraft).length > 0
+                      : tipo === "catalog"
+                        ? draftCatalogSerialized !== currentCatalogSerialized &&
+                          catalogValueSchema.safeParse(catalogDraft).success
+                        : false
 
   return {
     open,
@@ -355,10 +417,14 @@ export function useEditFieldForm({
     setLogoPresetDraft,
     categoryIconDraft,
     setCategoryIconDraft,
-    intentLinkDraft,
-    setIntentLinkDraft,
     galleryDraft,
     setGalleryDraft,
+    itemListDraft,
+    setItemListDraft,
+    heroStripDraft,
+    setHeroStripDraft,
+    catalogDraft,
+    setCatalogDraft,
     pages,
     loading,
     error,
@@ -374,23 +440,28 @@ export function useEditFieldForm({
 export function groupEditableFields(fields: EditableFields) {
   const textFields: Array<[string, FieldDef]> = []
   const imageFields: Array<[string, FieldDef]> = []
+  const sectionFields: Array<[string, FieldDef]> = []
   const logoFields: Array<[string, FieldDef]> = []
   const iconFields: Array<[string, FieldDef]> = []
-  const galleryFields: Array<[string, FieldDef]> = []
 
   for (const [path, field] of Object.entries(fields)) {
-    if (field.editTipo === "text" || field.editTipo === "button" || field.editTipo === "intent-link") {
+    if (field.editTipo === "text" || field.editTipo === "button") {
       textFields.push([path, field])
     } else if (field.editTipo === "img" || field.editTipo === "bg-image") {
       imageFields.push([path, field])
+    } else if (
+      field.editTipo === "gallery" ||
+      field.editTipo === "item-list" ||
+      field.editTipo === "hero-strip" ||
+      field.editTipo === "catalog"
+    ) {
+      sectionFields.push([path, field])
     } else if (field.editTipo === "logo-preset") {
       logoFields.push([path, field])
     } else if (field.editTipo === "category-icon") {
       iconFields.push([path, field])
-    } else if (field.editTipo === "gallery") {
-      galleryFields.push([path, field])
     }
   }
 
-  return { textFields, imageFields, logoFields, iconFields, galleryFields }
+  return { textFields, imageFields, sectionFields, logoFields, iconFields }
 }

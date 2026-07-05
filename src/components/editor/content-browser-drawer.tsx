@@ -1,4 +1,8 @@
 import { useEditNavigation } from "@/components/content/editor-mode"
+import {
+  buildContentFieldGroups,
+  getContentGroupPanelTitle,
+} from "@/components/editor/content-field-groups"
 import { EditFieldDrawer } from "@/components/editor/edit-field-drawer"
 import { groupEditableFields } from "@/components/editor/use-edit-field-form"
 import { CategoryIcon } from "@/components/icons/category-icon"
@@ -11,31 +15,26 @@ import {
   DrawerHeader,
   DrawerTitle,
 } from "@/components/ui/drawer"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { parseButtonValue } from "@/lib/content/fields/button"
-import {
-  intentLinkFallbackForPath,
-  intentsCtaDefault,
-  parseIntentLinkValue,
-} from "@/lib/content/fields/home-intents"
+import { parseCatalogValue } from "@/lib/content/fields/catalog"
 import {
   CATEGORY_ICON_LABELS,
   categoryIconFallbackForPath,
   parseCategoryIconValue,
 } from "@/lib/content/fields/category-icon"
+import { parseGalleryValue } from "@/lib/content/fields/gallery"
+import { parseHeroStripValue } from "@/lib/content/fields/hero-strip"
+import { intentsCtaDefault } from "@/lib/content/fields/home-intents"
+import { parseItemListValue } from "@/lib/content/fields/item-list"
 import {
   DEFAULT_LOGO_PRESET,
   LOGO_PRESET_LABELS,
   parseLogoPresetValue,
 } from "@/lib/content/fields/logo-preset"
-import {
-  galleryItemCover,
-  parseGalleryValue,
-} from "@/lib/content/fields/home-gallery"
-import type { EditSearch } from "@/lib/content/fields/search"
-import type { EditableFields } from "@/lib/content/fields/types"
+import type { ContentGroupId, EditSearch } from "@/lib/content/fields/search"
+import type { EditableFields, FieldDef } from "@/lib/content/fields/types"
 import { cn } from "@/lib/utils"
-import { ChevronRight, ImageIcon, Images, Palette, Shapes, Type } from "lucide-react"
+import { ChevronRight, ImageIcon, Layers } from "lucide-react"
 
 type ContentBrowserDrawerProps = {
   content: Record<string, string>
@@ -95,6 +94,262 @@ function TextPreview({ value }: { value: string }) {
   )
 }
 
+function sectionPreview(
+  path: string,
+  editTipo: FieldDef["editTipo"],
+  content: Record<string, string>
+) {
+  if (editTipo === "gallery") {
+    const gallery = parseGalleryValue(content[path], content)
+    return `${gallery.slides.length} slide${gallery.slides.length === 1 ? "" : "s"}`
+  }
+  if (editTipo === "item-list") {
+    const list = parseItemListValue(content[path], content)
+    return `${list.items.length} item${list.items.length === 1 ? "" : "s"}`
+  }
+  if (editTipo === "hero-strip") {
+    const hero = parseHeroStripValue(content[path], content)
+    return `${hero.tiles.length} coluna${hero.tiles.length === 1 ? "" : "s"}`
+  }
+  if (editTipo === "catalog") {
+    const catalog = parseCatalogValue(content[path], content)
+    const count = catalog.categories.reduce(
+      (total, category) => total + category.products.length,
+      0
+    )
+    return `${count} produto${count === 1 ? "" : "s"}`
+  }
+  return ""
+}
+
+function sectionThumbnail(
+  path: string,
+  editTipo: FieldDef["editTipo"],
+  content: Record<string, string>
+) {
+  if (editTipo === "gallery") {
+    const slide = parseGalleryValue(content[path], content).slides[0]
+    if (!slide?.url) {
+      return (
+        <div className="flex size-12 items-center justify-center rounded-lg border bg-muted/30">
+          <ImageIcon className="size-5 text-muted-foreground" />
+        </div>
+      )
+    }
+    return (
+      <img
+        src={slide.url}
+        alt=""
+        className="size-12 rounded-lg border object-cover"
+      />
+    )
+  }
+
+  if (editTipo === "item-list") {
+    const item = parseItemListValue(content[path], content).items[0]
+    if (!item?.image) {
+      return (
+        <div className="flex size-12 items-center justify-center rounded-lg border bg-muted/30">
+          <Layers className="size-5 text-muted-foreground" />
+        </div>
+      )
+    }
+    return (
+      <img
+        src={item.image}
+        alt=""
+        className="size-12 rounded-lg border object-cover"
+      />
+    )
+  }
+
+  if (editTipo === "hero-strip") {
+    const tile = parseHeroStripValue(content[path], content).tiles[0]
+    if (!tile?.image) {
+      return (
+        <div className="flex size-12 items-center justify-center rounded-lg border bg-muted/30">
+          <ImageIcon className="size-5 text-muted-foreground" />
+        </div>
+      )
+    }
+    return (
+      <img
+        src={tile.image}
+        alt=""
+        className="size-12 rounded-lg border object-cover"
+      />
+    )
+  }
+
+  return (
+    <div className="flex size-12 items-center justify-center rounded-lg border bg-muted/30">
+      <Layers className="size-5 text-muted-foreground" />
+    </div>
+  )
+}
+
+const EMPTY_MESSAGES: Record<ContentGroupId, string> = {
+  textos: "Nenhum campo de texto nesta página.",
+  imagens: "Nenhuma imagem editável nesta página.",
+  secoes: "Nenhuma seção editável nesta página.",
+  icones: "Nenhum ícone editável nesta página.",
+  logo: "Nenhuma configuração de logo nesta página.",
+}
+
+function CategoryFieldList({
+  categoria,
+  content,
+  editPath,
+  fields,
+  onSelect,
+}: {
+  categoria: ContentGroupId
+  content: Record<string, string>
+  editPath?: string
+  fields: Array<[string, FieldDef]>
+  onSelect: (path: string, editTipo: FieldDef["editTipo"]) => void
+}) {
+  if (fields.length === 0) {
+    return (
+      <p className="py-8 text-center text-sm text-muted-foreground">
+        {EMPTY_MESSAGES[categoria]}
+      </p>
+    )
+  }
+
+  return (
+    <div className="space-y-2 pt-2">
+      {fields.map(([path, field]) => {
+        if (categoria === "textos") {
+          const raw = content[path] ?? ""
+          const preview =
+            field.editTipo === "button" ? (
+              <TextPreview
+                value={
+                  parseButtonValue(
+                    raw,
+                    path === "intents.cta"
+                      ? intentsCtaDefault
+                      : {
+                          label: "",
+                          variant: "primary",
+                          link: { kind: "page", pageSlug: "home" },
+                        }
+                  ).label
+                }
+              />
+            ) : (
+              <TextPreview value={raw} />
+            )
+
+          return (
+            <FieldListItem
+              key={path}
+              path={path}
+              label={field.label}
+              subtitle={preview}
+              selected={editPath === path}
+              onSelect={() => onSelect(path, field.editTipo)}
+            />
+          )
+        }
+
+        if (categoria === "imagens") {
+          const src = content[path]
+          return (
+            <FieldListItem
+              key={path}
+              path={path}
+              label={field.label}
+              selected={editPath === path}
+              onSelect={() => onSelect(path, field.editTipo)}
+              thumbnail={
+                src ? (
+                  <img
+                    src={src}
+                    alt=""
+                    className="size-12 rounded-lg border object-cover"
+                  />
+                ) : (
+                  <div className="flex size-12 items-center justify-center rounded-lg border bg-muted/30">
+                    <ImageIcon className="size-5 text-muted-foreground" />
+                  </div>
+                )
+              }
+            />
+          )
+        }
+
+        if (categoria === "secoes") {
+          return (
+            <FieldListItem
+              key={path}
+              path={path}
+              label={field.label}
+              selected={editPath === path}
+              onSelect={() => onSelect(path, field.editTipo)}
+              thumbnail={sectionThumbnail(path, field.editTipo, content)}
+              subtitle={
+                <p className="text-xs text-muted-foreground">
+                  {sectionPreview(path, field.editTipo, content)}
+                </p>
+              }
+            />
+          )
+        }
+
+        if (categoria === "icones") {
+          const icon = parseCategoryIconValue(
+            content[path],
+            categoryIconFallbackForPath(path)
+          )
+          return (
+            <FieldListItem
+              key={path}
+              path={path}
+              label={field.label}
+              selected={editPath === path}
+              onSelect={() => onSelect(path, field.editTipo)}
+              thumbnail={
+                <div className="flex size-12 items-center justify-center rounded-lg border bg-muted/30">
+                  <CategoryIcon icon={icon} className="size-6" />
+                </div>
+              }
+              subtitle={
+                <p className="text-xs text-muted-foreground">
+                  {CATEGORY_ICON_LABELS[icon]}
+                </p>
+              }
+            />
+          )
+        }
+
+        const preset = parseLogoPresetValue(
+          content[path],
+          DEFAULT_LOGO_PRESET
+        )
+        return (
+          <FieldListItem
+            key={path}
+            path={path}
+            label={field.label}
+            selected={editPath === path}
+            onSelect={() => onSelect(path, field.editTipo)}
+            thumbnail={
+              <SilosGraosSymbol preset={preset} className="size-12" />
+            }
+            subtitle={
+              <p className="text-xs text-muted-foreground">
+                {LOGO_PRESET_LABELS[preset]}
+              </p>
+            }
+          />
+        )
+      })}
+    </div>
+  )
+}
+
 export function ContentBrowserDrawer({
   content,
   fields,
@@ -103,269 +358,36 @@ export function ContentBrowserDrawer({
   onOpenChange,
 }: ContentBrowserDrawerProps) {
   const { editPath, openEdit } = useEditNavigation()
-  const { textFields, imageFields, logoFields, iconFields, galleryFields } =
-    groupEditableFields(fields)
+  const categoria = search.categoria
+  const activeGroup = categoria
+    ? buildContentFieldGroups(groupEditableFields(fields)).find(
+        (group) => group.id === categoria
+      )
+    : undefined
 
   return (
     <Drawer open={open} onOpenChange={onOpenChange} swipeDirection="right">
       <DrawerContent className="h-full max-h-none data-[swipe-axis=x]:w-full data-[swipe-axis=x]:sm:max-w-md">
         <DrawerHeader className="flex-row items-center justify-between border-b pb-4">
-          <DrawerTitle>Conteúdo da página</DrawerTitle>
+          <DrawerTitle>
+            {categoria ? getContentGroupPanelTitle(categoria) : "Conteúdo da página"}
+          </DrawerTitle>
           <DrawerClose render={<Button variant="ghost" size="sm" />}>
             Fechar
           </DrawerClose>
         </DrawerHeader>
 
-        <Tabs defaultValue="textos" className="flex min-h-0 flex-1 flex-col">
-          <TabsList className="w-full bg-muted px-4 rounded-none">
-            <TabsTrigger value="textos" className="flex-1 gap-1.5">
-              <Type className="size-4" />
-              <span>Textos</span>
-            </TabsTrigger>
-            <TabsTrigger value="imagens" className="flex-1 gap-1.5">
-              <ImageIcon className="size-4" />
-              <span>Imagens</span>
-            </TabsTrigger>
-            <TabsTrigger value="icones" className="flex-1 gap-1.5">
-              <Shapes className="size-4" />
-              <span>Ícones</span>
-            </TabsTrigger>
-            <TabsTrigger value="logo" className="flex-1 gap-1.5">
-              <Palette className="size-4" />
-              <span>Logo</span>
-            </TabsTrigger>
-            {galleryFields.length > 0 ? (
-              <TabsTrigger value="galeria" className="flex-1 gap-1.5">
-                <Images className="size-4" />
-                <span>Galeria</span>
-              </TabsTrigger>
-            ) : null}
-          </TabsList>
-
-          <TabsContent value="textos" className="flex-1 overflow-y-auto pb-4 px-4">
-            <div className="space-y-2 pt-2">
-              {textFields.length === 0 ? (
-                <p className="py-8 text-center text-sm text-muted-foreground">
-                  Nenhum campo de texto nesta página.
-                </p>
-              ) : (
-                textFields.map(([path, field]) => {
-                  const raw = content[path] ?? ""
-                  const preview =
-                    field.editTipo === "button" ? (
-                      <TextPreview
-                        value={
-                          parseButtonValue(
-                            raw,
-                            path === "intents.cta"
-                              ? intentsCtaDefault
-                              : {
-                                  label: "",
-                                  variant: "primary",
-                                  link: { kind: "page", pageSlug: "home" },
-                                }
-                          ).label
-                        }
-                      />
-                    ) : field.editTipo === "intent-link" ? (
-                      <TextPreview
-                        value={(() => {
-                          const link = parseIntentLinkValue(
-                            raw,
-                            intentLinkFallbackForPath(path)
-                          )
-                          return link.kind === "route"
-                            ? `${link.to}${link.hash ? `#${link.hash}` : ""}`
-                            : link.href
-                        })()}
-                      />
-                    ) : (
-                      <TextPreview value={raw} />
-                    )
-
-                  return (
-                    <FieldListItem
-                      key={path}
-                      path={path}
-                      label={field.label}
-                      subtitle={preview}
-                      selected={editPath === path}
-                      onSelect={() => openEdit(path, field.editTipo)}
-                    />
-                  )
-                })
-              )}
-            </div>
-          </TabsContent>
-
-          <TabsContent value="imagens" className="flex-1 overflow-y-auto pb-4 px-4">
-            <div className="space-y-2 pt-2">
-              {imageFields.length === 0 ? (
-                <p className="py-8 text-center text-sm text-muted-foreground">
-                  Nenhuma imagem editável nesta página.
-                </p>
-              ) : (
-                imageFields.map(([path, field]) => {
-                  const src = content[path]
-                  return (
-                    <FieldListItem
-                      key={path}
-                      path={path}
-                      label={field.label}
-                      selected={editPath === path}
-                      onSelect={() => openEdit(path, field.editTipo)}
-                      thumbnail={
-                        src ? (
-                          <img
-                            src={src}
-                            alt=""
-                            className="size-12 rounded-lg border object-cover"
-                          />
-                        ) : (
-                          <div className="flex size-12 items-center justify-center rounded-lg border bg-muted/30">
-                            <ImageIcon className="size-5 text-muted-foreground" />
-                          </div>
-                        )
-                      }
-                    />
-                  )
-                })
-              )}
-            </div>
-          </TabsContent>
-
-          <TabsContent value="icones" className="flex-1 overflow-y-auto pb-4 px-4">
-            <div className="space-y-2 pt-2">
-              {iconFields.length === 0 ? (
-                <p className="py-8 text-center text-sm text-muted-foreground">
-                  Nenhum ícone editável nesta página.
-                </p>
-              ) : (
-                iconFields.map(([path, field]) => {
-                  const icon = parseCategoryIconValue(
-                    content[path],
-                    categoryIconFallbackForPath(path)
-                  )
-                  return (
-                    <FieldListItem
-                      key={path}
-                      path={path}
-                      label={field.label}
-                      selected={editPath === path}
-                      onSelect={() => openEdit(path, field.editTipo)}
-                      thumbnail={
-                        <div className="flex size-12 items-center justify-center rounded-lg border bg-muted/30">
-                          <CategoryIcon icon={icon} className="size-6" />
-                        </div>
-                      }
-                      subtitle={
-                        <p className="text-xs text-muted-foreground">
-                          {CATEGORY_ICON_LABELS[icon]}
-                        </p>
-                      }
-                    />
-                  )
-                })
-              )}
-            </div>
-          </TabsContent>
-
-          <TabsContent value="logo" className="flex-1 overflow-y-auto pb-4 px-4">
-            <div className="space-y-2 pt-2">
-              {logoFields.length === 0 ? (
-                <p className="py-8 text-center text-sm text-muted-foreground">
-                  Nenhuma configuração de logo nesta página.
-                </p>
-              ) : (
-                logoFields.map(([path, field]) => {
-                  const preset = parseLogoPresetValue(
-                    content[path],
-                    DEFAULT_LOGO_PRESET
-                  )
-                  return (
-                    <FieldListItem
-                      key={path}
-                      path={path}
-                      label={field.label}
-                      selected={editPath === path}
-                      onSelect={() => openEdit(path, field.editTipo)}
-                      thumbnail={
-                        <SilosGraosSymbol
-                          preset={preset}
-                          className="size-12"
-                        />
-                      }
-                      subtitle={
-                        <p className="text-xs text-muted-foreground">
-                          {LOGO_PRESET_LABELS[preset]}
-                        </p>
-                      }
-                    />
-                  )
-                })
-              )}
-            </div>
-          </TabsContent>
-
-          {galleryFields.length > 0 ? (
-            <TabsContent
-              value="galeria"
-              className="flex-1 overflow-y-auto pb-4 px-4"
-            >
-              <div className="space-y-2 pt-2">
-                {galleryFields.map(([path, field]) => {
-                  const gallery = parseGalleryValue(content[path])
-                  const visibleItems = gallery.items.filter(
-                    (item) => item.photos.length > 0
-                  )
-                  const previewItems = visibleItems.slice(0, 3)
-
-                  return (
-                    <FieldListItem
-                      key={path}
-                      path={path}
-                      label={field.label}
-                      selected={editPath === path}
-                      onSelect={() => openEdit(path, field.editTipo)}
-                      thumbnail={
-                        previewItems.length > 0 ? (
-                          <div className="flex size-12 overflow-hidden rounded-lg border">
-                            {previewItems.map((item, index) => (
-                              <img
-                                key={item.id}
-                                src={galleryItemCover(item)}
-                                alt=""
-                                className={cn(
-                                  "size-full object-cover",
-                                  previewItems.length > 1 && "w-1/3"
-                                )}
-                                style={
-                                  previewItems.length > 1
-                                    ? { marginLeft: index > 0 ? -8 : 0 }
-                                    : undefined
-                                }
-                              />
-                            ))}
-                          </div>
-                        ) : (
-                          <div className="flex size-12 items-center justify-center rounded-lg border bg-muted/30">
-                            <Images className="size-5 text-muted-foreground" />
-                          </div>
-                        )
-                      }
-                      subtitle={
-                        <p className="text-xs text-muted-foreground">
-                          {visibleItems.length}{" "}
-                          {visibleItems.length === 1 ? "item" : "itens"}
-                        </p>
-                      }
-                    />
-                  )
-                })}
-              </div>
-            </TabsContent>
+        <div className="flex-1 overflow-y-auto px-4 pb-4">
+          {categoria && activeGroup ? (
+            <CategoryFieldList
+              categoria={categoria}
+              content={content}
+              editPath={editPath}
+              fields={activeGroup.fields}
+              onSelect={openEdit}
+            />
           ) : null}
-        </Tabs>
+        </div>
 
         <EditFieldDrawer content={content} fields={fields} search={search} />
       </DrawerContent>
