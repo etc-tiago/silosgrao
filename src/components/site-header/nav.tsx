@@ -2,7 +2,7 @@ import { cn } from "@/lib/utils"
 import { Link } from "@tanstack/react-router"
 
 export type NavItem = {
-  to: "/"
+  to: "/" | "/contato"
   label: string
   hash?: string
 }
@@ -11,13 +11,16 @@ export const navItems: NavItem[] = [
   { to: "/", label: "Início" },
   { to: "/", hash: "solucoes", label: "Soluções" },
   { to: "/", hash: "sobre", label: "Sobre" },
-  { to: "/", hash: "contato", label: "Contato" },
+  { to: "/contato", label: "Contato" },
 ]
 
 export const navItemsLeft = navItems.slice(0, 2)
 export const navItemsRight = navItems.slice(2)
 
 export function isNavItemActive(pathname: string, hash: string, item: NavItem) {
+  if (item.to !== "/") {
+    return pathname === item.to
+  }
   if (pathname !== "/") return false
   if (!item.hash) return hash === ""
   return hash === item.hash

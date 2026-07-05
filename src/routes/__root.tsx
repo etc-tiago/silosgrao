@@ -5,6 +5,7 @@ import { SiteFooter } from "@/components/site-footer"
 import { SiteHeader } from "@/components/site-header"
 import { usePageLogoPreset } from "@/components/site-header/use-page-logo-preset"
 import { loadRootContent } from "@/lib/content/home.fn"
+import { SITE_WHATSAPP_URL } from "@/lib/site/contact"
 import appCss from "../styles.css?url"
 
 export const Route = createRootRoute({
@@ -70,7 +71,7 @@ function RootSiteHeader() {
   const { content } = Route.useLoaderData()
   const logoPreset = usePageLogoPreset(content)
   const whatsappUrl =
-    content["header.whatsappUrl"]?.trim() || "https://wa.me/5585987654321"
+    content["header.whatsappUrl"]?.trim() || SITE_WHATSAPP_URL
 
   return <SiteHeader logoPreset={logoPreset} whatsappUrl={whatsappUrl} />
 }

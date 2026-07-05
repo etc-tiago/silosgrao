@@ -5,7 +5,7 @@ export type ProductBreadcrumbItem =
   | {
       kind: "link"
       label: string
-      to: "/" | "/produtos" | "/produtos/$categoria"
+      to: "/" | "/produtos" | "/produtos/$categoria" | "/contato"
       params?: { categoria: string }
       hash?: string
     }

@@ -4,7 +4,7 @@ import {
   migrateIntentLink,
   type ContentLink,
 } from "@/lib/content/fields/link"
-import { SITE_WHATSAPP_URL } from "@/lib/site/contact"
+import { siteWhatsappUrlWithText } from "@/lib/site/contact"
 import { z } from "zod"
 
 export const itemListActionSchema = z.object({
@@ -45,7 +45,7 @@ const DEFAULT_INTENT_ITEMS: ItemListItem[] = [
       label: "Solicitar orçamento",
       link: {
         kind: "external",
-        url: `${SITE_WHATSAPP_URL}?text=${encodeURIComponent("Olá! Gostaria de solicitar um orçamento.")}`,
+        url: siteWhatsappUrlWithText("Olá! Gostaria de solicitar um orçamento."),
         openInNewTab: true,
       },
     },

@@ -1,5 +1,6 @@
 import { z } from "zod"
 import { contentLinkSchema } from "@/lib/content/fields/link"
+import { SITE_WHATSAPP_URL } from "@/lib/site/contact"
 
 export const buttonVariantEnum = ["primary", "secondary", "link"] as const
 export type ButtonVariant = (typeof buttonVariantEnum)[number]
@@ -45,7 +46,7 @@ export const heroCtaWhatsappDefault: ButtonValue = {
   variant: "secondary",
   link: {
     kind: "external",
-    url: "https://wa.me/",
+    url: SITE_WHATSAPP_URL,
     openInNewTab: true,
   },
 }

@@ -10,13 +10,14 @@ import {
   SITE_FOOTER_CONTACT_TITLE_DEFAULT,
 } from "@/lib/content/fields/pages/site"
 import {
-  SITE_LOCATION,
+  SITE_ADDRESS_LINES,
+  SITE_EMAIL,
   SITE_PHONE_DISPLAY,
   SITE_WHATSAPP_DISPLAY,
   SITE_WHATSAPP_URL,
 } from "@/lib/site/contact"
 import { Link } from "@tanstack/react-router"
-import { MapPin, Phone } from "lucide-react"
+import { Mail, MapPin, Phone } from "lucide-react"
 
 type SiteFooterProps = {
   content?: Record<string, string>
@@ -66,11 +67,29 @@ export function SiteFooter({ content = {} }: SiteFooterProps) {
               </a>
               <div className="flex items-center gap-2 text-primary-foreground/80">
                 <Phone className="size-4" />
-                <span>{SITE_PHONE_DISPLAY}</span>
+                <a
+                  href={`tel:${SITE_PHONE_DISPLAY.replace(/\s/g, "")}`}
+                  className="transition-colors hover:text-primary-foreground"
+                >
+                  {SITE_PHONE_DISPLAY}
+                </a>
               </div>
+              <a
+                href={`mailto:${SITE_EMAIL}`}
+                className="flex items-center gap-2 text-primary-foreground/80 transition-colors hover:text-primary-foreground"
+              >
+                <Mail className="size-4" />
+                <span>{SITE_EMAIL}</span>
+              </a>
               <div className="flex items-start gap-2 text-primary-foreground/80">
                 <MapPin className="mt-1 size-4 shrink-0" />
-                <span>{SITE_LOCATION}</span>
+                <address className="not-italic">
+                  {SITE_ADDRESS_LINES.map((line) => (
+                    <span key={line} className="block">
+                      {line}
+                    </span>
+                  ))}
+                </address>
               </div>
             </div>
           </div>

@@ -1,4 +1,4 @@
-import { SITE_WHATSAPP_PHONE } from "@/lib/site/contact"
+import { siteWhatsappUrlWithText } from "@/lib/site/contact"
 
 export type ProductCategoryId =
   | "silos"
@@ -208,15 +208,11 @@ export const HOME_PRODUCTS: Record<ProductCategoryId, Product[]> = {
 }
 
 export function whatsappProductUrl(productName: string) {
-  const text = encodeURIComponent(
+  return siteWhatsappUrlWithText(
     `Olá! Gostaria de saber mais sobre o ${productName}`
   )
-  return `https://wa.me/${SITE_WHATSAPP_PHONE}?text=${text}`
 }
 
 export function whatsappCustomUrl() {
-  const text = encodeURIComponent(
-    "Olá! Gostaria de uma solução customizada"
-  )
-  return `https://wa.me/${SITE_WHATSAPP_PHONE}?text=${text}`
+  return siteWhatsappUrlWithText("Olá! Gostaria de uma solução customizada")
 }
