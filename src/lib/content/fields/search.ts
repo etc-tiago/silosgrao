@@ -1,9 +1,8 @@
-import { z } from "zod"
 import { editTipoEnum } from "@/lib/content/fields/types"
+import { z } from "zod"
 
 export const contentGroupIdEnum = [
   "textos",
-  "imagens",
   "secoes",
   "logo",
 ] as const

@@ -439,7 +439,6 @@ export function useEditFieldForm({
 
 export function groupEditableFields(fields: EditableFields) {
   const textFields: Array<[string, FieldDef]> = []
-  const imageFields: Array<[string, FieldDef]> = []
   const sectionFields: Array<[string, FieldDef]> = []
   const logoFields: Array<[string, FieldDef]> = []
   const iconFields: Array<[string, FieldDef]> = []
@@ -447,9 +446,9 @@ export function groupEditableFields(fields: EditableFields) {
   for (const [path, field] of Object.entries(fields)) {
     if (field.editTipo === "text" || field.editTipo === "button") {
       textFields.push([path, field])
-    } else if (field.editTipo === "img" || field.editTipo === "bg-image") {
-      imageFields.push([path, field])
     } else if (
+      field.editTipo === "img" ||
+      field.editTipo === "bg-image" ||
       field.editTipo === "gallery" ||
       field.editTipo === "item-list" ||
       field.editTipo === "hero-strip" ||
@@ -464,5 +463,5 @@ export function groupEditableFields(fields: EditableFields) {
     }
   }
 
-  return { textFields, imageFields, sectionFields, logoFields, iconFields }
+  return { textFields, sectionFields, logoFields, iconFields }
 }

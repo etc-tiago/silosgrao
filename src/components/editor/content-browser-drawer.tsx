@@ -121,6 +121,24 @@ function sectionThumbnail(
   editTipo: FieldDef["editTipo"],
   content: Record<string, string>
 ) {
+  if (editTipo === "img" || editTipo === "bg-image") {
+    const src = content[path]
+    if (!src) {
+      return (
+        <div className="flex size-12 items-center justify-center rounded-lg border bg-muted/30">
+          <ImageIcon className="size-5 text-muted-foreground" />
+        </div>
+      )
+    }
+    return (
+      <img
+        src={src}
+        alt=""
+        className="size-12 rounded-lg border object-cover"
+      />
+    )
+  }
+
   if (editTipo === "gallery") {
     const slide = parseGalleryValue(content[path], content).slides[0]
     if (!slide?.url) {
@@ -184,7 +202,6 @@ function sectionThumbnail(
 
 const EMPTY_MESSAGES: Record<ContentGroupId, string> = {
   textos: "Nenhum campo de texto nesta página.",
-  imagens: "Nenhuma imagem editável nesta página.",
   secoes: "Nenhuma seção editável nesta página.",
   logo: "Nenhuma configuração de logo nesta página.",
 }
@@ -243,32 +260,6 @@ function CategoryFieldList({
               subtitle={preview}
               selected={editPath === path}
               onSelect={() => onSelect(path, field.editTipo)}
-            />
-          )
-        }
-
-        if (categoria === "imagens") {
-          const src = content[path]
-          return (
-            <FieldListItem
-              key={path}
-              path={path}
-              label={field.label}
-              selected={editPath === path}
-              onSelect={() => onSelect(path, field.editTipo)}
-              thumbnail={
-                src ? (
-                  <img
-                    src={src}
-                    alt=""
-                    className="size-12 rounded-lg border object-cover"
-                  />
-                ) : (
-                  <div className="flex size-12 items-center justify-center rounded-lg border bg-muted/30">
-                    <ImageIcon className="size-5 text-muted-foreground" />
-                  </div>
-                )
-              }
             />
           )
         }
