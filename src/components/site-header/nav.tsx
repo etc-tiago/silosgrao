@@ -2,7 +2,7 @@ import { cn } from "@/lib/utils"
 import { Link } from "@tanstack/react-router"
 
 export type NavItem = {
-  to: "/" | "/contato"
+  to: "/" | "/contato" | "/sobre"
   label: string
   hash?: string
 }
@@ -10,7 +10,7 @@ export type NavItem = {
 export const navItems: NavItem[] = [
   { to: "/", label: "Início" },
   { to: "/", hash: "solucoes", label: "Soluções" },
-  { to: "/", hash: "sobre", label: "Sobre" },
+  { to: "/sobre", label: "Sobre" },
   { to: "/contato", label: "Contato" },
 ]
 

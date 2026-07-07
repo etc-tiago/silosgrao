@@ -84,26 +84,28 @@ export function ContentActionButton({
 }
 
 type EditorSafeRouteLinkProps = {
-  to: string
-  params?: Record<string, string>
+  to: "/" | "/produtos" | "/contato" | "/sobre" | "/codigo-etica"
   className?: string
   children: ReactNode
 }
 
 export function EditorSafeRouteLink({
   to,
-  params,
   className,
   children,
 }: EditorSafeRouteLinkProps) {
   const { isEditor } = useEditorMode()
 
   if (isEditor) {
-    return <span className={className}>{children}</span>
+    return (
+      <a href={to} className={className}>
+        {children}
+      </a>
+    )
   }
 
   return (
-    <Link to={to} params={params} className={className}>
+    <Link to={to} className={className}>
       {children}
     </Link>
   )

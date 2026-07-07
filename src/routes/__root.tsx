@@ -3,6 +3,7 @@ import { HeadContent, Scripts, createRootRoute } from "@tanstack/react-router"
 import { FloatBar } from "@/components/editor/float-bar"
 import { CartDrawer } from "@/components/cart/cart-drawer"
 import { CartProvider } from "@/components/cart/cart-provider"
+import { CartSideButton } from "@/components/cart/cart-side-button"
 import { SiteFooter } from "@/components/site-footer"
 import { SiteHeader } from "@/components/site-header"
 import { usePageLogoPreset } from "@/components/site-header/use-page-logo-preset"
@@ -91,6 +92,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
           <RootSiteHeader />
           {children}
           <SiteFooter content={content} />
+          <CartSideButton />
           <CartDrawer />
           {editor && editorState ? (
             <FloatBar

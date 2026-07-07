@@ -69,7 +69,7 @@ const DEFAULT_INTENT_ITEMS: ItemListItem[] = [
     image: "/demo/stay3.jpg",
     primaryAction: {
       label: "Sobre nós",
-      link: { kind: "page", pageSlug: "home", hash: "sobre" },
+      link: { kind: "page", pageSlug: "sobre" },
     },
   },
   {

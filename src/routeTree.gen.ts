@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as SobreRouteImport } from './routes/sobre'
 import { Route as ProdutosRouteImport } from './routes/produtos'
 import { Route as EditarRouteImport } from './routes/editar'
 import { Route as DemoRouteImport } from './routes/demo'
@@ -19,6 +20,11 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as ApiRpcSplatRouteImport } from './routes/api/rpc/$'
 import { Route as ApiContentAssetsSplatRouteImport } from './routes/api/content-assets/$'
 
+const SobreRoute = SobreRouteImport.update({
+  id: '/sobre',
+  path: '/sobre',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ProdutosRoute = ProdutosRouteImport.update({
   id: '/produtos',
   path: '/produtos',
@@ -73,6 +79,7 @@ export interface FileRoutesByFullPath {
   '/demo': typeof DemoRoute
   '/editar': typeof EditarRoute
   '/produtos': typeof ProdutosRoute
+  '/sobre': typeof SobreRoute
   '/api/content-assets/$': typeof ApiContentAssetsSplatRoute
   '/api/rpc/$': typeof ApiRpcSplatRoute
 }
@@ -84,6 +91,7 @@ export interface FileRoutesByTo {
   '/demo': typeof DemoRoute
   '/editar': typeof EditarRoute
   '/produtos': typeof ProdutosRoute
+  '/sobre': typeof SobreRoute
   '/api/content-assets/$': typeof ApiContentAssetsSplatRoute
   '/api/rpc/$': typeof ApiRpcSplatRoute
 }
@@ -96,6 +104,7 @@ export interface FileRoutesById {
   '/demo': typeof DemoRoute
   '/editar': typeof EditarRoute
   '/produtos': typeof ProdutosRoute
+  '/sobre': typeof SobreRoute
   '/api/content-assets/$': typeof ApiContentAssetsSplatRoute
   '/api/rpc/$': typeof ApiRpcSplatRoute
 }
@@ -109,6 +118,7 @@ export interface FileRouteTypes {
     | '/demo'
     | '/editar'
     | '/produtos'
+    | '/sobre'
     | '/api/content-assets/$'
     | '/api/rpc/$'
   fileRoutesByTo: FileRoutesByTo
@@ -120,6 +130,7 @@ export interface FileRouteTypes {
     | '/demo'
     | '/editar'
     | '/produtos'
+    | '/sobre'
     | '/api/content-assets/$'
     | '/api/rpc/$'
   id:
@@ -131,6 +142,7 @@ export interface FileRouteTypes {
     | '/demo'
     | '/editar'
     | '/produtos'
+    | '/sobre'
     | '/api/content-assets/$'
     | '/api/rpc/$'
   fileRoutesById: FileRoutesById
@@ -143,12 +155,20 @@ export interface RootRouteChildren {
   DemoRoute: typeof DemoRoute
   EditarRoute: typeof EditarRoute
   ProdutosRoute: typeof ProdutosRoute
+  SobreRoute: typeof SobreRoute
   ApiContentAssetsSplatRoute: typeof ApiContentAssetsSplatRoute
   ApiRpcSplatRoute: typeof ApiRpcSplatRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/sobre': {
+      id: '/sobre'
+      path: '/sobre'
+      fullPath: '/sobre'
+      preLoaderRoute: typeof SobreRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/produtos': {
       id: '/produtos'
       path: '/produtos'
@@ -223,6 +243,7 @@ const rootRouteChildren: RootRouteChildren = {
   DemoRoute: DemoRoute,
   EditarRoute: EditarRoute,
   ProdutosRoute: ProdutosRoute,
+  SobreRoute: SobreRoute,
   ApiContentAssetsSplatRoute: ApiContentAssetsSplatRoute,
   ApiRpcSplatRoute: ApiRpcSplatRoute,
 }

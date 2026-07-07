@@ -15,7 +15,7 @@ const CODIGO_ETICA_PDF_URL = "/codigo-etica.pdf"
 
 function CodigoEticaPage() {
   return (
-    <main className="min-h-svh bg-background px-6 pb-16 pt-32 md:px-14">
+    <main className="min-h-svh bg-background px-6 pt-32 pb-16 md:px-14">
       <div className="mx-auto max-w-3xl">
         <ProductBreadcrumb
           items={[
@@ -31,7 +31,7 @@ function CodigoEticaPage() {
           </h1>
         </header>
 
-        <article className="prose prose-neutral max-w-none dark:prose-invert">
+        <article className="prose prose-neutral dark:prose-invert max-w-none">
           <p className="leading-relaxed text-muted-foreground">
             O{" "}
             <strong className="font-medium text-foreground">
@@ -43,27 +43,6 @@ function CodigoEticaPage() {
             responsabilidade da empresa, alinhada à sua missão de entregar
             soluções sustentáveis para o agronegócio.
           </p>
-
-          <p className="mt-4 text-sm text-muted-foreground">
-            <strong className="font-medium text-foreground">Elaborado por:</strong>{" "}
-            Geison Loose{" "}
-            <span className="mx-2 text-border">|</span>
-            <strong className="font-medium text-foreground">
-              Aprovado pela:
-            </strong>{" "}
-            Diretoria Executiva
-          </p>
-
-          <section className="mt-10">
-            <h2 className="font-display text-xl text-foreground">Objetivo</h2>
-            <p className="mt-4 leading-relaxed text-muted-foreground">
-              Estabelecer regras claras de conduta ética e íntegra, prevenir
-              irregularidades (como corrupção e assédio), promover um ambiente
-              de trabalho seguro e saudável, e garantir o cumprimento das leis
-              e dos valores da empresa.
-            </p>
-          </section>
-
           <section className="mt-10">
             <h2 className="font-display text-2xl text-foreground">
               Valores e Princípios Éticos
@@ -109,88 +88,6 @@ function CodigoEticaPage() {
                 favorecimentos indevidos.
               </li>
             </ul>
-          </section>
-
-          <section className="mt-10">
-            <h2 className="font-display text-2xl text-foreground">
-              Principais Regras de Conduta
-            </h2>
-
-            <div className="mt-6 space-y-6">
-              <div>
-                <h3 className="font-medium text-foreground">
-                  Combate à Corrupção
-                </h3>
-                <p className="mt-2 leading-relaxed text-muted-foreground">
-                  Proibido oferecer, prometer ou aceitar vantagem indevida a
-                  agentes públicos ou particulares. Vedadas fraudes em
-                  licitações e práticas que prejudiquem a livre concorrência
-                  (Lei Anticorrupção 12.846/2013).
-                </p>
-              </div>
-
-              <div>
-                <h3 className="font-medium text-foreground">
-                  Ambiente de Trabalho
-                </h3>
-                <p className="mt-2 leading-relaxed text-muted-foreground">
-                  Exige respeito mútuo, sem discriminação, assédio, fofocas ou
-                  uso de álcool/drogas. Registro de ponto deve ser pessoal e
-                  intransferível. Proibidas relações que gerem conflito de
-                  interesse. Meritocracia nas promoções.
-                </p>
-              </div>
-
-              <div>
-                <h3 className="font-medium text-foreground">
-                  Uso de Recursos, Internet e Dados
-                </h3>
-                <p className="mt-2 leading-relaxed text-muted-foreground">
-                  Uso responsável e exclusivo para fins profissionais. Proibido
-                  uso de aparelhos pessoais e redes sociais no expediente (salvo
-                  autorização). Conformidade com a LGPD. Informações
-                  confidenciais e criações intelectuais pertencem à empresa.
-                </p>
-              </div>
-
-              <div>
-                <h3 className="font-medium text-foreground">
-                  Relacionamentos e Conflitos de Interesse
-                </h3>
-                <p className="mt-2 leading-relaxed text-muted-foreground">
-                  Clientes, fornecedores e concorrentes tratados com respeito,
-                  transparência e critérios objetivos. Todo colaborador deve
-                  identificar e comunicar situações que possam comprometer sua
-                  imparcialidade.
-                </p>
-              </div>
-
-              <div>
-                <h3 className="font-medium text-foreground">
-                  Denúncias e Meio Ambiente
-                </h3>
-                <p className="mt-2 leading-relaxed text-muted-foreground">
-                  Canais confidenciais (inclusive anônimos) para denúncias, com
-                  proteção ao denunciante. Práticas sustentáveis e cumprimento
-                  da legislação ambiental. Comunicação com imprensa e órgãos
-                  públicos é responsabilidade exclusiva da Diretoria.
-                </p>
-              </div>
-            </div>
-          </section>
-
-          <section className="mt-10">
-            <h2 className="font-display text-2xl text-foreground">
-              Penalidades
-            </h2>
-            <p className="mt-4 leading-relaxed text-muted-foreground">
-              Descumprimento pode resultar em{" "}
-              <strong className="font-medium text-foreground">
-                advertência, suspensão, desligamento ou medidas legais
-              </strong>
-              , conforme a gravidade. A omissão na comunicação de
-              irregularidades também é infração.
-            </p>
           </section>
 
           <hr className="my-10 border-border" />
