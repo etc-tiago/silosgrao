@@ -17,11 +17,7 @@ export function CartSideButton({ className }: CartSideButtonProps) {
     <button
       type="button"
       onClick={openCart}
-      aria-label={
-        itemCount > 0
-          ? `Abrir carrinho com ${itemCount} itens`
-          : "Solicitar orçamento"
-      }
+      aria-label="Solicitar orçamento"
       className={cn(
         "fixed top-1/2 right-4 z-9998 flex origin-right -translate-y-1/2 rotate-270 items-center gap-2 rounded-t-2xl border border-b-0 bg-primary px-4 py-2 text-primary-foreground shadow-lg transition-colors hover:bg-primary/90",
         className
