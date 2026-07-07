@@ -13,9 +13,9 @@ import { Route as ProdutosRouteImport } from './routes/produtos'
 import { Route as EditarRouteImport } from './routes/editar'
 import { Route as DemoRouteImport } from './routes/demo'
 import { Route as ContatoRouteImport } from './routes/contato'
+import { Route as CodigoEticaRouteImport } from './routes/codigo-etica'
+import { Route as CatalogoRouteImport } from './routes/catalogo'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as ProdutosCategoriaRouteImport } from './routes/produtos/$categoria'
-import { Route as ProdutosCategoriaIdRouteImport } from './routes/produtos/$categoria/$id'
 import { Route as ApiRpcSplatRouteImport } from './routes/api/rpc/$'
 import { Route as ApiContentAssetsSplatRouteImport } from './routes/api/content-assets/$'
 
@@ -39,20 +39,20 @@ const ContatoRoute = ContatoRouteImport.update({
   path: '/contato',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CodigoEticaRoute = CodigoEticaRouteImport.update({
+  id: '/codigo-etica',
+  path: '/codigo-etica',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CatalogoRoute = CatalogoRouteImport.update({
+  id: '/catalogo',
+  path: '/catalogo',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
-} as any)
-const ProdutosCategoriaRoute = ProdutosCategoriaRouteImport.update({
-  id: '/$categoria',
-  path: '/$categoria',
-  getParentRoute: () => ProdutosRoute,
-} as any)
-const ProdutosCategoriaIdRoute = ProdutosCategoriaIdRouteImport.update({
-  id: '/$id',
-  path: '/$id',
-  getParentRoute: () => ProdutosCategoriaRoute,
 } as any)
 const ApiRpcSplatRoute = ApiRpcSplatRouteImport.update({
   id: '/api/rpc/$',
@@ -67,80 +67,82 @@ const ApiContentAssetsSplatRoute = ApiContentAssetsSplatRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/catalogo': typeof CatalogoRoute
+  '/codigo-etica': typeof CodigoEticaRoute
   '/contato': typeof ContatoRoute
   '/demo': typeof DemoRoute
   '/editar': typeof EditarRoute
-  '/produtos': typeof ProdutosRouteWithChildren
-  '/produtos/$categoria': typeof ProdutosCategoriaRouteWithChildren
+  '/produtos': typeof ProdutosRoute
   '/api/content-assets/$': typeof ApiContentAssetsSplatRoute
   '/api/rpc/$': typeof ApiRpcSplatRoute
-  '/produtos/$categoria/$id': typeof ProdutosCategoriaIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/catalogo': typeof CatalogoRoute
+  '/codigo-etica': typeof CodigoEticaRoute
   '/contato': typeof ContatoRoute
   '/demo': typeof DemoRoute
   '/editar': typeof EditarRoute
-  '/produtos': typeof ProdutosRouteWithChildren
-  '/produtos/$categoria': typeof ProdutosCategoriaRouteWithChildren
+  '/produtos': typeof ProdutosRoute
   '/api/content-assets/$': typeof ApiContentAssetsSplatRoute
   '/api/rpc/$': typeof ApiRpcSplatRoute
-  '/produtos/$categoria/$id': typeof ProdutosCategoriaIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/catalogo': typeof CatalogoRoute
+  '/codigo-etica': typeof CodigoEticaRoute
   '/contato': typeof ContatoRoute
   '/demo': typeof DemoRoute
   '/editar': typeof EditarRoute
-  '/produtos': typeof ProdutosRouteWithChildren
-  '/produtos/$categoria': typeof ProdutosCategoriaRouteWithChildren
+  '/produtos': typeof ProdutosRoute
   '/api/content-assets/$': typeof ApiContentAssetsSplatRoute
   '/api/rpc/$': typeof ApiRpcSplatRoute
-  '/produtos/$categoria/$id': typeof ProdutosCategoriaIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/catalogo'
+    | '/codigo-etica'
     | '/contato'
     | '/demo'
     | '/editar'
     | '/produtos'
-    | '/produtos/$categoria'
     | '/api/content-assets/$'
     | '/api/rpc/$'
-    | '/produtos/$categoria/$id'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/catalogo'
+    | '/codigo-etica'
     | '/contato'
     | '/demo'
     | '/editar'
     | '/produtos'
-    | '/produtos/$categoria'
     | '/api/content-assets/$'
     | '/api/rpc/$'
-    | '/produtos/$categoria/$id'
   id:
     | '__root__'
     | '/'
+    | '/catalogo'
+    | '/codigo-etica'
     | '/contato'
     | '/demo'
     | '/editar'
     | '/produtos'
-    | '/produtos/$categoria'
     | '/api/content-assets/$'
     | '/api/rpc/$'
-    | '/produtos/$categoria/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  CatalogoRoute: typeof CatalogoRoute
+  CodigoEticaRoute: typeof CodigoEticaRoute
   ContatoRoute: typeof ContatoRoute
   DemoRoute: typeof DemoRoute
   EditarRoute: typeof EditarRoute
-  ProdutosRoute: typeof ProdutosRouteWithChildren
+  ProdutosRoute: typeof ProdutosRoute
   ApiContentAssetsSplatRoute: typeof ApiContentAssetsSplatRoute
   ApiRpcSplatRoute: typeof ApiRpcSplatRoute
 }
@@ -175,26 +177,26 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ContatoRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/codigo-etica': {
+      id: '/codigo-etica'
+      path: '/codigo-etica'
+      fullPath: '/codigo-etica'
+      preLoaderRoute: typeof CodigoEticaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/catalogo': {
+      id: '/catalogo'
+      path: '/catalogo'
+      fullPath: '/catalogo'
+      preLoaderRoute: typeof CatalogoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
-    }
-    '/produtos/$categoria': {
-      id: '/produtos/$categoria'
-      path: '/$categoria'
-      fullPath: '/produtos/$categoria'
-      preLoaderRoute: typeof ProdutosCategoriaRouteImport
-      parentRoute: typeof ProdutosRoute
-    }
-    '/produtos/$categoria/$id': {
-      id: '/produtos/$categoria/$id'
-      path: '/$id'
-      fullPath: '/produtos/$categoria/$id'
-      preLoaderRoute: typeof ProdutosCategoriaIdRouteImport
-      parentRoute: typeof ProdutosCategoriaRoute
     }
     '/api/rpc/$': {
       id: '/api/rpc/$'
@@ -213,35 +215,14 @@ declare module '@tanstack/react-router' {
   }
 }
 
-interface ProdutosCategoriaRouteChildren {
-  ProdutosCategoriaIdRoute: typeof ProdutosCategoriaIdRoute
-}
-
-const ProdutosCategoriaRouteChildren: ProdutosCategoriaRouteChildren = {
-  ProdutosCategoriaIdRoute: ProdutosCategoriaIdRoute,
-}
-
-const ProdutosCategoriaRouteWithChildren =
-  ProdutosCategoriaRoute._addFileChildren(ProdutosCategoriaRouteChildren)
-
-interface ProdutosRouteChildren {
-  ProdutosCategoriaRoute: typeof ProdutosCategoriaRouteWithChildren
-}
-
-const ProdutosRouteChildren: ProdutosRouteChildren = {
-  ProdutosCategoriaRoute: ProdutosCategoriaRouteWithChildren,
-}
-
-const ProdutosRouteWithChildren = ProdutosRoute._addFileChildren(
-  ProdutosRouteChildren,
-)
-
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  CatalogoRoute: CatalogoRoute,
+  CodigoEticaRoute: CodigoEticaRoute,
   ContatoRoute: ContatoRoute,
   DemoRoute: DemoRoute,
   EditarRoute: EditarRoute,
-  ProdutosRoute: ProdutosRouteWithChildren,
+  ProdutosRoute: ProdutosRoute,
   ApiContentAssetsSplatRoute: ApiContentAssetsSplatRoute,
   ApiRpcSplatRoute: ApiRpcSplatRoute,
 }

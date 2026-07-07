@@ -5,8 +5,7 @@ export type ProductBreadcrumbItem =
   | {
       kind: "link"
       label: string
-      to: "/" | "/produtos" | "/produtos/$categoria" | "/contato"
-      params?: { categoria: string }
+      to: "/" | "/produtos" | "/contato" | "/codigo-etica"
       hash?: string
     }
   | {
@@ -35,7 +34,6 @@ export function ProductBreadcrumb({ items, className }: ProductBreadcrumbProps) 
               {item.kind === "link" ? (
                 <Link
                   to={item.to}
-                  params={item.params}
                   hash={item.hash}
                   className="transition-colors hover:text-foreground"
                 >

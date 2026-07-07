@@ -15,7 +15,6 @@ import {
   DrawerTitle,
 } from "@/components/ui/drawer"
 import { parseButtonValue } from "@/lib/content/fields/button"
-import { parseCatalogValue } from "@/lib/content/fields/catalog"
 import { parseGalleryValue } from "@/lib/content/fields/gallery"
 import { parseHeroStripValue } from "@/lib/content/fields/hero-strip"
 import { intentsCtaDefault } from "@/lib/content/fields/home-intents"
@@ -104,14 +103,6 @@ function sectionPreview(
   if (editTipo === "hero-strip") {
     const hero = parseHeroStripValue(content[path], content)
     return `${hero.tiles.length} coluna${hero.tiles.length === 1 ? "" : "s"}`
-  }
-  if (editTipo === "catalog") {
-    const catalog = parseCatalogValue(content[path], content)
-    const count = catalog.categories.reduce(
-      (total, category) => total + category.products.length,
-      0
-    )
-    return `${count} produto${count === 1 ? "" : "s"}`
   }
   return ""
 }

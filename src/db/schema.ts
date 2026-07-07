@@ -173,6 +173,106 @@ export const sessionsRelations = relations(sessions, ({ one }) => ({
   }),
 }))
 
+export const catalogCategories = sqliteTable(
+  "catalog_categories",
+  {
+    id: integer("id").primaryKey({ autoIncrement: true }),
+    slug: text("slug").notNull(),
+    label: text("label").notNull(),
+    sortOrder: integer("sort_order").notNull().default(0),
+    createdAt: integer("created_at", { mode: "timestamp_ms" })
+      .notNull()
+      .default(sql`(unixepoch() * 1000)`),
+    updatedAt: integer("updated_at", { mode: "timestamp_ms" })
+      .notNull()
+      .default(sql`(unixepoch() * 1000)`),
+  },
+  (table) => [uniqueIndex("catalog_categories_slug_unique").on(table.slug)]
+)
+
+export const catalogProducts = sqliteTable(
+  "catalog_products",
+  {
+    id: integer("id").primaryKey({ autoIncrement: true }),
+    slug: text("slug").notNull(),
+    title: text("title").notNull(),
+    priceCents: integer("price_cents").notNull().default(0),
+    description: text("description"),
+    capacity: text("capacity"),
+    specs: text("specs"),
+    imageUrl: text("image_url").notNull(),
+    categoryId: integer("category_id").references(() => catalogCategories.id, {
+      onDelete: "set null",
+    }),
+    sortOrder: integer("sort_order").notNull().default(0),
+    showOnHomepage: integer("show_on_homepage").notNull().default(0),
+    createdAt: integer("created_at", { mode: "timestamp_ms" })
+      .notNull()
+      .default(sql`(unixepoch() * 1000)`),
+    updatedAt: integer("updated_at", { mode: "timestamp_ms" })
+      .notNull()
+      .default(sql`(unixepoch() * 1000)`),
+    updatedBy: integer("updated_by").references(() => editores.id, {
+      onDelete: "set null",
+    }),
+  },
+  (table) => [
+    uniqueIndex("catalog_products_slug_unique").on(table.slug),
+    index("catalog_products_category_id_idx").on(table.categoryId),
+    index("catalog_products_price_cents_idx").on(table.priceCents),
+    index("catalog_products_created_at_idx").on(table.createdAt),
+    index("catalog_products_homepage_category_idx").on(
+      table.categoryId,
+      table.showOnHomepage
+    ),
+  ]
+)
+
+export const catalogProductImages = sqliteTable(
+  "catalog_product_images",
+  {
+    id: integer("id").primaryKey({ autoIncrement: true }),
+    productId: integer("product_id")
+      .notNull()
+      .references(() => catalogProducts.id, { onDelete: "cascade" }),
+    imageUrl: text("image_url").notNull(),
+    sortOrder: integer("sort_order").notNull().default(0),
+  },
+  (table) => [index("catalog_product_images_product_id_idx").on(table.productId)]
+)
+
+export const catalogCategoriesRelations = relations(
+  catalogCategories,
+  ({ many }) => ({
+    products: many(catalogProducts),
+  })
+)
+
+export const catalogProductsRelations = relations(
+  catalogProducts,
+  ({ one, many }) => ({
+    category: one(catalogCategories, {
+      fields: [catalogProducts.categoryId],
+      references: [catalogCategories.id],
+    }),
+    images: many(catalogProductImages),
+    updatedByEditor: one(editores, {
+      fields: [catalogProducts.updatedBy],
+      references: [editores.id],
+    }),
+  })
+)
+
+export const catalogProductImagesRelations = relations(
+  catalogProductImages,
+  ({ one }) => ({
+    product: one(catalogProducts, {
+      fields: [catalogProductImages.productId],
+      references: [catalogProducts.id],
+    }),
+  })
+)
+
 export type Editor = typeof editores.$inferSelect
 export type Page = typeof pages.$inferSelect
 export type ContentEntry = typeof contentEntries.$inferSelect

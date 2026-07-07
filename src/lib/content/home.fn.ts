@@ -1,4 +1,8 @@
 import { getSessionEditor } from "@/lib/auth/session.server"
+import {
+  getHomepageCatalogByCategory,
+  getPublicCatalogByCategory,
+} from "@/lib/catalog/service"
 import { loadMergedContent, loadPageContent } from "@/lib/content/load-page-content"
 import { getServerDb } from "@/lib/server/env"
 import { createServerFn } from "@tanstack/react-start"
@@ -9,9 +13,12 @@ export const loadHomeContent = createServerFn({ method: "GET" }).handler(
     const editor = await getSessionEditor(db)
     const mode = editor ? "editor" : "public"
 
-    const content = await loadMergedContent(db, ["home", "site", "produtos"], mode)
+    const [content, homepageCatalog] = await Promise.all([
+      loadMergedContent(db, ["home", "site"], mode),
+      getHomepageCatalogByCategory(db),
+    ])
 
-    return { content, mode }
+    return { content, mode, homepageCatalog }
   }
 )
 
@@ -30,8 +37,11 @@ export const loadProdutosContent = createServerFn({ method: "GET" }).handler(
     const db = getServerDb()
     const editor = await getSessionEditor(db)
     const mode = editor ? "editor" : "public"
-    const content = await loadMergedContent(db, ["produtos", "site"], mode)
-    return { content, mode }
+    const [content, catalog] = await Promise.all([
+      loadMergedContent(db, ["produtos", "site"], mode),
+      getPublicCatalogByCategory(db),
+    ])
+    return { content, mode, catalog }
   }
 )
 
@@ -45,7 +55,7 @@ export const loadRootContent = createServerFn({ method: "GET" }).handler(
         const { getServerOrpcClient } = await import("@/orpc/server-client")
         return getServerOrpcClient().auth.getSession()
       })(),
-      loadMergedContent(db, ["site", "produtos"], mode),
+      loadMergedContent(db, ["site"], mode),
     ])
     return { ...session, content, mode }
   }

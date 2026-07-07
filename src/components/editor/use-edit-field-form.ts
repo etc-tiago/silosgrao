@@ -7,13 +7,6 @@ import {
   type ButtonValue,
 } from "@/lib/content/fields/button"
 import {
-  catalogValueSchema,
-  DEFAULT_CATALOG_VALUE,
-  parseCatalogValue,
-  serializeCatalogValue,
-  type CatalogValue,
-} from "@/lib/content/fields/catalog"
-import {
   categoryIconFallbackForPath,
   categoryIconSchema,
   parseCategoryIconValue,
@@ -121,8 +114,6 @@ export function useEditFieldForm({
     useState<ItemListValue>(DEFAULT_ITEM_LIST_VALUE)
   const [heroStripDraft, setHeroStripDraft] =
     useState<HeroStripValue>(DEFAULT_HERO_STRIP_VALUE)
-  const [catalogDraft, setCatalogDraft] =
-    useState<CatalogValue>(DEFAULT_CATALOG_VALUE)
   const [pages, setPages] = useState<PageOption[]>([])
   const [imageFile, setImageFile] = useState<File | null>(null)
   const [imagePreview, setImagePreview] = useState<string | null>(null)
@@ -147,7 +138,6 @@ export function useEditFieldForm({
     setGalleryDraft(parseGalleryValue(currentValue, content))
     setItemListDraft(parseItemListValue(currentValue, content))
     setHeroStripDraft(parseHeroStripValue(currentValue, content))
-    setCatalogDraft(parseCatalogValue(currentValue, content))
     setImageFile(null)
     setImagePreview(null)
     setError(null)
@@ -300,13 +290,6 @@ export function useEditFieldForm({
           return
         }
         value = serializeHeroStripValue(parsed.data)
-      } else if (tipo === "catalog") {
-        const parsed = catalogValueSchema.safeParse(catalogDraft)
-        if (!parsed.success) {
-          setError("Dados do catálogo inválidos.")
-          return
-        }
-        value = serializeCatalogValue(parsed.data)
       } else if (tipo === "video") {
         setError("Editor de vídeo em breve.")
         return
@@ -365,11 +348,6 @@ export function useEditFieldForm({
     tiles: validHeroStripDraft(heroStripDraft),
   })
 
-  const currentCatalogSerialized = serializeCatalogValue(
-    parseCatalogValue(currentValue, content)
-  )
-  const draftCatalogSerialized = serializeCatalogValue(catalogDraft)
-
   const canSave =
     tipo === "text"
       ? draft !== currentValue
@@ -397,10 +375,7 @@ export function useEditFieldForm({
                     : tipo === "hero-strip"
                       ? draftHeroStripSerialized !== currentHeroStripSerialized &&
                         validHeroStripDraft(heroStripDraft).length > 0
-                      : tipo === "catalog"
-                        ? draftCatalogSerialized !== currentCatalogSerialized &&
-                          catalogValueSchema.safeParse(catalogDraft).success
-                        : false
+                      : false
 
   return {
     open,
@@ -423,8 +398,6 @@ export function useEditFieldForm({
     setItemListDraft,
     heroStripDraft,
     setHeroStripDraft,
-    catalogDraft,
-    setCatalogDraft,
     pages,
     loading,
     error,
@@ -452,7 +425,6 @@ export function groupEditableFields(fields: EditableFields) {
       field.editTipo === "gallery" ||
       field.editTipo === "item-list" ||
       field.editTipo === "hero-strip" ||
-      field.editTipo === "catalog" ||
       field.editTipo === "video"
     ) {
       sectionFields.push([path, field])

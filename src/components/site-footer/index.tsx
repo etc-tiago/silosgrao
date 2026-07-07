@@ -1,12 +1,7 @@
 import { SilosGraosLogomarca } from "@/components/icons/silos-graos-logomarca"
 import { WhatsApp } from "@/components/icons/whatsapp"
 import {
-  PRODUTOS_CATALOG_PATH,
-  parseCatalogValue,
-} from "@/lib/content/fields/catalog"
-import {
   SITE_FOOTER_ABOUT_DEFAULT,
-  SITE_FOOTER_CATEGORIES_TITLE_DEFAULT,
   SITE_FOOTER_CONTACT_TITLE_DEFAULT,
 } from "@/lib/content/fields/pages/site"
 import {
@@ -25,19 +20,15 @@ type SiteFooterProps = {
 
 export function SiteFooter({ content = {} }: SiteFooterProps) {
   const year = new Date().getFullYear()
-  const catalog = parseCatalogValue(content[PRODUTOS_CATALOG_PATH], content)
   const whatsappUrl = content["header.whatsappUrl"]?.trim() || SITE_WHATSAPP_URL
   const about = content["footer.about"]?.trim() || SITE_FOOTER_ABOUT_DEFAULT
   const contactTitle =
     content["footer.contactTitle"]?.trim() || SITE_FOOTER_CONTACT_TITLE_DEFAULT
-  const categoriesTitle =
-    content["footer.categoriesTitle"]?.trim() ||
-    SITE_FOOTER_CATEGORIES_TITLE_DEFAULT
 
   return (
     <footer className="bg-primary px-6 py-12 text-primary-foreground md:px-14">
       <div className="mx-auto max-w-7xl">
-        <div className="mb-8 grid gap-8 md:grid-cols-3">
+        <div className="mb-8 grid gap-8 md:grid-cols-2">
           <div>
             <Link
               to="/"
@@ -92,33 +83,6 @@ export function SiteFooter({ content = {} }: SiteFooterProps) {
                 </address>
               </div>
             </div>
-          </div>
-
-          <div>
-            <h3 className="font-display text-xl text-primary-foreground">
-              {categoriesTitle}
-            </h3>
-            <ul className="mt-4 space-y-2 text-sm text-primary-foreground/80">
-              <li>
-                <Link
-                  to="/produtos"
-                  className="transition-colors hover:text-primary-foreground"
-                >
-                  Catálogo completo
-                </Link>
-              </li>
-              {catalog.categories.map((category) => (
-                <li key={category.id}>
-                  <Link
-                    to="/produtos/$categoria"
-                    params={{ categoria: category.id }}
-                    className="transition-colors hover:text-primary-foreground"
-                  >
-                    {category.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
           </div>
         </div>
 

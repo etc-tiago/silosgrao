@@ -6,8 +6,7 @@ export async function refreshEditorData(router: RegisteredRouter) {
       match.routeId === "/" ||
       match.routeId === "/demo" ||
       match.routeId === "/produtos" ||
-      match.routeId === "/produtos/$categoria" ||
-      match.routeId === "/produtos/$categoria/$id" ||
+      match.routeId === "/catalogo" ||
       match.routeId === "__root__",
   })
 }

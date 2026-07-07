@@ -9,7 +9,6 @@ import {
   logoPresetSchema,
 } from "@/lib/content/fields/logo-preset"
 import { CategoryIconPicker } from "@/components/editor/category-icon-picker"
-import { CatalogFieldEditor } from "@/components/editor/catalog-field-editor"
 import { GalleryFieldEditor } from "@/components/editor/gallery-field-editor"
 import { HeroStripFieldEditor } from "@/components/editor/hero-strip-field-editor"
 import { ItemListFieldEditor } from "@/components/editor/item-list-field-editor"
@@ -19,7 +18,6 @@ import {
   type LogoColorPreset,
 } from "@/components/icons/logo-presets"
 import { SilosGraosLogomarca } from "@/components/icons/silos-graos-logomarca"
-import type { CatalogValue } from "@/lib/content/fields/catalog"
 import type { GalleryValue } from "@/lib/content/fields/gallery"
 import type { HeroStripValue } from "@/lib/content/fields/hero-strip"
 import type { ItemListValue } from "@/lib/content/fields/item-list"
@@ -436,8 +434,6 @@ type EditFieldFormProps = {
   setItemListDraft: (value: ItemListValue) => void
   heroStripDraft: HeroStripValue
   setHeroStripDraft: (value: HeroStripValue) => void
-  catalogDraft: CatalogValue
-  setCatalogDraft: (value: CatalogValue) => void
   compositePageSlug: string
   compositeFieldPath: string
   pages: PageOption[]
@@ -469,8 +465,6 @@ export function EditFieldForm({
   setItemListDraft,
   heroStripDraft,
   setHeroStripDraft,
-  catalogDraft,
-  setCatalogDraft,
   compositePageSlug,
   compositeFieldPath,
   pages,
@@ -595,16 +589,6 @@ export function EditFieldForm({
           fieldPath={compositeFieldPath}
           pages={pages}
           onChange={setHeroStripDraft}
-        />
-      ) : null}
-
-      {tipo === "catalog" ? (
-        <CatalogFieldEditor
-          draft={catalogDraft}
-          loading={loading}
-          pageSlug={compositePageSlug}
-          fieldPath={compositeFieldPath}
-          onChange={setCatalogDraft}
         />
       ) : null}
 

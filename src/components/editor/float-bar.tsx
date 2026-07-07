@@ -4,8 +4,8 @@ import { useEditorPageChrome } from "@/components/editor/editor-page-chrome"
 import { Button } from "@/components/ui/button"
 import { refreshEditorData } from "@/lib/content/refresh-editor-data"
 import { orpc } from "@/orpc/browser-client"
-import { useRouter } from "@tanstack/react-router"
-import { LogOut, RotateCcw, RotateCw, Trash2, Upload } from "lucide-react"
+import { Link, useRouter } from "@tanstack/react-router"
+import { LogOut, Package, RotateCcw, RotateCw, Trash2, Upload } from "lucide-react"
 import { useState } from "react"
 
 interface FloatBarProps {
@@ -99,6 +99,21 @@ export function FloatBar({ canUndo, canRedo, hasDevChanges }: FloatBarProps) {
           <RotateCw className="size-4" />
           <span className="sr-only">Refazer</span>
         </Button>
+
+        <div className="mx-1 h-6 w-px bg-border" />
+
+        <Link to="/catalogo">
+          <Button
+            size="sm"
+            variant="ghost"
+            className="rounded-full"
+            disabled={loading}
+            title="Catálogo"
+          >
+            <Package className="size-4" />
+            <span className="hidden sm:inline">Catálogo</span>
+          </Button>
+        </Link>
 
         <div className="mx-1 h-6 w-px bg-border" />
 

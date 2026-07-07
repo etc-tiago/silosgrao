@@ -41,7 +41,7 @@ export function mergeEditableFields(
 }
 
 export function mergeHomeEditorFields() {
-  return mergeEditableFields("home", "site", "produtos")
+  return mergeEditableFields("home", "site")
 }
 
 export function mergeProdutosEditorFields() {

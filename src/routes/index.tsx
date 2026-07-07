@@ -3,6 +3,7 @@ import { HomeHeroIntro } from "@/components/home/home-hero-intro"
 import { HomeHeroSection } from "@/components/home/home-hero-section"
 import { HomeIntentsSection } from "@/components/home/home-intents-section"
 import { HomeProductGallery } from "@/components/home/home-product-gallery"
+import { HomeProductsMarketingSection } from "@/components/home/home-products-marketing-section"
 import { HomeProductsSection } from "@/components/home/home-products-section"
 import { mergeHomeEditorFields } from "@/lib/content/fields"
 import { editSearchSchema } from "@/lib/content/fields/search"
@@ -16,7 +17,7 @@ export const Route = createFileRoute("/")({
 })
 
 function HomePage() {
-  const { content, mode } = Route.useLoaderData()
+  const { content, mode, homepageCatalog } = Route.useLoaderData()
   const search = Route.useSearch()
   const fields = mergeHomeEditorFields()
 
@@ -30,7 +31,12 @@ function HomePage() {
       <main className="min-h-screen bg-background">
         <HomeHeroSection content={content} />
         <HomeHeroIntro content={content} framed />
-        <HomeProductsSection content={content} framed />
+        <HomeProductsMarketingSection content={content} framed />
+        <HomeProductsSection
+          content={content}
+          catalog={homepageCatalog}
+          framed
+        />
         <HomeIntentsSection content={content} framed />
         <HomeProductGallery content={content} framed />
       </main>

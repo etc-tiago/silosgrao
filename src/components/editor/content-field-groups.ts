@@ -27,7 +27,6 @@ export function getContentGroupIdForField(field: FieldDef): ContentGroupId | nul
     field.editTipo === "gallery" ||
     field.editTipo === "item-list" ||
     field.editTipo === "hero-strip" ||
-    field.editTipo === "catalog" ||
     field.editTipo === "video" ||
     field.editTipo === "category-icon"
   ) {

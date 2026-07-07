@@ -1,6 +1,8 @@
 import { HeadContent, Scripts, createRootRoute } from "@tanstack/react-router"
 
 import { FloatBar } from "@/components/editor/float-bar"
+import { CartDrawer } from "@/components/cart/cart-drawer"
+import { CartProvider } from "@/components/cart/cart-provider"
 import { SiteFooter } from "@/components/site-footer"
 import { SiteHeader } from "@/components/site-header"
 import { usePageLogoPreset } from "@/components/site-header/use-page-logo-preset"
@@ -85,16 +87,19 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         <HeadContent />
       </head>
       <body>
-        <RootSiteHeader />
-        {children}
-        <SiteFooter content={content} />
-        {editor && editorState ? (
-          <FloatBar
-            canUndo={editorState.canUndo}
-            canRedo={editorState.canRedo}
-            hasDevChanges={editorState.hasDevChanges}
-          />
-        ) : null}
+        <CartProvider>
+          <RootSiteHeader />
+          {children}
+          <SiteFooter content={content} />
+          <CartDrawer />
+          {editor && editorState ? (
+            <FloatBar
+              canUndo={editorState.canUndo}
+              canRedo={editorState.canRedo}
+              hasDevChanges={editorState.hasDevChanges}
+            />
+          ) : null}
+        </CartProvider>
         <Scripts />
       </body>
     </html>

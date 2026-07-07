@@ -18,7 +18,6 @@ const WIDE_EDITOR_TIPOS = new Set([
   "gallery",
   "item-list",
   "hero-strip",
-  "catalog",
 ])
 
 type EditFieldDrawerProps = {
@@ -88,8 +87,6 @@ export function EditFieldDrawer({
             setItemListDraft={form.setItemListDraft}
             heroStripDraft={form.heroStripDraft}
             setHeroStripDraft={form.setHeroStripDraft}
-            catalogDraft={form.catalogDraft}
-            setCatalogDraft={form.setCatalogDraft}
             compositePageSlug={form.field.pageSlug}
             compositeFieldPath={search.editar ?? ""}
             pages={form.pages}

@@ -12,8 +12,9 @@
     "format": "oxfmt",
     "check": "oxfmt --check",
     "typecheck": "tsc --noEmit",
-    "db:setup:local": "wrangler d1 execute silosgraos-cms --local --file=src/db/schema.sql && wrangler d1 execute silosgraos-cms --local --file=src/db/seed.sql",
-    "db:setup:remote": "wrangler d1 execute silosgraos-cms --remote --file=src/db/schema.sql && wrangler d1 execute silosgraos-cms --remote --file=src/db/seed.sql",
+    "db:setup:local": "wrangler d1 execute silosgraos-cms --local --file=src/db/drizzle/0000_orange_talisman.sql && wrangler d1 execute silosgraos-cms --local --file=src/db/drizzle/0001_catalog.sql",
+    "db:setup:remote": "wrangler d1 execute silosgraos-cms --remote --file=src/db/drizzle/0000_orange_talisman.sql && wrangler d1 execute silosgraos-cms --remote --file=src/db/drizzle/0001_catalog.sql",
+    "db:migrate:catalog": "wrangler d1 execute silosgraos-cms --local --file=src/db/drizzle/0001_catalog.sql",
     "cf:types": "wrangler types",
     "db:studio": "drizzle-kit studio"
   },

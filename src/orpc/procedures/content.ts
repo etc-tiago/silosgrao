@@ -3,6 +3,7 @@ import { asc } from "drizzle-orm"
 import { z } from "zod"
 import { contentTypeEnum, pages } from "@/db/schema"
 import { setField as setFieldValue } from "@/lib/content/write"
+import { isUploadedContentAssetUrl } from "@/lib/content/image-url"
 import { getEditorState } from "@/lib/content/write"
 import type { ORPCContext } from "@/orpc/context"
 
@@ -31,18 +32,6 @@ function contentAssetUrl(request: Request, key: string) {
   return `${origin}/api/content-assets/${key}`
 }
 
-function isAllowedImageValue(request: Request, value: string) {
-  try {
-    const url = new URL(value, request.url)
-    const origin = new URL(request.url).origin
-    return (
-      url.origin === origin && url.pathname.startsWith("/api/content-assets/")
-    )
-  } catch {
-    return false
-  }
-}
-
 const setField = authed
   .input(
     z.object({
@@ -53,7 +42,7 @@ const setField = authed
     })
   )
   .handler(async ({ context, input }) => {
-    if (input.type === "image" && !isAllowedImageValue(context.request, input.value)) {
+    if (input.type === "image" && !isUploadedContentAssetUrl(context.request, input.value)) {
       throw new ORPCError("BAD_REQUEST", {
         message: "Valor de imagem inválido.",
       })

@@ -47,6 +47,12 @@ export const homeEditableFields = {
     contentType: "text",
     pageSlug: "home",
   },
+  "products.marketingLead": {
+    label: "Produtos — texto de apoio",
+    editTipo: "text",
+    contentType: "text",
+    pageSlug: "home",
+  },
   [INTENTS_HEADING_LINE1_PATH]: {
     label: "Intenções — título linha 1",
     editTipo: "text",
