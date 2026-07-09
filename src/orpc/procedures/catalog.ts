@@ -1,4 +1,4 @@
-import { ORPCError, os } from "@orpc/server"
+import { ORPCError } from "@orpc/server"
 import { z } from "zod"
 import {
   createCatalogProduct,
@@ -18,20 +18,7 @@ import {
   catalogProductInputSchema,
 } from "@/lib/catalog/types"
 import { isAllowedCatalogImageUrl } from "@/lib/content/image-url"
-import type { ORPCContext } from "@/orpc/context"
-
-const authed = os.$context<ORPCContext>().use(async ({ context, next }) => {
-  if (!context.editor) {
-    throw new ORPCError("UNAUTHORIZED")
-  }
-
-  return next({
-    context: {
-      ...context,
-      editor: context.editor,
-    },
-  })
-})
+import { authed } from "@/orpc/middleware/auth"
 
 function assertValidImageUrls(request: Request, urls: string[]) {
   for (const url of urls) {

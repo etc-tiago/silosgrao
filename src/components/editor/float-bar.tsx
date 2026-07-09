@@ -1,25 +1,35 @@
 import { ConfirmDialog } from "@/components/editor/confirm-dialog"
 import { FloatBarContentMenu } from "@/components/editor/float-bar-content-menu"
+import { UsersDrawer } from "@/components/editor/users-drawer"
 import { useEditorPageChrome } from "@/components/editor/editor-page-chrome"
 import { Button } from "@/components/ui/button"
+import type { EditorTipo } from "@/db/schema"
 import { refreshEditorData } from "@/lib/content/refresh-editor-data"
 import { orpc } from "@/orpc/browser-client"
 import { Link, useRouter } from "@tanstack/react-router"
-import { LogOut, Package, RotateCcw, RotateCw, Trash2, Upload } from "lucide-react"
+import { LogOut, Package, RotateCcw, RotateCw, Trash2, Upload, Users } from "lucide-react"
 import { useState } from "react"
 
+interface FloatBarEditor {
+  id: number
+  email: string
+  tipo: EditorTipo
+}
+
 interface FloatBarProps {
+  editor: FloatBarEditor
   canUndo: boolean
   canRedo: boolean
   hasDevChanges: boolean
 }
 
-export function FloatBar({ canUndo, canRedo, hasDevChanges }: FloatBarProps) {
+export function FloatBar({ editor, canUndo, canRedo, hasDevChanges }: FloatBarProps) {
   const router = useRouter()
   const editorPage = useEditorPageChrome()
   const [confirmAction, setConfirmAction] = useState<
     "discard" | "publish" | null
   >(null)
+  const [usersOpen, setUsersOpen] = useState(false)
   const [loading, setLoading] = useState(false)
 
   async function refreshSession() {
@@ -115,6 +125,20 @@ export function FloatBar({ canUndo, canRedo, hasDevChanges }: FloatBarProps) {
           </Button>
         </Link>
 
+        {editor.tipo === "admin" ? (
+          <Button
+            size="sm"
+            variant={usersOpen ? "secondary" : "ghost"}
+            className="rounded-full"
+            disabled={loading}
+            onClick={() => setUsersOpen(true)}
+            title="Usuários"
+          >
+            <Users className="size-4" />
+            <span className="hidden sm:inline">Usuários</span>
+          </Button>
+        ) : null}
+
         <div className="mx-1 h-6 w-px bg-border" />
 
         {editorPage ? (
@@ -183,6 +207,14 @@ export function FloatBar({ canUndo, canRedo, hasDevChanges }: FloatBarProps) {
         onCancel={() => setConfirmAction(null)}
         loading={loading}
       />
+
+      {editor.tipo === "admin" ? (
+        <UsersDrawer
+          open={usersOpen}
+          onOpenChange={setUsersOpen}
+          currentEditorId={editor.id}
+        />
+      ) : null}
     </>
   )
 }

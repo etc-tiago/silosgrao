@@ -1,4 +1,3 @@
-import type { EditableFields } from "@/lib/content/fields/types"
 import {
   GALLERY_HEADING_LINE1_PATH,
   GALLERY_HEADING_LINE2_PATH,
@@ -15,6 +14,7 @@ import {
   INTENTS_ITEMS_PATH,
 } from "@/lib/content/fields/item-list"
 import { PRODUCTS_SECTION_TITLE_PATH } from "@/lib/content/fields/home-products"
+import type { EditableFields } from "@/lib/content/fields/types"
 
 export const homeEditableFields = {
   "hero.headline.line1": {

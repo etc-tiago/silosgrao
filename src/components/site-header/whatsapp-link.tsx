@@ -1,15 +1,18 @@
 import { WhatsApp } from "@/components/icons/whatsapp"
 import { WHATSAPP_LINK } from "@/components/site-header/config"
+import type { HeaderThemeTokens } from "@/lib/site/header-theme"
 import { cn } from "@/lib/utils"
 
 type SiteHeaderWhatsappLinkProps = {
   className?: string
   href?: string
+  theme: HeaderThemeTokens
 }
 
 export function SiteHeaderWhatsappLink({
   className,
   href = WHATSAPP_LINK.href,
+  theme,
 }: SiteHeaderWhatsappLinkProps) {
   return (
     <a
@@ -17,7 +20,8 @@ export function SiteHeaderWhatsappLink({
       target="_blank"
       rel="noopener noreferrer"
       className={cn(
-        "inline-flex shrink-0 items-center justify-center rounded-sm p-2 text-white transition-opacity duration-300 hover:opacity-85 md:w-36 md:justify-end",
+        "inline-flex shrink-0 items-center justify-center rounded-sm p-2 transition-opacity duration-300 hover:opacity-85 md:w-36 md:justify-end",
+        theme.icon,
         className
       )}
     >

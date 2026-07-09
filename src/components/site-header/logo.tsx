@@ -1,20 +1,28 @@
-import { SilosGraosLogomarca } from "@/components/icons/silos-graos-logomarca"
 import {
   DEFAULT_LOGO_COLOR_PRESET,
   type LogoColorPreset,
 } from "@/components/icons/logo-presets"
-import { Link } from "@tanstack/react-router"
+import { SilosGraosLogomarca } from "@/components/icons/silos-graos-logomarca"
 import { cn } from "@/lib/utils"
+import { Link } from "@tanstack/react-router"
 
 export type SiteHeaderLogoProps = {
   className?: string
+  mobilePreset?: LogoColorPreset
+  desktopPreset?: LogoColorPreset
+  /** @deprecated Use mobilePreset and desktopPreset */
   preset?: LogoColorPreset
 }
 
 export function SiteHeaderLogo({
   className,
+  mobilePreset,
+  desktopPreset,
   preset = DEFAULT_LOGO_COLOR_PRESET,
 }: SiteHeaderLogoProps) {
+  const resolvedMobile = mobilePreset ?? preset
+  const resolvedDesktop = desktopPreset ?? preset
+
   return (
     <Link
       to="/"
@@ -24,11 +32,16 @@ export function SiteHeaderLogo({
       )}
     >
       <SilosGraosLogomarca
-        preset={preset}
+        preset={resolvedMobile}
         aria-hidden
-        className="h-14 w-auto md:h-20"
+        className="h-14 w-auto md:hidden"
       />
-      <span className="sr-only">Silos Grãos</span>
+      <SilosGraosLogomarca
+        preset={resolvedDesktop}
+        aria-hidden
+        className="hidden h-20 w-auto md:block"
+      />
+      <span className="sr-only">Silos Grão</span>
     </Link>
   )
 }

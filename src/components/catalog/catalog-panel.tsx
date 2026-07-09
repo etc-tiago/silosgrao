@@ -102,7 +102,7 @@ export function CatalogPanel() {
           <div>
             <h1 className="font-display text-3xl md:text-4xl">Catálogo</h1>
             <p className="mt-1 text-sm text-muted-foreground">
-              Painel privado de produtos
+              Gerencie produtos e categorias
             </p>
           </div>
         </div>

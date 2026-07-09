@@ -45,18 +45,38 @@ export const loadProdutosContent = createServerFn({ method: "GET" }).handler(
   }
 )
 
+export const loadCatalogoContent = createServerFn({ method: "GET" }).handler(
+  async () => {
+    const db = getServerDb()
+    const editor = await getSessionEditor(db)
+    const catalog = await getPublicCatalogByCategory(db)
+
+    return {
+      catalog,
+      isEditor: Boolean(editor),
+    }
+  }
+)
+
+export const loadSobreContent = createServerFn({ method: "GET" }).handler(
+  async () => {
+    const db = getServerDb()
+    const editor = await getSessionEditor(db)
+    const mode = editor ? "editor" : "public"
+    const content = await loadMergedContent(db, ["sobre", "site"], mode)
+    return { content, mode }
+  }
+)
+
 export const loadRootContent = createServerFn({ method: "GET" }).handler(
   async () => {
     const db = getServerDb()
     const editor = await getSessionEditor(db)
     const mode = editor ? "editor" : "public"
-    const [session, content] = await Promise.all([
-      (async () => {
-        const { getServerOrpcClient } = await import("@/orpc/server-client")
-        return getServerOrpcClient().auth.getSession()
-      })(),
-      loadMergedContent(db, ["site"], mode),
-    ])
-    return { ...session, content, mode }
+    const session = await (async () => {
+      const { getServerOrpcClient } = await import("@/orpc/server-client")
+      return getServerOrpcClient().auth.getSession()
+    })()
+    return { ...session, mode }
   }
 )

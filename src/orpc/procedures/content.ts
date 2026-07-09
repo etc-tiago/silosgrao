@@ -1,24 +1,11 @@
-import { ORPCError, os } from "@orpc/server"
+import { ORPCError } from "@orpc/server"
 import { asc } from "drizzle-orm"
 import { z } from "zod"
 import { contentTypeEnum, pages } from "@/db/schema"
 import { setField as setFieldValue } from "@/lib/content/write"
 import { isUploadedContentAssetUrl } from "@/lib/content/image-url"
 import { getEditorState } from "@/lib/content/write"
-import type { ORPCContext } from "@/orpc/context"
-
-const authed = os.$context<ORPCContext>().use(async ({ context, next }) => {
-  if (!context.editor) {
-    throw new ORPCError("UNAUTHORIZED")
-  }
-
-  return next({
-    context: {
-      ...context,
-      editor: context.editor,
-    },
-  })
-})
+import { authed } from "@/orpc/middleware/auth"
 
 const ALLOWED_IMAGE_TYPES = new Set([
   "image/jpeg",

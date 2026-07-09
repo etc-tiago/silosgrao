@@ -2,16 +2,22 @@
   "$schema": "./node_modules/wrangler/config-schema.json",
   "name": "silosgraos-site",
   "compatibility_date": "2026-06-01",
-  "compatibility_flags": ["nodejs_compat"],
+  "compatibility_flags": [
+    "nodejs_compat"
+  ],
   "main": "@tanstack/react-start/server-entry",
   "d1_databases": [
     {
       "binding": "DB",
       "database_name": "silosgraos-cms",
-      "database_id": "00000000-0000-0000-0000-000000000001",
+      "database_id": "ad16f060-1be7-46e1-901f-c67bd3f393e4",
     },
   ],
-  "send_email": [{ "name": "EMAIL" }],
+  "send_email": [
+    {
+      "name": "EMAIL"
+    }
+  ],
   "r2_buckets": [
     {
       "binding": "CONTENT_ASSETS",

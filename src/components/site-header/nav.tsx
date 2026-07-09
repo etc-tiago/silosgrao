@@ -1,15 +1,16 @@
+import type { HeaderThemeTokens } from "@/lib/site/header-theme"
 import { cn } from "@/lib/utils"
 import { Link } from "@tanstack/react-router"
 
 export type NavItem = {
-  to: "/" | "/contato" | "/sobre"
+  to: "/" | "/contato" | "/sobre" | "/catalogo"
   label: string
   hash?: string
 }
 
 export const navItems: NavItem[] = [
   { to: "/", label: "Início" },
-  { to: "/", hash: "solucoes", label: "Soluções" },
+  { to: "/catalogo", label: "Catálogo" },
   { to: "/sobre", label: "Sobre" },
   { to: "/contato", label: "Contato" },
 ]
@@ -26,25 +27,41 @@ export function isNavItemActive(pathname: string, hash: string, item: NavItem) {
   return hash === item.hash
 }
 
-export function navLinkClassName(active: boolean) {
+const navLinkBaseClassName =
+  "group relative isolate overflow-hidden rounded-sm px-3 py-2 text-[0.6875rem] font-semibold tracking-[0.24em] uppercase outline-1 outline-transparent transition-[background-color] duration-300 ease-out"
+
+export function navLinkClassName(
+  active: boolean,
+  tokens?: HeaderThemeTokens
+) {
   return cn(
-    "group relative isolate overflow-hidden rounded-sm px-3 py-2 text-[0.6875rem] font-semibold tracking-[0.24em] text-white uppercase outline-1 outline-transparent transition-[background-color] duration-300 ease-out",
-    active ? "bg-white/10 outline-white/15" : ""
+    navLinkBaseClassName,
+    tokens?.nav ?? "text-white",
+    active ? tokens?.navActive ?? "bg-white/10 outline-white/15" : ""
+  )
+}
+
+export function drawerNavLinkClassName(active: boolean) {
+  return cn(
+    navLinkBaseClassName,
+    "text-foreground",
+    active ? "bg-foreground/10 outline-foreground/15" : ""
   )
 }
 
 type NavLinkProps = {
   item: NavItem
   active: boolean
+  tokens?: HeaderThemeTokens
   onNavigate?: () => void
 }
 
-export function NavLink({ item, active, onNavigate }: NavLinkProps) {
+export function NavLink({ item, active, tokens, onNavigate }: NavLinkProps) {
   return (
     <Link
       to={item.to}
       hash={item.hash}
-      className={navLinkClassName(active)}
+      className={navLinkClassName(active, tokens)}
       onClick={onNavigate}
     >
       <span className="relative z-10">{item.label}</span>
@@ -52,11 +69,15 @@ export function NavLink({ item, active, onNavigate }: NavLinkProps) {
   )
 }
 
-function NavSeparator() {
+function NavSeparator({ tokens }: { tokens?: HeaderThemeTokens }) {
   return (
     <span
       aria-hidden
-      className="mx-3 h-8 w-px bg-linear-to-b from-white/15 via-white/8 to-transparent"
+      className={cn(
+        "mx-3 h-8 w-px",
+        tokens?.separator ??
+        "bg-linear-to-b from-white/15 via-white/8 to-transparent"
+      )}
     />
   )
 }
@@ -65,6 +86,7 @@ type NavListProps = {
   items: NavItem[]
   pathname: string
   hash: string
+  tokens?: HeaderThemeTokens
   showSeparators?: boolean
   onNavigate?: () => void
 }
@@ -73,6 +95,7 @@ export function NavList({
   items,
   pathname,
   hash,
+  tokens,
   showSeparators = true,
   onNavigate,
 }: NavListProps) {
@@ -83,8 +106,15 @@ export function NavList({
 
         return (
           <li key={item.label} className="flex items-center">
-            {showSeparators && index > 0 ? <NavSeparator /> : null}
-            <NavLink item={item} active={active} onNavigate={onNavigate} />
+            {showSeparators && index > 0 ? (
+              <NavSeparator tokens={tokens} />
+            ) : null}
+            <NavLink
+              item={item}
+              active={active}
+              tokens={tokens}
+              onNavigate={onNavigate}
+            />
           </li>
         )
       })}

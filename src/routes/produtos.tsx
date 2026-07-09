@@ -1,15 +1,15 @@
-import { EditorPageProvider } from "@/components/editor/editor-page-provider"
-import { P, Span } from "@/components/content"
 import { PublicCatalogSection } from "@/components/catalog/public-catalog-section"
-import { ProductBreadcrumb } from "@/components/products/product-breadcrumb"
+import { P, Span } from "@/components/content"
+import { EditorPageProvider } from "@/components/editor/editor-page-provider"
 import { homeSectionHeadingClass } from "@/components/home/home-section"
-import {
-  PRODUTOS_HEADING_PATH,
-  PRODUTOS_LEAD_PATH,
-  PRODUTOS_HEADING_DEFAULT,
-  PRODUTOS_LEAD_DEFAULT,
-} from "@/lib/content/fields/catalog"
+import { ProductBreadcrumb } from "@/components/products/product-breadcrumb"
 import { mergeProdutosEditorFields } from "@/lib/content/fields"
+import {
+  PRODUTOS_HEADING_DEFAULT,
+  PRODUTOS_HEADING_PATH,
+  PRODUTOS_LEAD_DEFAULT,
+  PRODUTOS_LEAD_PATH,
+} from "@/lib/content/fields/catalog"
 import { editSearchSchema } from "@/lib/content/fields/search"
 import { loadProdutosContent } from "@/lib/content/home.fn"
 import { cn } from "@/lib/utils"
@@ -19,7 +19,7 @@ export const Route = createFileRoute("/produtos")({
   validateSearch: editSearchSchema,
   loader: () => loadProdutosContent(),
   head: () => ({
-    meta: [{ title: "Produtos · Silos Grãos" }],
+    meta: [{ title: "Produtos · Silos Grão" }],
   }),
   component: ProdutosPage,
 })

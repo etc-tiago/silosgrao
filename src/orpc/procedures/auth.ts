@@ -1,7 +1,5 @@
-import { ORPCError, os } from "@orpc/server"
-import { eq } from "drizzle-orm"
-import { z } from "zod"
 import { editores } from "@/db/schema"
+import { isActiveEditor } from "@/lib/auth/editor"
 import { createOtpChallenge, verifyOtpChallenge } from "@/lib/auth/otp"
 import { checkRateLimit } from "@/lib/auth/rate-limit"
 import {
@@ -9,9 +7,11 @@ import {
   destroySession,
   getSessionEditor,
 } from "@/lib/auth/session.server"
-import { verifyTurnstile } from "@/lib/auth/turnstile"
 import { getEditorState } from "@/lib/content/write"
 import type { ORPCContext } from "@/orpc/context"
+import { ORPCError, os } from "@orpc/server"
+import { eq } from "drizzle-orm"
+import { z } from "zod"
 
 export const base = os.$context<ORPCContext>()
 
@@ -19,17 +19,10 @@ const requestOtp = base
   .input(
     z.object({
       email: z.email(),
-      turnstileToken: z.string().min(1),
     })
   )
   .handler(async ({ input, context }) => {
     const email = input.email.toLowerCase().trim()
-
-    await verifyTurnstile(
-      input.turnstileToken,
-      context.env.TURNSTILE_SECRET_KEY ?? "1x0000000000000000000000000000000AA",
-      context.ip
-    )
 
     await checkRateLimit(context.db, `otp:email:${email}`, 3, 15 * 60 * 1000)
     await checkRateLimit(context.db, `otp:ip:${context.ip}`, 10, 15 * 60 * 1000)
@@ -38,7 +31,7 @@ const requestOtp = base
       where: eq(editores.email, email),
     })
 
-    if (editor) {
+    if (editor && isActiveEditor(editor)) {
       const { code } = await createOtpChallenge(context.db, email)
 
       try {
@@ -46,7 +39,7 @@ const requestOtp = base
           to: email,
           from: {
             email: context.env.OTP_FROM_EMAIL,
-            name: "Silos Grãos",
+            name: "Silos Grão",
           },
           subject: "Seu código de acesso",
           text: `Seu código de acesso é: ${code}. Válido por 10 minutos.`,
@@ -82,7 +75,7 @@ const verifyOtp = base
       where: eq(editores.email, email),
     })
 
-    if (!editor) {
+    if (!editor || !isActiveEditor(editor)) {
       throw new ORPCError("UNAUTHORIZED", {
         message: "Código inválido ou expirado.",
       })

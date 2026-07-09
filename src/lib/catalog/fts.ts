@@ -1,6 +1,8 @@
 import { sql } from "drizzle-orm"
 import type { Db } from "@/db/client"
 
+type DbExecutor = Pick<Db, "run">
+
 export function buildFtsQuery(search: string) {
   const terms = search
     .trim()
@@ -17,7 +19,7 @@ export function buildFtsQuery(search: string) {
 }
 
 export async function syncProductFts(
-  db: Db,
+  db: DbExecutor,
   productId: number,
   title: string,
   description: string | null
@@ -30,6 +32,6 @@ export async function syncProductFts(
   )
 }
 
-export async function deleteProductFts(db: Db, productId: number) {
+export async function deleteProductFts(db: DbExecutor, productId: number) {
   await db.run(sql`DELETE FROM catalog_products_fts WHERE rowid = ${productId}`)
 }

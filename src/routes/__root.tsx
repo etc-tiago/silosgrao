@@ -1,12 +1,12 @@
 import { HeadContent, Scripts, createRootRoute } from "@tanstack/react-router"
 
-import { FloatBar } from "@/components/editor/float-bar"
 import { CartDrawer } from "@/components/cart/cart-drawer"
 import { CartProvider } from "@/components/cart/cart-provider"
 import { CartSideButton } from "@/components/cart/cart-side-button"
+import { FloatBar } from "@/components/editor/float-bar"
 import { SiteFooter } from "@/components/site-footer"
 import { SiteHeader } from "@/components/site-header"
-import { usePageLogoPreset } from "@/components/site-header/use-page-logo-preset"
+import { useHeaderTheme } from "@/components/site-header/use-header-theme"
 import { loadRootContent } from "@/lib/content/home.fn"
 import { SITE_WHATSAPP_URL } from "@/lib/site/contact"
 import appCss from "../styles.css?url"
@@ -22,7 +22,7 @@ export const Route = createRootRoute({
         content: "width=device-width, initial-scale=1",
       },
       {
-        title: "Silos Grãos",
+        title: "Silos Grão",
       },
       {
         name: "apple-mobile-web-app-title",
@@ -71,16 +71,18 @@ export const Route = createRootRoute({
 })
 
 function RootSiteHeader() {
-  const { content } = Route.useLoaderData()
-  const logoPreset = usePageLogoPreset(content)
-  const whatsappUrl =
-    content["header.whatsappUrl"]?.trim() || SITE_WHATSAPP_URL
+  const theme = useHeaderTheme()
 
-  return <SiteHeader logoPreset={logoPreset} whatsappUrl={whatsappUrl} />
+  return (
+    <SiteHeader
+      theme={theme.desktopTokens}
+      whatsappUrl={SITE_WHATSAPP_URL}
+    />
+  )
 }
 
 function RootDocument({ children }: { children: React.ReactNode }) {
-  const { editor, editorState, content } = Route.useLoaderData()
+  const { editor, editorState } = Route.useLoaderData()
 
   return (
     <html lang="pt-BR">
@@ -91,11 +93,16 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         <CartProvider>
           <RootSiteHeader />
           {children}
-          <SiteFooter content={content} />
+          <SiteFooter />
           <CartSideButton />
           <CartDrawer />
           {editor && editorState ? (
             <FloatBar
+              editor={{
+                id: editor.id,
+                email: editor.email,
+                tipo: editor.tipo,
+              }}
               canUndo={editorState.canUndo}
               canRedo={editorState.canRedo}
               hasDevChanges={editorState.hasDevChanges}

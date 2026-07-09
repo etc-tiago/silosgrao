@@ -1,29 +1,21 @@
 import { SilosGraosLogomarca } from "@/components/icons/silos-graos-logomarca"
 import { WhatsApp } from "@/components/icons/whatsapp"
 import {
-  SITE_FOOTER_ABOUT_DEFAULT,
-  SITE_FOOTER_CONTACT_TITLE_DEFAULT,
-} from "@/lib/content/fields/pages/site"
-import {
   SITE_ADDRESS_LINES,
   SITE_EMAIL,
   SITE_PHONE_DISPLAY,
   SITE_WHATSAPP_DISPLAY,
   SITE_WHATSAPP_URL,
 } from "@/lib/site/contact"
+import {
+  SITE_FOOTER_ABOUT,
+  SITE_FOOTER_CONTACT_TITLE,
+} from "@/lib/site/site-chrome"
 import { Link } from "@tanstack/react-router"
 import { Mail, MapPin, Phone } from "lucide-react"
 
-type SiteFooterProps = {
-  content?: Record<string, string>
-}
-
-export function SiteFooter({ content = {} }: SiteFooterProps) {
+export function SiteFooter() {
   const year = new Date().getFullYear()
-  const whatsappUrl = content["header.whatsappUrl"]?.trim() || SITE_WHATSAPP_URL
-  const about = content["footer.about"]?.trim() || SITE_FOOTER_ABOUT_DEFAULT
-  const contactTitle =
-    content["footer.contactTitle"]?.trim() || SITE_FOOTER_CONTACT_TITLE_DEFAULT
 
   return (
     <footer className="bg-primary px-6 py-12 text-primary-foreground md:px-14">
@@ -35,20 +27,20 @@ export function SiteFooter({ content = {} }: SiteFooterProps) {
               className="inline-block transition-opacity hover:opacity-85"
             >
               <SilosGraosLogomarca preset="white" className="h-20 w-auto" />
-              <span className="sr-only">Silos Grãos</span>
+              <span className="sr-only">Silos Grão</span>
             </Link>
             <p className="mt-4 text-sm leading-relaxed text-primary-foreground/80">
-              {about}
+              {SITE_FOOTER_ABOUT}
             </p>
           </div>
 
           <div>
             <h3 className="font-display text-xl text-primary-foreground">
-              {contactTitle}
+              {SITE_FOOTER_CONTACT_TITLE}
             </h3>
             <div className="mt-4 space-y-3 text-sm">
               <a
-                href={whatsappUrl}
+                href={SITE_WHATSAPP_URL}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-2 text-primary-foreground/80 transition-colors hover:text-primary-foreground"
@@ -88,7 +80,7 @@ export function SiteFooter({ content = {} }: SiteFooterProps) {
 
         <div className="border-t border-primary-foreground/20 pt-8">
           <p className="text-center text-sm text-primary-foreground/70">
-            © {year} Silos Grãos. Todos os direitos reservados. | Desenvolvido
+            © {year} Silos Grão. Todos os direitos reservados. | Desenvolvido
             com precisão para sua confiança.
           </p>
         </div>

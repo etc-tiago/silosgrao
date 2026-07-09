@@ -1,20 +1,6 @@
-import { ORPCError, os } from "@orpc/server"
 import { discardDevChanges, publishDevChanges } from "@/lib/content/publish"
 import { getEditorState, redoChange, undoChange } from "@/lib/content/write"
-import type { ORPCContext } from "@/orpc/context"
-
-const authed = os.$context<ORPCContext>().use(async ({ context, next }) => {
-  if (!context.editor) {
-    throw new ORPCError("UNAUTHORIZED")
-  }
-
-  return next({
-    context: {
-      ...context,
-      editor: context.editor,
-    },
-  })
-})
+import { authed } from "@/orpc/middleware/auth"
 
 const undo = authed.handler(async ({ context }) => {
   const changed = await undoChange(context.db, context.editor!.id)

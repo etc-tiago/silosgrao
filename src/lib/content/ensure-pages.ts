@@ -5,6 +5,7 @@ const PAGE_SEEDS = [
   { slug: "home", title: "Início" },
   { slug: "site", title: "Site global" },
   { slug: "produtos", title: "Produtos" },
+  { slug: "sobre", title: "Sobre" },
 ] as const
 
 export type ContentPageSlug = (typeof PAGE_SEEDS)[number]["slug"]

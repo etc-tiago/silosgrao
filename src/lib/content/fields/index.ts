@@ -4,6 +4,10 @@ import {
   produtosEditableFields,
 } from "@/lib/content/fields/pages/produtos"
 import {
+  sobreContentPaths,
+  sobreEditableFields,
+} from "@/lib/content/fields/pages/sobre"
+import {
   siteContentPaths,
   siteEditableFields,
 } from "@/lib/content/fields/pages/site"
@@ -13,6 +17,7 @@ export const editableFieldsByPage = {
   home: homeEditableFields,
   site: siteEditableFields,
   produtos: produtosEditableFields,
+  sobre: sobreEditableFields,
 } as const satisfies Record<string, EditableFields>
 
 export type ContentPageSlug = keyof typeof editableFieldsByPage
@@ -29,6 +34,8 @@ export function contentPathsForPage(pageSlug: ContentPageSlug) {
       return siteContentPaths
     case "produtos":
       return produtosContentPaths
+    case "sobre":
+      return sobreContentPaths
   }
 }
 
@@ -46,6 +53,10 @@ export function mergeHomeEditorFields() {
 
 export function mergeProdutosEditorFields() {
   return mergeEditableFields("produtos", "site")
+}
+
+export function mergeSobreEditorFields() {
+  return mergeEditableFields("sobre", "site")
 }
 
 /** @deprecated use homeEditableFields from pages/home.ts */

@@ -1,5 +1,5 @@
-import { WhatsApp } from "@/components/icons/whatsapp"
 import { homeSectionHeadingClass } from "@/components/home/home-section"
+import { WhatsApp } from "@/components/icons/whatsapp"
 import { ProductBreadcrumb } from "@/components/products/product-breadcrumb"
 import {
   SITE_ADDRESS_LINES,
@@ -15,7 +15,7 @@ import { Mail, MapPin, Phone } from "lucide-react"
 
 export const Route = createFileRoute("/contato")({
   head: () => ({
-    meta: [{ title: "Contato · Silos Grãos" }],
+    meta: [{ title: "Contato · Silos Grão" }],
   }),
   component: ContatoPage,
 })

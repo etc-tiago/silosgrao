@@ -26,6 +26,7 @@ export const editores = sqliteTable(
     email: text("email").notNull(),
     tipo: text("tipo", { enum: editorTipoEnum }).notNull(),
     hash: text("hash").notNull(),
+    revokedAt: integer("revoked_at", { mode: "timestamp_ms" }),
     createdAt: integer("created_at", { mode: "timestamp_ms" })
       .notNull()
       .default(sql`(unixepoch() * 1000)`),

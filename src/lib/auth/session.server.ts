@@ -7,6 +7,7 @@ import {
 import type { Db } from "@/db/client"
 import { sessions } from "@/db/schema"
 import type { Editor } from "@/db/schema"
+import { isActiveEditor } from "@/lib/auth/editor"
 import { generateToken, hashValue } from "@/lib/crypto"
 
 export const SESSION_COOKIE = "editor_session"
@@ -49,7 +50,18 @@ export async function getSessionEditor(db: Db): Promise<Editor | null> {
 
   if (!session) return null
 
-  return session.editor as Editor
+  const editor = session.editor as Editor
+  if (!isActiveEditor(editor)) {
+    await db.delete(sessions).where(eq(sessions.tokenHash, tokenHash))
+    deleteCookie(SESSION_COOKIE, { path: "/" })
+    return null
+  }
+
+  return editor
+}
+
+export async function destroyEditorSessions(db: Db, editorId: number) {
+  await db.delete(sessions).where(eq(sessions.editorId, editorId))
 }
 
 export async function destroySession(db: Db) {

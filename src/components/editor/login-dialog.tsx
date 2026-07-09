@@ -1,34 +1,23 @@
 import { useState } from "react"
 import { useNavigate } from "@tanstack/react-router"
 import { Button } from "@/components/ui/button"
-import { TurnstileWidget } from "@/components/editor/turnstile"
 import { orpc } from "@/orpc/browser-client"
 
-interface LoginDialogProps {
-  turnstileSiteKey: string
-}
-
-export function LoginDialog({ turnstileSiteKey }: LoginDialogProps) {
+export function LoginDialog() {
   const navigate = useNavigate()
   const [step, setStep] = useState<"email" | "otp">("email")
   const [email, setEmail] = useState("")
   const [code, setCode] = useState("")
-  const [turnstileToken, setTurnstileToken] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
 
   async function handleRequestOtp(event: React.FormEvent) {
     event.preventDefault()
     setError(null)
-
-    if (!turnstileToken) {
-      setError("Complete a verificação de segurança.")
-      return
-    }
-
     setLoading(true)
+
     try {
-      await orpc.auth.requestOtp({ email, turnstileToken })
+      await orpc.auth.requestOtp({ email })
       setStep("otp")
     } catch {
       setError("Não foi possível enviar o código. Tente novamente.")
@@ -78,12 +67,6 @@ export function LoginDialog({ turnstileSiteKey }: LoginDialogProps) {
               />
             </label>
 
-            <TurnstileWidget
-              siteKey={turnstileSiteKey}
-              onSuccess={setTurnstileToken}
-              onExpire={() => setTurnstileToken(null)}
-            />
-
             {error ? <p className="text-sm text-destructive">{error}</p> : null}
 
             <Button type="submit" className="w-full" disabled={loading}>
@@ -120,7 +103,6 @@ export function LoginDialog({ turnstileSiteKey }: LoginDialogProps) {
               onClick={() => {
                 setStep("email")
                 setCode("")
-                setTurnstileToken(null)
               }}
             >
               Voltar

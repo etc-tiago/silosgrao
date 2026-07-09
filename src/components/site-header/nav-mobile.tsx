@@ -5,17 +5,22 @@ import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { PRODUTOS_LINK } from "@/components/site-header/config"
 import {
+  drawerNavLinkClassName,
   isNavItemActive,
   navItems,
-  navLinkClassName,
 } from "@/components/site-header/nav"
+import type { HeaderThemeTokens } from "@/lib/site/header-theme"
 import { cn } from "@/lib/utils"
 
 type SiteHeaderNavMobileProps = {
   className?: string
+  theme: HeaderThemeTokens
 }
 
-export function SiteHeaderNavMobile({ className }: SiteHeaderNavMobileProps) {
+export function SiteHeaderNavMobile({
+  className,
+  theme,
+}: SiteHeaderNavMobileProps) {
   const [open, setOpen] = useState(false)
   const { location } = useRouterState()
   const hash = location.hash.replace(/^#/, "")
@@ -35,7 +40,8 @@ export function SiteHeaderNavMobile({ className }: SiteHeaderNavMobileProps) {
             variant="ghost"
             size="icon"
             className={cn(
-              "shrink-0 text-white hover:bg-white/10 md:hidden",
+              "shrink-0 hover:bg-foreground/10 md:hidden md:hover:bg-white/10",
+              theme.icon,
               className
             )}
             aria-label="Abrir menu"
@@ -77,8 +83,8 @@ export function SiteHeaderNavMobile({ className }: SiteHeaderNavMobileProps) {
                       to={item.to}
                       hash={item.hash}
                       className={cn(
-                        navLinkClassName(active),
-                        "block w-full text-foreground"
+                        drawerNavLinkClassName(active),
+                        "block w-full"
                       )}
                       onClick={closeMenu}
                     >
@@ -91,8 +97,8 @@ export function SiteHeaderNavMobile({ className }: SiteHeaderNavMobileProps) {
                 <Link
                   to={PRODUTOS_LINK.to}
                   className={cn(
-                    navLinkClassName(produtosActive),
-                    "block w-full text-foreground"
+                    drawerNavLinkClassName(produtosActive),
+                    "block w-full"
                   )}
                   onClick={closeMenu}
                 >

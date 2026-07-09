@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as SyncDataRouteImport } from './routes/sync-data'
 import { Route as SobreRouteImport } from './routes/sobre'
 import { Route as ProdutosRouteImport } from './routes/produtos'
 import { Route as EditarRouteImport } from './routes/editar'
@@ -20,6 +21,11 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as ApiRpcSplatRouteImport } from './routes/api/rpc/$'
 import { Route as ApiContentAssetsSplatRouteImport } from './routes/api/content-assets/$'
 
+const SyncDataRoute = SyncDataRouteImport.update({
+  id: '/sync-data',
+  path: '/sync-data',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SobreRoute = SobreRouteImport.update({
   id: '/sobre',
   path: '/sobre',
@@ -80,6 +86,7 @@ export interface FileRoutesByFullPath {
   '/editar': typeof EditarRoute
   '/produtos': typeof ProdutosRoute
   '/sobre': typeof SobreRoute
+  '/sync-data': typeof SyncDataRoute
   '/api/content-assets/$': typeof ApiContentAssetsSplatRoute
   '/api/rpc/$': typeof ApiRpcSplatRoute
 }
@@ -92,6 +99,7 @@ export interface FileRoutesByTo {
   '/editar': typeof EditarRoute
   '/produtos': typeof ProdutosRoute
   '/sobre': typeof SobreRoute
+  '/sync-data': typeof SyncDataRoute
   '/api/content-assets/$': typeof ApiContentAssetsSplatRoute
   '/api/rpc/$': typeof ApiRpcSplatRoute
 }
@@ -105,6 +113,7 @@ export interface FileRoutesById {
   '/editar': typeof EditarRoute
   '/produtos': typeof ProdutosRoute
   '/sobre': typeof SobreRoute
+  '/sync-data': typeof SyncDataRoute
   '/api/content-assets/$': typeof ApiContentAssetsSplatRoute
   '/api/rpc/$': typeof ApiRpcSplatRoute
 }
@@ -119,6 +128,7 @@ export interface FileRouteTypes {
     | '/editar'
     | '/produtos'
     | '/sobre'
+    | '/sync-data'
     | '/api/content-assets/$'
     | '/api/rpc/$'
   fileRoutesByTo: FileRoutesByTo
@@ -131,6 +141,7 @@ export interface FileRouteTypes {
     | '/editar'
     | '/produtos'
     | '/sobre'
+    | '/sync-data'
     | '/api/content-assets/$'
     | '/api/rpc/$'
   id:
@@ -143,6 +154,7 @@ export interface FileRouteTypes {
     | '/editar'
     | '/produtos'
     | '/sobre'
+    | '/sync-data'
     | '/api/content-assets/$'
     | '/api/rpc/$'
   fileRoutesById: FileRoutesById
@@ -156,12 +168,20 @@ export interface RootRouteChildren {
   EditarRoute: typeof EditarRoute
   ProdutosRoute: typeof ProdutosRoute
   SobreRoute: typeof SobreRoute
+  SyncDataRoute: typeof SyncDataRoute
   ApiContentAssetsSplatRoute: typeof ApiContentAssetsSplatRoute
   ApiRpcSplatRoute: typeof ApiRpcSplatRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/sync-data': {
+      id: '/sync-data'
+      path: '/sync-data'
+      fullPath: '/sync-data'
+      preLoaderRoute: typeof SyncDataRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/sobre': {
       id: '/sobre'
       path: '/sobre'
@@ -244,6 +264,7 @@ const rootRouteChildren: RootRouteChildren = {
   EditarRoute: EditarRoute,
   ProdutosRoute: ProdutosRoute,
   SobreRoute: SobreRoute,
+  SyncDataRoute: SyncDataRoute,
   ApiContentAssetsSplatRoute: ApiContentAssetsSplatRoute,
   ApiRpcSplatRoute: ApiRpcSplatRoute,
 }
