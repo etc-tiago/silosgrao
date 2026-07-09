@@ -15,7 +15,7 @@ import { Mail, MapPin, Phone } from "lucide-react"
 
 export const Route = createFileRoute("/contato")({
   head: () => ({
-    meta: [{ title: "Contato · Silos Grão" }],
+    meta: [{ title: "Contato · Silo Grão" }],
   }),
   component: ContatoPage,
 })

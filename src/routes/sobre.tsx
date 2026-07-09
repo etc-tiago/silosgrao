@@ -24,7 +24,7 @@ export const Route = createFileRoute("/sobre")({
   validateSearch: editSearchSchema,
   loader: () => loadSobreContent(),
   head: () => ({
-    meta: [{ title: "Sobre · Silos Grão" }],
+    meta: [{ title: "Sobre · Silo Grão" }],
   }),
   component: SobrePage,
 })

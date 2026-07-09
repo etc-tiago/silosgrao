@@ -6,7 +6,7 @@ import { FileText } from "lucide-react"
 
 export const Route = createFileRoute("/codigo-etica")({
   head: () => ({
-    meta: [{ title: "Código de Ética · Silos Grão" }],
+    meta: [{ title: "Código de Ética · Silo Grão" }],
   }),
   component: CodigoEticaPage,
 })

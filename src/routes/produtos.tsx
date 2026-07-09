@@ -19,7 +19,7 @@ export const Route = createFileRoute("/produtos")({
   validateSearch: editSearchSchema,
   loader: () => loadProdutosContent(),
   head: () => ({
-    meta: [{ title: "Produtos · Silos Grão" }],
+    meta: [{ title: "Produtos · Silo Grão" }],
   }),
   component: ProdutosPage,
 })

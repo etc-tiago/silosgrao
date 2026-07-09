@@ -39,7 +39,7 @@ const requestOtp = base
           to: email,
           from: {
             email: context.env.OTP_FROM_EMAIL,
-            name: "Silos Grão",
+            name: "Silo Grão",
           },
           subject: "Seu código de acesso",
           text: `Seu código de acesso é: ${code}. Válido por 10 minutos.`,

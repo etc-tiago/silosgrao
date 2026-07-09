@@ -9,7 +9,7 @@ import { createFileRoute } from "@tanstack/react-router"
 export const Route = createFileRoute("/catalogo")({
   loader: () => loadCatalogoContent(),
   head: () => ({
-    meta: [{ title: "Catálogo · Silos Grão" }],
+    meta: [{ title: "Catálogo · Silo Grão" }],
   }),
   component: CatalogoPage,
 })

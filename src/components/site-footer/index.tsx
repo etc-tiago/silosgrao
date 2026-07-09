@@ -27,7 +27,7 @@ export function SiteFooter() {
               className="inline-block transition-opacity hover:opacity-85"
             >
               <SilosGraosLogomarca preset="white" className="h-20 w-auto" />
-              <span className="sr-only">Silos Grão</span>
+              <span className="sr-only">Silo Grão</span>
             </Link>
             <p className="mt-4 text-sm leading-relaxed text-primary-foreground/80">
               {SITE_FOOTER_ABOUT}
@@ -80,7 +80,7 @@ export function SiteFooter() {
 
         <div className="border-t border-primary-foreground/20 pt-8">
           <p className="text-center text-sm text-primary-foreground/70">
-            © {year} Silos Grão. Todos os direitos reservados. | Desenvolvido
+            © {year} Silo Grão. Todos os direitos reservados. | Desenvolvido
             com precisão para sua confiança.
           </p>
         </div>

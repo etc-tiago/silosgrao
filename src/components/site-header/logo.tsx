@@ -41,7 +41,7 @@ export function SiteHeaderLogo({
         aria-hidden
         className="hidden h-20 w-auto md:block"
       />
-      <span className="sr-only">Silos Grão</span>
+      <span className="sr-only">Silo Grão</span>
     </Link>
   )
 }

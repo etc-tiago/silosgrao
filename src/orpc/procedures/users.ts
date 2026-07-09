@@ -98,11 +98,11 @@ const invite = adminOnly
         to: email,
         from: {
           email: context.env.OTP_FROM_EMAIL,
-          name: "Silos Grão",
+          name: "Silo Grão",
         },
-        subject: "Convite para editar o site Silos Grão",
-        text: `Você foi convidado como ${roleLabel} para editar o site Silos Grão.\n\nAcesse ${loginUrl} e informe este email para receber um código de acesso.`,
-        html: `<p>Você foi convidado como <strong>${roleLabel}</strong> para editar o site Silos Grão.</p><p><a href="${loginUrl}">Acesse aqui</a> e informe este email para receber um código de acesso.</p>`,
+        subject: "Convite para editar o site Silo Grão",
+        text: `Você foi convidado como ${roleLabel} para editar o site Silo Grão.\n\nAcesse ${loginUrl} e informe este email para receber um código de acesso.`,
+        html: `<p>Você foi convidado como <strong>${roleLabel}</strong> para editar o site Silo Grão.</p><p><a href="${loginUrl}">Acesse aqui</a> e informe este email para receber um código de acesso.</p>`,
       })
     } catch {
       console.info(`[dev] Invite for ${email}: ${loginUrl}`)
