@@ -9,6 +9,7 @@ import { resolveDesktopHeaderPreset } from "@/lib/site/resolve-header-theme"
 
 export type ResolvedHeaderTheme = {
   desktopPreset: HeaderColorPreset
+  /** Preset do sheet mobile (fundo claro); o header usa `desktopTokens`. */
   mobilePreset: HeaderColorPreset
   desktopTokens: HeaderThemeTokens
   mobileTokens: HeaderThemeTokens

@@ -4,13 +4,14 @@ export const HERO_COLUMN_DEFAULTS = [
   "/demo/hero-col-3.jpg",
   "/demo/hero-col-4.jpg",
   "/demo/hero-col-5.jpg",
+  "/demo/hero-col-6.jpg",
 ] as const
 
-export const HERO_COLUMN_PATHS = [1, 2, 3, 4, 5].map(
+export const HERO_COLUMN_PATHS = [1, 2, 3, 4, 5, 6].map(
   (i) => `hero.columns.${i}` as const
 )
 
-export const HERO_CATEGORY_PATHS = [1, 2, 3, 4, 5].map(
+export const HERO_CATEGORY_PATHS = [1, 2, 3, 4, 5, 6].map(
   (i) => `hero.categories.${i}` as const
 )
 

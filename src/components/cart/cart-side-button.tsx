@@ -19,7 +19,7 @@ export function CartSideButton({ className }: CartSideButtonProps) {
       onClick={openCart}
       aria-label="Solicitar orçamento"
       className={cn(
-        "fixed top-1/2 right-4 z-9998 flex origin-right -translate-y-1/2 rotate-270 items-center gap-2 rounded-t-2xl border border-b-0 bg-primary px-4 py-2 text-primary-foreground shadow-lg transition-colors hover:bg-primary/90",
+        "fixed top-1/2 right-4 z-9998 flex origin-right -translate-y-1/2 rotate-270 items-center gap-2 rounded-t-2xl border border-b-0 border-black/10 bg-primary px-4 py-2 text-primary-foreground shadow-lg transition-colors hover:bg-primary/90",
         className
       )}
     >

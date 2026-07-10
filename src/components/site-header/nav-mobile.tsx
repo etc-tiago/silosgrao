@@ -40,7 +40,7 @@ export function SiteHeaderNavMobile({
             variant="ghost"
             size="icon"
             className={cn(
-              "shrink-0 hover:bg-foreground/10 md:hidden md:hover:bg-white/10",
+              "shrink-0 hover:bg-white/10 md:hidden",
               theme.icon,
               className
             )}

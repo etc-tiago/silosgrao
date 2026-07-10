@@ -20,7 +20,7 @@ export function SiteHeaderWhatsappLink({
       target="_blank"
       rel="noopener noreferrer"
       className={cn(
-        "inline-flex shrink-0 items-center justify-center rounded-sm p-2 transition-opacity duration-300 hover:opacity-85 md:w-36 md:justify-end",
+        "inline-flex shrink-0 items-center justify-center rounded-sm p-2 transition-opacity duration-300 hover:opacity-85",
         theme.icon,
         className
       )}

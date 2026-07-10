@@ -25,6 +25,7 @@ const DEFAULT_HERO_CAPTIONS = [
   "Transportadores",
   "Infraestrutura",
   "Soluções",
+  "Serviços",
 ] as const
 
 export const DEFAULT_HERO_STRIP_VALUE: HeroStripValue = {
@@ -44,7 +45,7 @@ function migrateLegacyHeroTiles(
 ): HeroStripValue | undefined {
   const tiles: HeroTile[] = []
 
-  for (let index = 1; index <= 5; index += 1) {
+  for (let index = 1; index <= 6; index += 1) {
     const image =
       legacyContent[`hero.columns.${index}`] ??
       HERO_COLUMN_DEFAULTS[index - 1]
