@@ -82,7 +82,9 @@ function RootSiteHeader() {
 }
 
 function RootDocument({ children }: { children: React.ReactNode }) {
-  const { editor, editorState } = Route.useLoaderData()
+  const loaderData = Route.useLoaderData()
+  const editor = loaderData?.editor
+  const editorState = loaderData?.editorState
 
   return (
     <html lang="pt-BR">

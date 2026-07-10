@@ -26,9 +26,9 @@ export function SiteHeader({
         />
         <SiteHeaderNavMobile className="order-3 shrink-0" theme={theme} />
         <SiteHeaderCenterGroup theme={theme} className="md:order-2" />
-        <div className="order-4 flex shrink-0 items-center gap-1 md:order-1" />
+        <div className="order-4 flex shrink-0 items-center gap-1 md:order-1 w-24" />
         <SiteHeaderWhatsappLink
-          className="order-2 md:order-3"
+          className="order-2 md:order-3 w-24"
           href={whatsappUrl}
           theme={theme}
         />

@@ -12,6 +12,8 @@
     "format": "oxfmt",
     "check": "oxfmt --check",
     "typecheck": "tsc --noEmit",
+    "db:setup:local": "wrangler d1 execute silosgraos-cms --local --file=src/db/drizzle/0000_hot_doctor_faustus.sql && wrangler d1 execute silosgraos-cms --local --file=src/db/drizzle/0001_catalog_fts.sql",
+    "db:setup:remote": "wrangler d1 execute silosgraos-cms --remote --file=src/db/drizzle/0000_hot_doctor_faustus.sql && wrangler d1 execute silosgraos-cms --remote --file=src/db/drizzle/0001_catalog_fts.sql",
     "cf:types": "wrangler types",
     "db:studio": "drizzle-kit studio"
   },
